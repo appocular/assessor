@@ -23,9 +23,9 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
-// $app->withFacades();
+$app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +81,7 @@ $app->singleton(
 // $app->register(Oogle\Assessor\Providers\AppServiceProvider::class);
 // $app->register(Oogle\Assessor\Providers\AuthServiceProvider::class);
 // $app->register(Oogle\Assessor\Providers\EventServiceProvider::class);
+$app->register(Webpatser\Uuid\UuidServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
