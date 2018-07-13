@@ -3,10 +3,12 @@
 namespace Oogle\Assessor\Exceptions;
 
 use Exception;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
@@ -45,6 +47,20 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        return parent::render($request, $e);
+        $rendered = parent::render($request, $e);
+
+        $content = [
+            'error' => [
+                'code' => $rendered->getStatusCode(),
+                'message' => $e->getMessage(),
+            ]
+        ];
+
+        if (env('APP_DEBUG', config('app.debug', false))) {
+            $fe = FlattenException::create($e);
+            $content['error']['trace'] = $fe->toArray();
+        }
+
+        return new Response($content, $rendered->getStatusCode());
     }
 }
