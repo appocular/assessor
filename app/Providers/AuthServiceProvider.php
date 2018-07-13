@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Providers;
+namespace Oogle\Assessor\Providers;
 
-use App\User;
+use Oogle\Assessor\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 

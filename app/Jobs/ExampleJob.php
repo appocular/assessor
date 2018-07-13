@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace Oogle\Assessor\Jobs;
 
 class ExampleJob extends Job
 {

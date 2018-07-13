@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace Oogle\Assessor\Events;
 
 class ExampleEvent extends Event
 {
