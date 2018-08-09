@@ -1,6 +1,6 @@
 <?php
 
-namespace Oogle\Assessor\Console;
+namespace Ogle\Assessor\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;

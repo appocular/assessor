@@ -11,7 +11,7 @@
 |
 */
 
-$factory->define(Oogle\Assessor\User::class, function (Faker\Generator $faker) {
+$factory->define(Ogle\Assessor\User::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
         'email' => $faker->email,

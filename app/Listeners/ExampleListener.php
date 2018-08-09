@@ -1,8 +1,8 @@
 <?php
 
-namespace Oogle\Assessor\Listeners;
+namespace Ogle\Assessor\Listeners;
 
-use Oogle\Assessor\Events\ExampleEvent;
+use Ogle\Assessor\Events\ExampleEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 

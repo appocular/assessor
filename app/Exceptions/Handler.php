@@ -1,6 +1,6 @@
 <?php
 
-namespace Oogle\Assessor\Exceptions;
+namespace Ogle\Assessor\Exceptions;
 
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Oogle\Assessor\Http\Middleware;
+namespace Ogle\Assessor\Http\Middleware;
 
 use Closure;
 

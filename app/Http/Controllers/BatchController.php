@@ -1,10 +1,10 @@
 <?php
 
-namespace Oogle\Assessor\Http\Controllers;
+namespace Ogle\Assessor\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Oogle\Assessor\Batch;
+use Ogle\Assessor\Batch;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class BatchController extends BaseController

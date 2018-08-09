@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Oogle\\Assessor\\": "app/"
+            "Ogle\\Assessor\\": "app/"
         }
     },
     "autoload-dev": {

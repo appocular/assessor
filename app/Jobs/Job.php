@@ -1,6 +1,6 @@
 <?php
 
-namespace Oogle\Assessor\Jobs;
+namespace Ogle\Assessor\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Oogle\Assessor;
+namespace Ogle\Assessor;
 
 use Illuminate\Database\Eloquent\Model;
 use Webpatser\Uuid\Uuid;
