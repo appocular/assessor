@@ -36,4 +36,12 @@ class Batch extends Model
             $model->{$model->getKeyName()} = (string) Uuid::generate(4);
         });
     }
+
+    /**
+     * Get the run associated with this run.
+     */
+    public function run()
+    {
+        return $this->belongsTo('Ogle\Assessor\Run', 'sha');
+    }
 }
