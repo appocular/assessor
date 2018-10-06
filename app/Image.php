@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Image extends Model
 {
 
-    protected $fillable = ['id', 'name'];
+    protected $fillable = ['id', 'name', 'image_sha'];
 
     protected $keyType = 'string';
 

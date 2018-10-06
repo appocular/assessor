@@ -2,6 +2,8 @@
 
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
+use Ogle\Assessor\ImageStore;
+use Prophecy\Argument;
 
 class BatchTest extends TestCase
 {
@@ -46,6 +48,9 @@ class BatchTest extends TestCase
 
     public function testAddingImage()
     {
+        $imageStore = $this->prophesize(ImageStore::class);
+        $imageStore->store(Argument::any())->willReturn('XXX');
+        $this->app->instance(ImageStore::class, $imageStore->reveal());
         $sha = str_repeat('1', 40);
         $run_id = $this->startBatch($sha);
 
@@ -53,11 +58,8 @@ class BatchTest extends TestCase
         $image = file_get_contents(__DIR__ . '/../fixtures/images/basn6a16.png');
 
         $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
-        //print_r(json_decode($this->response->getContent()));
         $this->assertResponseStatus(200);
-        $this->seeInDatabase('images', ['run_id' => $sha, 'name' => 'test image']);
-        // todo: test image sha
-
+        $this->seeInDatabase('images', ['run_id' => $sha, 'name' => 'test image', 'image_sha' => 'XXX']);
     }
 
     /**

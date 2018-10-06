@@ -7,11 +7,22 @@ use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Ogle\Assessor\Batch;
 use Ogle\Assessor\Image;
+use Ogle\Assessor\ImageStore;
 use Ogle\Assessor\Run;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class BatchController extends BaseController
 {
+    /**
+     * @var ImageStore
+     */
+    protected $ImageStore;
+
+    public function __construct(ImageStore $imageStore)
+    {
+        $this->imageStore = $imageStore;
+    }
+
     public function create(Request $request)
     {
         $this->validate($request, [
@@ -50,11 +61,13 @@ class BatchController extends BaseController
         if (!$imageData || substr($imageData, 0, 8) !== $pngHeader) {
             throw new BadRequestHttpException('Bad image data');
         }
+        $sha = $this->imageStore->store($imageData);
 
         // do something with the image.
         $run->images()->create([
             'id' => hash('sha1', $request->input('name')),
             'name' => $request->input('name'),
+            'image_sha' => $sha,
         ]);
     }
 }
