@@ -1,0 +1,87 @@
+FORMAT: 1A
+
+# Assessor
+
+Assessor is the brains of Ogle. It keeps track of test runs, batches
+and images.
+
+## Batch resource [/api/v1/batch]
+
+### Create batch [POST]
+
+Start a new batch run. Returns the id of the new batch.
+
++ Request (application/json)
+
+        {
+            "sha": "d8f4590320e1343a915b6394170650a8f35d6926"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "id": "58444f87-0525-429d-ba3c-d7b06cab748a"
+        }
+
++ Response 422 (application/json)
+
+        {
+            "error": {
+                "message": "The given data was invalid.",
+                "errors": {
+                    "sha": ["The sha field is required."]
+                }
+            }
+        }
+
+### Delete batch [DELETE /api/v1/batch/{id}]
+
+Finishes batch run. No further images can be added to this batch, but
+further batches on the same commit can be created.
+
++ Response 200
+
++ Response 404 (application/json)
+
+        {
+            "error": {
+                "message": "No query results for model [Ogle\Assessor\Batch] OEU357a06f7-6fa6-41b4-8d19-7ce4eacf9871"
+            }
+        }
+
+### Add image [POST /api/v1/batch/{id}/image]
+
+Add image to batch. Stores image and associates it with the commit of
+the current batch run.
+
++ Request (application/json)
+
+        {
+            "name": 'Frontpage',
+            "image": "<base64 PNG data>"
+        }
+
++ Response 200
+
++ Response 422
+
+        {
+            "error": {
+                "message": "The given data was invalid.",
+                "errors": {
+                    "sha": ["The name field is required."]
+                }
+            }
+        }
+
++ Response 400 (application/json)
+
+    Base64 data not a valid PNG.
+
+    + Body
+
+            {
+                "error": {
+                    "message": "Bad image data"
+                }
+            }
