@@ -1,7 +1,6 @@
 <?php
 
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 use Ogle\Assessor\ImageStore;
 use Prophecy\Argument;
 
@@ -36,6 +35,40 @@ class BatchTest extends TestCase
         $this->assertResponseStatus(404);
     }
 
+    public function testBatchValidation()
+    {
+        $this->json('POST', '/api/v1/batch', []);
+        $this->assertResponseStatus(422);
+        $this->seeJsonEquals([
+            'error' => [
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'sha' => [0 => 'The sha field is required.'],
+                ],
+            ],
+        ]);
+        $json = json_decode($this->response->getContent());
+    }
+
+    public function testImageValidation()
+    {
+        $sha = str_repeat('1', 40);
+        $run_id = $this->startBatch($sha);
+
+        $this->json('POST', '/api/v1/batch/' . $run_id . '/image', []);
+        $this->assertResponseStatus(422);
+        $this->seeJsonEquals([
+            'error' => [
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'name' => [0 => 'The name field is required.'],
+                    'image' => [0 => 'The image field is required.'],
+                ],
+            ],
+        ]);
+        $json = json_decode($this->response->getContent());
+    }
+
     public function testBadImage()
     {
         $sha = str_repeat('1', 40);
@@ -43,7 +76,7 @@ class BatchTest extends TestCase
 
         $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => 'random data']);
         $this->assertResponseStatus(400);
-        $this->seeJson(['error' => ['code' => 400, 'message' => 'Bad image data']]);
+        $this->seeJson(['error' => ['message' => 'Bad image data']]);
     }
 
     public function testAddingImage()
@@ -56,10 +89,30 @@ class BatchTest extends TestCase
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
         $image = file_get_contents(__DIR__ . '/../fixtures/images/basn6a16.png');
+        //$this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => '', 'image' => '']);
 
         $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
+        $this->seeInDatabase('images', [
+            'id' => hash('sha1', 'test image'),
+            'run_id' => $sha,
+            'name' => 'test image',
+            'image_sha' => 'XXX',
+        ]);
         $this->assertResponseStatus(200);
-        $this->seeInDatabase('images', ['run_id' => $sha, 'name' => 'test image', 'image_sha' => 'XXX']);
+
+        // Submitting an image with the same name should give an error.
+        $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
+        $this->assertResponseStatus(409);
+        $this->seeJson(['error' => ['message' => 'Image already exists']]);
+
+        $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
+        $this->assertResponseStatus(200);
+        $this->seeInDatabase('images', [
+            'id' => hash('sha1', 'test image2'),
+            'run_id' => $sha,
+            'name' => 'test image2',
+            'image_sha' => 'XXX',
+        ]);
     }
 
     /**

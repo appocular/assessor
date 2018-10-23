@@ -50,7 +50,6 @@ class Handler extends ExceptionHandler
 
         $content = [
             'error' => [
-                'code' => $rendered->getStatusCode(),
                 'message' => $e->getMessage(),
             ]
         ];
