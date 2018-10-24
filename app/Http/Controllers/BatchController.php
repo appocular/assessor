@@ -69,7 +69,7 @@ class BatchController extends BaseController
 
         try {
             $run->images()->create([
-                'id' => hash('sha1', $request->input('name')),
+                'id' => hash('sha1', $run->id . $request->input('name')),
                 'name' => $request->input('name'),
                 'image_sha' => $sha,
             ]);

@@ -89,7 +89,6 @@ class BatchTest extends TestCase
 
         $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->seeInDatabase('images', [
-            'id' => hash('sha1', 'test image'),
             'run_id' => $sha,
             'name' => 'test image',
             'image_sha' => 'XXX',
@@ -104,13 +103,25 @@ class BatchTest extends TestCase
         $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
-            'id' => hash('sha1', 'test image2'),
             'run_id' => $sha,
             'name' => 'test image2',
             'image_sha' => 'XXX',
         ]);
 
+        $this->delete('/api/v1/batch/' . $batch_id);
+        $this->assertResponseStatus(200);
+
         // Starting a new run (not batch) should enable adding the same image...
+        $sha = str_repeat('2', 40);
+        $batch_id = $this->startBatch($sha);
+
+        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
+        $this->assertResponseStatus(200);
+        $this->seeInDatabase('images', [
+            'run_id' => $sha,
+            'name' => 'test image2',
+            'image_sha' => 'XXX',
+        ]);
     }
 
     /**
