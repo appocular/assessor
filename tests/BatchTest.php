@@ -16,16 +16,16 @@ class BatchTest extends TestCase
     public function testCreateAndDelete()
     {
         $sha = str_repeat('0', 40);
-        $run_id = $this->startBatch($sha);
+        $batch_id = $this->startBatch($sha);
 
         // Assert that we can see the batch and run in the database.
-        $this->seeInDatabase('batches', ['id' => $run_id, 'sha' => $sha]);
+        $this->seeInDatabase('batches', ['id' => $batch_id, 'sha' => $sha]);
         $this->seeInDatabase('runs', ['id' => $sha]);
 
-        $this->delete('/api/v1/batch/' . $run_id);
+        $this->delete('/api/v1/batch/' . $batch_id);
         $this->assertResponseStatus(200);
         // Assert that the batch was deleted but the run still exists.
-        $this->missingFromDatabase('batches', ['id' => $run_id, 'sha' => $sha]);
+        $this->missingFromDatabase('batches', ['id' => $batch_id, 'sha' => $sha]);
         $this->seeInDatabase('runs', ['id' => $sha]);
     }
 
@@ -51,9 +51,9 @@ class BatchTest extends TestCase
     public function testImageValidation()
     {
         $sha = str_repeat('1', 40);
-        $run_id = $this->startBatch($sha);
+        $batch_id = $this->startBatch($sha);
 
-        $this->json('POST', '/api/v1/batch/' . $run_id . '/image', []);
+        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', []);
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
             'message' => 'The given data was invalid.',
@@ -68,9 +68,9 @@ class BatchTest extends TestCase
     public function testBadImage()
     {
         $sha = str_repeat('1', 40);
-        $run_id = $this->startBatch($sha);
+        $batch_id = $this->startBatch($sha);
 
-        $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => 'random data']);
+        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => 'random data']);
         $this->assertResponseStatus(400);
         $this->seeJson(['message' => 'Bad image data']);
     }
@@ -81,13 +81,13 @@ class BatchTest extends TestCase
         $imageStore->store(Argument::any())->willReturn('XXX');
         $this->app->instance(ImageStore::class, $imageStore->reveal());
         $sha = str_repeat('1', 40);
-        $run_id = $this->startBatch($sha);
+        $batch_id = $this->startBatch($sha);
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
         $image = file_get_contents(__DIR__ . '/../fixtures/images/basn6a16.png');
-        //$this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => '', 'image' => '']);
+        //$this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => '', 'image' => '']);
 
-        $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
+        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->seeInDatabase('images', [
             'id' => hash('sha1', 'test image'),
             'run_id' => $sha,
@@ -97,11 +97,11 @@ class BatchTest extends TestCase
         $this->assertResponseStatus(200);
 
         // Submitting an image with the same name should give an error.
-        $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
+        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(409);
         $this->seeJson(['message' => 'Image already exists']);
 
-        $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
+        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
             'id' => hash('sha1', 'test image2'),
