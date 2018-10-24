@@ -40,11 +40,9 @@ class BatchTest extends TestCase
         $this->json('POST', '/api/v1/batch', []);
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
-            'error' => [
-                'message' => 'The given data was invalid.',
-                'errors' => [
-                    'sha' => [0 => 'The sha field is required.'],
-                ],
+            'message' => 'The given data was invalid.',
+            'validation_errors' => [
+                'sha' => [0 => 'The sha field is required.'],
             ],
         ]);
         $json = json_decode($this->response->getContent());
@@ -58,12 +56,10 @@ class BatchTest extends TestCase
         $this->json('POST', '/api/v1/batch/' . $run_id . '/image', []);
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
-            'error' => [
-                'message' => 'The given data was invalid.',
-                'errors' => [
-                    'name' => [0 => 'The name field is required.'],
-                    'image' => [0 => 'The image field is required.'],
-                ],
+            'message' => 'The given data was invalid.',
+            'validation_errors' => [
+                'name' => [0 => 'The name field is required.'],
+                'image' => [0 => 'The image field is required.'],
             ],
         ]);
         $json = json_decode($this->response->getContent());
@@ -76,7 +72,7 @@ class BatchTest extends TestCase
 
         $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => 'random data']);
         $this->assertResponseStatus(400);
-        $this->seeJson(['error' => ['message' => 'Bad image data']]);
+        $this->seeJson(['message' => 'Bad image data']);
     }
 
     public function testAddingImage()
@@ -103,7 +99,7 @@ class BatchTest extends TestCase
         // Submitting an image with the same name should give an error.
         $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(409);
-        $this->seeJson(['error' => ['message' => 'Image already exists']]);
+        $this->seeJson(['message' => 'Image already exists']);
 
         $this->json('POST', '/api/v1/batch/' . $run_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
@@ -113,6 +109,8 @@ class BatchTest extends TestCase
             'name' => 'test image2',
             'image_sha' => 'XXX',
         ]);
+
+        // Starting a new run (not batch) should enable adding the same image...
     }
 
     /**

@@ -49,13 +49,11 @@ class Handler extends ExceptionHandler
         $rendered = parent::render($request, $e);
 
         $content = [
-            'error' => [
-                'message' => $e->getMessage(),
-            ]
+            'message' => $e->getMessage(),
         ];
 
         if ($e instanceof ValidationException) {
-            $content['error']['errors'] = $e->errors();
+            $content['validation_errors'] = $e->errors();
         }
 
         return new Response($content, $rendered->getStatusCode());

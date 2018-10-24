@@ -26,11 +26,9 @@ Start a new batch run. Returns the id of the new batch.
 + Response 422 (application/json)
 
         {
-            "error": {
-                "message": "The given data was invalid.",
-                "errors": {
-                    "sha": ["The sha field is required."]
-                }
+            "message": "The given data was invalid.",
+            "validation_errors": {
+                "sha": ["The sha field is required."]
             }
         }
 
@@ -44,9 +42,7 @@ further batches on the same commit can be created.
 + Response 404 (application/json)
 
         {
-            "error": {
-                "message": "No query results for model [Ogle\Assessor\Batch] OEU357a06f7-6fa6-41b4-8d19-7ce4eacf9871"
-            }
+            "message": "No query results for model [Ogle\Assessor\Batch] OEU357a06f7-6fa6-41b4-8d19-7ce4eacf9871"
         }
 
 ### Add image [POST /api/v1/batch/{id}/image]
@@ -66,11 +62,9 @@ the current batch run.
 + Response 422
 
         {
-            "error": {
-                "message": "The given data was invalid.",
-                "errors": {
-                    "sha": ["The name field is required."]
-                }
+            "message": "The given data was invalid.",
+            "validation_errors": {
+                "sha": ["The name field is required."]
             }
         }
 
@@ -81,7 +75,5 @@ the current batch run.
     + Body
 
             {
-                "error": {
-                    "message": "Bad image data"
-                }
+                "message": "Bad image data"
             }
