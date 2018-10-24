@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Ogle\Assessor\Batch;
+use Ogle\Assessor\Commit;
 use Ogle\Assessor\Image;
 use Ogle\Assessor\ImageStore;
-use Ogle\Assessor\Run;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
@@ -35,7 +35,7 @@ class BatchController extends BaseController
         $batch = new Batch($request->all());
         $batch->save();
 
-        $run = Run::firstOrCreate(['id' => $request->input('sha')]);
+        $commit = Commit::firstOrCreate(['sha' => $request->input('sha')]);
 
         return (new Response(['id' => $batch->id]));
     }
@@ -49,7 +49,7 @@ class BatchController extends BaseController
     public function addImage(Request $request, $batchId)
     {
         $batch = Batch::findOrFail($batchId);
-        $run = $batch->run;
+        $commit = $batch->commit;
 
         $this->validate($request, [
             'name' => 'required|string|min:1|max:255',
@@ -68,8 +68,8 @@ class BatchController extends BaseController
         $sha = $this->imageStore->store($imageData);
 
         try {
-            $run->images()->create([
-                'id' => hash('sha1', $run->id . $request->input('name')),
+            $commit->images()->create([
+                'id' => hash('sha1', $commit->sha . $request->input('name')),
                 'name' => $request->input('name'),
                 'image_sha' => $sha,
             ]);

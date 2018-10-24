@@ -18,15 +18,15 @@ class BatchTest extends TestCase
         $sha = str_repeat('0', 40);
         $batch_id = $this->startBatch($sha);
 
-        // Assert that we can see the batch and run in the database.
+        // Assert that we can see the batch and commit in the database.
         $this->seeInDatabase('batches', ['id' => $batch_id, 'sha' => $sha]);
-        $this->seeInDatabase('runs', ['id' => $sha]);
+        $this->seeInDatabase('commits', ['sha' => $sha]);
 
         $this->delete('/api/v1/batch/' . $batch_id);
         $this->assertResponseStatus(200);
-        // Assert that the batch was deleted but the run still exists.
+        // Assert that the batch was deleted but the commit still exists.
         $this->missingFromDatabase('batches', ['id' => $batch_id, 'sha' => $sha]);
-        $this->seeInDatabase('runs', ['id' => $sha]);
+        $this->seeInDatabase('commits', ['sha' => $sha]);
     }
 
     public function testUnknownBatch()
@@ -89,7 +89,7 @@ class BatchTest extends TestCase
 
         $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->seeInDatabase('images', [
-            'run_id' => $sha,
+            'commit_sha' => $sha,
             'name' => 'test image',
             'image_sha' => 'XXX',
         ]);
@@ -103,7 +103,7 @@ class BatchTest extends TestCase
         $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
-            'run_id' => $sha,
+            'commit_sha' => $sha,
             'name' => 'test image2',
             'image_sha' => 'XXX',
         ]);
@@ -111,14 +111,14 @@ class BatchTest extends TestCase
         $this->delete('/api/v1/batch/' . $batch_id);
         $this->assertResponseStatus(200);
 
-        // Starting a new run (not batch) should enable adding the same image...
+        // A new batch on another commit should be able to add the same image.
         $sha = str_repeat('2', 40);
         $batch_id = $this->startBatch($sha);
 
         $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
-            'run_id' => $sha,
+            'commit_sha' => $sha,
             'name' => 'test image2',
             'image_sha' => 'XXX',
         ]);

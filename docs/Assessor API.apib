@@ -2,8 +2,13 @@ FORMAT: 1A
 
 # Assessor
 
-Assessor is the brains of Ogle. It keeps track of test runs, batches
+Assessor is the brains of Ogle. It keeps track of commits, batches
 and images.
+
+Images for visual testing is submitted by creating a batch. A batch is
+associated with a commit, and images submitted in the batch is put on
+the commit. Multiple batches may be run on the same commit,
+facilitating multiple test suites or parallel running.
 
 ## Batch resource [/api/v1/batch]
 

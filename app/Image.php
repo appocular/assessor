@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Image extends Model
 {
 
-    protected $fillable = ['id', 'name', 'image_sha'];
+    protected $fillable = ['id', 'name', 'commit_sha', 'image_sha'];
 
     protected $keyType = 'string';
 
     /**
-     * Get the run for the image.
+     * Get the commit for the image.
      */
-    public function run()
+    public function commit()
     {
-        return $this->belongsTo('Ogle\Assessor\Run');
+        return $this->belongsTo('Ogle\Assessor\Commit');
     }
 }

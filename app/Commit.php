@@ -4,14 +4,15 @@ namespace Ogle\Assessor;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Run extends Model
+class Commit extends Model
 {
-    protected $fillable = ['id'];
+    protected $fillable = ['sha'];
 
+    protected $primaryKey = 'sha';
     protected $keyType = 'string';
 
     /**
-     * Get the images for the run.
+     * Get the images for the commit.
      */
     public function images()
     {

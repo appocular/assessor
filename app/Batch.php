@@ -38,10 +38,10 @@ class Batch extends Model
     }
 
     /**
-     * Get the run associated with this run.
+     * Get the commit associated with this batch.
      */
-    public function run()
+    public function commit()
     {
-        return $this->belongsTo('Ogle\Assessor\Run', 'sha');
+        return $this->belongsTo('Ogle\Assessor\Commit', 'sha');
     }
 }
