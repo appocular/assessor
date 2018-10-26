@@ -42,6 +42,10 @@ Start a new batch run. Returns the id of the new batch.
 Finishes batch run. No further images can be added to this batch, but
 further batches on the same commit can be created.
 
++ Parameters
+
+    + id: `58444f87-0525-429d-ba3c-d7b06cab748a` - Batch id.
+
 + Response 200
 
 + Response 404 (application/json)
@@ -54,6 +58,10 @@ further batches on the same commit can be created.
 
 Add image to batch. Stores image and associates it with the commit of
 the current batch run.
+
++ Parameters
+
+    + id: `58444f87-0525-429d-ba3c-d7b06cab748a` - Batch id.
 
 + Request (application/json)
 
