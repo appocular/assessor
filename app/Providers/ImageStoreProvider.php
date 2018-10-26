@@ -2,8 +2,10 @@
 
 namespace Ogle\Assessor\Providers;
 
-use Ogle\Assessor\ImageStore;
+use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
+use Ogle\Assessor\ImageStore;
+use RuntimeException;
 
 class ImageStoreProvider extends ServiceProvider
 {
@@ -15,7 +17,13 @@ class ImageStoreProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(ImageStore::class, function ($app) {
-            return new ImageStore();
+            $uri = $app['config']->get('app.image_store_base_uri');
+            if (empty($uri)) {
+                throw new RuntimeException('No base uri for Keeper.');
+            }
+            $client = new Client(['base_uri' => $uri]);
+
+            return new ImageStore($client);
         });
     }
 }

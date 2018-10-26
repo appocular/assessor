@@ -81,6 +81,7 @@ $app->singleton(
 // $app->register(Ogle\Assessor\Providers\AppServiceProvider::class);
 // $app->register(Ogle\Assessor\Providers\AuthServiceProvider::class);
 // $app->register(Ogle\Assessor\Providers\EventServiceProvider::class);
+$app->register(Ogle\Assessor\Providers\ImageStoreProvider::class);
 $app->register(Webpatser\Uuid\UuidServiceProvider::class);
 
 /*

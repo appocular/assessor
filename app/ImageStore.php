@@ -2,8 +2,30 @@
 
 namespace Ogle\Assessor;
 
+use GuzzleHttp\Client;
+use RuntimeException;
+
 class ImageStore
 {
+
+    /**
+     * HTTP client.
+     *
+     * @var \GuzzleHttp\Client
+     */
+    protected $client;
+
+    /**
+     * Construct image store.
+     *
+     * @param Client $client
+     *   HTTP client to use.
+     */
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
     /**
      * Store image.
      *
@@ -15,6 +37,12 @@ class ImageStore
      */
     public function store(string $data) : string
     {
+        $response = $this->client->post('image', ['body' => $data]);
+        $reply = json_decode($response->getBody());
+        if ($response->getStatusCode() !== 200 || !property_exists($reply, 'sha')) {
+            throw new RuntimeException('Bad response from Keeper.');
+        }
+        return $reply->sha;
     }
 
     /**

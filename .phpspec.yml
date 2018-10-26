@@ -1,0 +1,17 @@
+suites:
+  main:
+    namespace: Ogle\Assessor
+    psr4_prefix: Ogle\Assessor
+    src_path: app
+
+extensions:
+  # PhpSpec\Laravel\Extension\LaravelExtension:
+  #   testing_environment: "testing"
+  LeanPHP\PhpSpec\CodeCoverage\CodeCoverageExtension:
+    format:
+      - clover
+    output:
+      clover: clover.xml
+    whitelist:
+      - app
+formatter.name: pretty
