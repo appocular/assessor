@@ -67,19 +67,11 @@ class BatchController extends BaseController
         }
         $sha = $this->imageStore->store($imageData);
 
-        try {
-            $commit->images()->create([
-                'id' => hash('sha1', $commit->sha . $request->input('name')),
-                'name' => $request->input('name'),
-                'image_sha' => $sha,
-            ]);
-        } catch (QueryException $e) {
-            // SQLSTATE 23000 is integrity constraint violation, which usually
-            // translates to duplicate keys.
-            if ($e->getCode() == '23000') {
-                throw new ConflictHttpException('Image already exists', $e);
-            }
-            throw $e;
-        }
+        $image = $commit->images()->firstOrNew([
+            'id' => hash('sha1', $commit->sha . $request->input('name')),
+            'name' => $request->input('name'),
+        ]);
+        $image->image_sha = $sha;
+        $image->save();
     }
 }

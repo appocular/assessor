@@ -85,7 +85,6 @@ class BatchTest extends TestCase
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
         $image = file_get_contents(__DIR__ . '/../fixtures/images/basn6a16.png');
-        //$this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => '', 'image' => '']);
 
         $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->seeInDatabase('images', [
@@ -95,32 +94,58 @@ class BatchTest extends TestCase
         ]);
         $this->assertResponseStatus(200);
 
-        // Submitting an image with the same name should give an error.
+        // Submitting an image with the same name should replace the data of image.
+        $imageStore->store(Argument::any())->willReturn('YYY');
         $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
-        $this->assertResponseStatus(409);
-        $this->seeJson(['message' => 'Image already exists']);
+        $this->assertResponseStatus(200);
+        $this->seeInDatabase('images', [
+            'commit_sha' => $sha,
+            'name' => 'test image',
+            'image_sha' => 'YYY',
+        ]);
+        // Check that the old data is missing.
+        $this->missingFromDatabase('images', [
+            'commit_sha' => $sha,
+            'name' => 'test image2',
+            'image_sha' => 'XXX',
+        ]);
 
+        // Posting a second image should work.
         $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
             'commit_sha' => $sha,
             'name' => 'test image2',
-            'image_sha' => 'XXX',
+            'image_sha' => 'YYY',
+        ]);
+
+        // The first image should still be there.
+        $this->seeInDatabase('images', [
+            'commit_sha' => $sha,
+            'name' => 'test image',
+            'image_sha' => 'YYY',
         ]);
 
         $this->delete('/api/v1/batch/' . $batch_id);
         $this->assertResponseStatus(200);
 
         // A new batch on another commit should be able to add the same image.
-        $sha = str_repeat('2', 40);
-        $batch_id = $this->startBatch($sha);
+        $sha2 = str_repeat('2', 40);
+        $batch_id = $this->startBatch($sha2);
 
-        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
+        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
+            'commit_sha' => $sha2,
+            'name' => 'test image',
+            'image_sha' => 'YYY',
+        ]);
+
+        // The image from the other run should still be there.
+        $this->seeInDatabase('images', [
             'commit_sha' => $sha,
-            'name' => 'test image2',
-            'image_sha' => 'XXX',
+            'name' => 'test image',
+            'image_sha' => 'YYY',
         ]);
     }
 
