@@ -1,8 +1,8 @@
 <?php
 
-namespace Ogle\Assessor\Providers;
+namespace Appocular\Assessor\Providers;
 
-use Ogle\Assessor\User;
+use Appocular\Assessor\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 

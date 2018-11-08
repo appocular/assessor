@@ -1,10 +1,10 @@
 <?php
 
-namespace spec\Ogle\Assessor;
+namespace spec\Appocular\Assessor;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Ogle\Assessor\ImageStore;
+use Appocular\Assessor\ImageStore;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use RuntimeException;

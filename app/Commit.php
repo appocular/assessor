@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor;
+namespace Appocular\Assessor;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,6 +16,6 @@ class Commit extends Model
      */
     public function images()
     {
-        return $this->hasMany('Ogle\Assessor\Image');
+        return $this->hasMany('Appocular\Assessor\Image');
     }
 }

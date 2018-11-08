@@ -1,7 +1,7 @@
 suites:
   main:
-    namespace: Ogle\Assessor
-    psr4_prefix: Ogle\Assessor
+    namespace: Appocular\Assessor
+    psr4_prefix: Appocular\Assessor
     src_path: app
 
 extensions:

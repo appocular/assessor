@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor\Http\Controllers;
+namespace Appocular\Assessor\Http\Controllers;
 
 class ExampleController extends Controller
 {

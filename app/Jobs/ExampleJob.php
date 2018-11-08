@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor\Jobs;
+namespace Appocular\Assessor\Jobs;
 
 class ExampleJob extends Job
 {

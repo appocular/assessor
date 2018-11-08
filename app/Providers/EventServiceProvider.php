@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor\Providers;
+namespace Appocular\Assessor\Providers;
 
 use Laravel\Lumen\Providers\EventServiceProvider as ServiceProvider;
 
@@ -12,8 +12,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Ogle\Assessor\Events\SomeEvent' => [
-            'Ogle\Assessor\Listeners\EventListener',
+        'Appocular\Assessor\Events\SomeEvent' => [
+            'Appocular\Assessor\Listeners\EventListener',
         ],
     ];
 }

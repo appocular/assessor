@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor;
+namespace Appocular\Assessor;
 
 use Illuminate\Database\Eloquent\Model;
 use Webpatser\Uuid\Uuid;
@@ -42,6 +42,6 @@ class Batch extends Model
      */
     public function commit()
     {
-        return $this->belongsTo('Ogle\Assessor\Commit', 'sha');
+        return $this->belongsTo('Appocular\Assessor\Commit', 'sha');
     }
 }

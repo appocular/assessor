@@ -40,12 +40,12 @@ $app->withEloquent();
 
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
-    Ogle\Assessor\Exceptions\Handler::class
+    Appocular\Assessor\Exceptions\Handler::class
 );
 
 $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
-    Ogle\Assessor\Console\Kernel::class
+    Appocular\Assessor\Console\Kernel::class
 );
 
 /*
@@ -60,11 +60,11 @@ $app->singleton(
 */
 
 // $app->middleware([
-//    Ogle\Assessor\Http\Middleware\ExampleMiddleware::class
+//    Appocular\Assessor\Http\Middleware\ExampleMiddleware::class
 // ]);
 
 // $app->routeMiddleware([
-//     'auth' => Ogle\Assessor\Http\Middleware\Authenticate::class,
+//     'auth' => Appocular\Assessor\Http\Middleware\Authenticate::class,
 // ]);
 
 /*
@@ -78,10 +78,10 @@ $app->singleton(
 |
 */
 
-// $app->register(Ogle\Assessor\Providers\AppServiceProvider::class);
-// $app->register(Ogle\Assessor\Providers\AuthServiceProvider::class);
-// $app->register(Ogle\Assessor\Providers\EventServiceProvider::class);
-$app->register(Ogle\Assessor\Providers\ImageStoreProvider::class);
+// $app->register(Appocular\Assessor\Providers\AppServiceProvider::class);
+// $app->register(Appocular\Assessor\Providers\AuthServiceProvider::class);
+// $app->register(Appocular\Assessor\Providers\EventServiceProvider::class);
+$app->register(Appocular\Assessor\Providers\ImageStoreProvider::class);
 $app->register(Webpatser\Uuid\UuidServiceProvider::class);
 
 /*
@@ -96,7 +96,7 @@ $app->register(Webpatser\Uuid\UuidServiceProvider::class);
 */
 
 $app->router->group([
-    'namespace' => 'Ogle\Assessor\Http\Controllers',
+    'namespace' => 'Appocular\Assessor\Http\Controllers',
 ], function ($router) {
     require __DIR__.'/../routes/web.php';
 });

@@ -1,10 +1,10 @@
 <?php
 
-namespace Ogle\Assessor\Providers;
+namespace Appocular\Assessor\Providers;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
-use Ogle\Assessor\ImageStore;
+use Appocular\Assessor\ImageStore;
 use RuntimeException;
 
 class ImageStoreProvider extends ServiceProvider

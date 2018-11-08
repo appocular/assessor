@@ -1,7 +1,7 @@
 <?php
 
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Ogle\Assessor\ImageStore;
+use Appocular\Assessor\ImageStore;
 use Prophecy\Argument;
 
 class BatchTest extends TestCase

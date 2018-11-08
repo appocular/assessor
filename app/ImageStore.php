@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor;
+namespace Appocular\Assessor;
 
 use GuzzleHttp\Client;
 use RuntimeException;

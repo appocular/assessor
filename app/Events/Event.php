@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor\Events;
+namespace Appocular\Assessor\Events;
 
 use Illuminate\Queue\SerializesModels;
 

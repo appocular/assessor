@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor\Http\Middleware;
+namespace Appocular\Assessor\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;

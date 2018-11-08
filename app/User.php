@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor;
+namespace Appocular\Assessor;
 
 use Illuminate\Auth\Authenticatable;
 use Laravel\Lumen\Auth\Authorizable;

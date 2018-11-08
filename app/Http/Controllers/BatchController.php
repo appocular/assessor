@@ -1,15 +1,15 @@
 <?php
 
-namespace Ogle\Assessor\Http\Controllers;
+namespace Appocular\Assessor\Http\Controllers;
 
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Ogle\Assessor\Batch;
-use Ogle\Assessor\Commit;
-use Ogle\Assessor\Image;
-use Ogle\Assessor\ImageStore;
+use Appocular\Assessor\Batch;
+use Appocular\Assessor\Commit;
+use Appocular\Assessor\Image;
+use Appocular\Assessor\ImageStore;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ogle\Assessor\Providers;
+namespace Appocular\Assessor\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
