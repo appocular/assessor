@@ -17,7 +17,8 @@
         "mockery/mockery": "~1.0",
         "phpspec/phpspec": "^4.3",
         "bossa/phpspec2-expect": "^3.0",
-        "leanphp/phpspec-code-coverage": "^4.2"
+        "leanphp/phpspec-code-coverage": "^4.2",
+        "ddelnano/dredd-hooks-php": "^1.1"
     },
     "autoload": {
         "psr-4": {

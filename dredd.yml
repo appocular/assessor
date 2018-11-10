@@ -1,0 +1,34 @@
+dry-run: null
+hookfiles: ./tests/dredd/hooks.php
+language: vendor/bin/dredd-hooks-php
+sandbox: false
+server: 'env DB_CONNECTION=sqlite DB_DATABASE=/tmp/assessor-dredd.sqlite KEEPER_BASE_URI=http://localhost:8081/ php -S 0.0.0.0:8080 -t public'
+server-wait: 0
+init: false
+custom: {}
+names: false
+only: []
+reporter: []
+output: []
+header: []
+sorted: true
+user: null
+inline-errors: false
+details: false
+method: []
+color: true
+level: info
+timestamp: false
+silent: false
+path: []
+hooks-worker-timeout: 5000
+hooks-worker-connect-timeout: 1500
+hooks-worker-connect-retry: 500
+hooks-worker-after-connect-wait: 100
+hooks-worker-term-timeout: 5000
+hooks-worker-term-retry: 500
+hooks-worker-handler-host: 127.0.0.1
+hooks-worker-handler-port: 61321
+config: ./dredd.yml
+blueprint: docs/Assessor API.apib
+endpoint: 'http://localhost:8080/'
