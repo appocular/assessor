@@ -28,11 +28,12 @@ class BatchController extends BaseController
     public function create(Request $request)
     {
         $this->validate($request, [
-            'sha' => 'required|regex:/[0-9A-F]{40}/',
+            'sha' => 'required|regex:/[0-9A-Fa-f]{40}/',
             // 'variants' => 'array',
         ]);
+        $sha = strtolower($request->input('sha'));
 
-        $batch = new Batch($request->all());
+        $batch = new Batch(['sha' => $sha]);
         $batch->save();
 
         $commit = Commit::firstOrCreate(['sha' => $request->input('sha')]);

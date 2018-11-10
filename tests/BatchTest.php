@@ -150,6 +150,20 @@ class BatchTest extends TestCase
     }
 
     /**
+     * Test that SHAs are normalized to lowercase.
+     */
+    public function testRegressionShaCasing()
+    {
+        $sha_uppercase = str_repeat('A', 40);
+        $sha_lowercase = str_repeat('a', 40);
+        $batch_id = $this->startBatch($sha_uppercase);
+        $this->seeInDatabase('batches', ['id' => $batch_id, 'sha' => $sha_lowercase]);
+
+        $batch_id = $this->startBatch($sha_lowercase);
+        $this->seeInDatabase('batches', ['id' => $batch_id, 'sha' => $sha_lowercase]);
+    }
+
+    /**
      * Start a batch and return the id.
      */
     public function startBatch($sha)
