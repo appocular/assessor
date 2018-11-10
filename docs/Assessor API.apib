@@ -72,6 +72,12 @@ the current batch run.
 
 + Response 200
 
++ Request Missing name (application/json)
+
+        {
+            "image": "<base64 PNG data>"
+        }
+
 + Response 422
 
         {
@@ -79,6 +85,13 @@ the current batch run.
             "validation_errors": {
                 "name": ["The name field is required."]
             }
+        }
+
++ Request Bad image data (application/json)
+
+        {
+            "name": "Frontpage",
+            "image": "<bad base64 PNG data>"
         }
 
 + Response 400 (application/json)
