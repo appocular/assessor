@@ -15,7 +15,7 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api/v1'], function () use ($router) {
+$router->group([], function () use ($router) {
     $router->post('batch', 'BatchController@create');
     $router->post('batch/{batchId}/image', 'BatchController@addImage');
     $router->delete('batch/{batchId}', 'BatchController@delete');

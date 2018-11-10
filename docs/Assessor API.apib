@@ -10,7 +10,7 @@ associated with a commit, and images submitted in the batch is put on
 the commit. Multiple batches may be run on the same commit,
 facilitating multiple test suites or parallel running.
 
-## Batch resource [/api/v1/batch]
+## Batch resource [/batch]
 
 ### Create batch [POST]
 
@@ -37,7 +37,7 @@ Start a new batch run. Returns the id of the new batch.
             }
         }
 
-### Delete batch [DELETE /api/v1/batch/{id}]
+### Delete batch [DELETE /batch/{id}]
 
 Finishes batch run. No further images can be added to this batch, but
 further batches on the same commit can be created.
@@ -54,7 +54,7 @@ further batches on the same commit can be created.
             "message": "No query results for model [Appocular\Assessor\Batch] OEU357a06f7-6fa6-41b4-8d19-7ce4eacf9871"
         }
 
-### Add image [POST /api/v1/batch/{id}/image]
+### Add image [POST /batch/{id}/image]
 
 Add image to batch. Stores image and associates it with the commit of
 the current batch run.

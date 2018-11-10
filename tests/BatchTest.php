@@ -22,7 +22,7 @@ class BatchTest extends TestCase
         $this->seeInDatabase('batches', ['id' => $batch_id, 'sha' => $sha]);
         $this->seeInDatabase('commits', ['sha' => $sha]);
 
-        $this->delete('/api/v1/batch/' . $batch_id);
+        $this->delete('/batch/' . $batch_id);
         $this->assertResponseStatus(200);
         // Assert that the batch was deleted but the commit still exists.
         $this->missingFromDatabase('batches', ['id' => $batch_id, 'sha' => $sha]);
@@ -31,13 +31,13 @@ class BatchTest extends TestCase
 
     public function testUnknownBatch()
     {
-        $this->delete('/api/v1/batch/random');
+        $this->delete('/batch/random');
         $this->assertResponseStatus(404);
     }
 
     public function testBatchValidation()
     {
-        $this->json('POST', '/api/v1/batch', []);
+        $this->json('POST', '/batch', []);
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
             'message' => 'The given data was invalid.',
@@ -53,7 +53,7 @@ class BatchTest extends TestCase
         $sha = str_repeat('1', 40);
         $batch_id = $this->startBatch($sha);
 
-        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', []);
+        $this->json('POST', '/batch/' . $batch_id . '/image', []);
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
             'message' => 'The given data was invalid.',
@@ -70,7 +70,7 @@ class BatchTest extends TestCase
         $sha = str_repeat('1', 40);
         $batch_id = $this->startBatch($sha);
 
-        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => 'random data']);
+        $this->json('POST', '/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => 'random data']);
         $this->assertResponseStatus(400);
         $this->seeJson(['message' => 'Bad image data']);
     }
@@ -86,7 +86,7 @@ class BatchTest extends TestCase
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
         $image = file_get_contents(__DIR__ . '/../fixtures/images/basn6a16.png');
 
-        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
+        $this->json('POST', '/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->seeInDatabase('images', [
             'commit_sha' => $sha,
             'name' => 'test image',
@@ -96,7 +96,7 @@ class BatchTest extends TestCase
 
         // Submitting an image with the same name should replace the data of image.
         $imageStore->store(Argument::any())->willReturn('YYY');
-        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
+        $this->json('POST', '/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
             'commit_sha' => $sha,
@@ -111,7 +111,7 @@ class BatchTest extends TestCase
         ]);
 
         // Posting a second image should work.
-        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
+        $this->json('POST', '/batch/' . $batch_id . '/image', ['name' => 'test image2', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
             'commit_sha' => $sha,
@@ -126,14 +126,14 @@ class BatchTest extends TestCase
             'image_sha' => 'YYY',
         ]);
 
-        $this->delete('/api/v1/batch/' . $batch_id);
+        $this->delete('/batch/' . $batch_id);
         $this->assertResponseStatus(200);
 
         // A new batch on another commit should be able to add the same image.
         $sha2 = str_repeat('2', 40);
         $batch_id = $this->startBatch($sha2);
 
-        $this->json('POST', '/api/v1/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
+        $this->json('POST', '/batch/' . $batch_id . '/image', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('images', [
             'commit_sha' => $sha2,
@@ -168,7 +168,7 @@ class BatchTest extends TestCase
      */
     public function startBatch($sha)
     {
-        $this->json('POST', '/api/v1/batch', ['sha' => $sha]);
+        $this->json('POST', '/batch', ['sha' => $sha]);
 
         $this->assertResponseStatus(200);
         $this->seeJsonStructure(['id']);
