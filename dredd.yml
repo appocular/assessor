@@ -2,7 +2,7 @@ dry-run: null
 hookfiles: ./tests/dredd/hooks.php
 language: vendor/bin/dredd-hooks-php
 sandbox: false
-server: 'env DB_CONNECTION=sqlite DB_DATABASE=/tmp/assessor-dredd.sqlite KEEPER_BASE_URI=http://localhost:8081/ php -S 0.0.0.0:8080 -t public'
+server: ./scripts/dredd-server.sh
 server-wait: 0
 init: false
 custom: {}
