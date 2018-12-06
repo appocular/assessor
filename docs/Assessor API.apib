@@ -107,3 +107,36 @@ the current batch run.
             {
                 "message": "Bad image data"
             }
+
+## Commit resource [/commit]
+
+### Get commit [GET /commit/{sha}]
+
+Get information about a commit, including images.
+
++ Parameters
+
+    + sha: `d8f4590320e1343a915b6394170650a8f35d6926` - The commit SHA.
+
++ Request (application/json)
+
++ Response 200
+
+        {
+            "sha": "d8f4590320e1343a915b6394170650a8f35d6926",
+            "images": [
+                {
+                    "name": "Frontpage",
+                    "image_sha": "3a14fed556280d45d1542e9723d3cc62326c3777"
+                }
+            ]
+        }
+
++ Request SHA not found (application/json)
+
+    + Parameters
+
+        + sha: `invalid`
+
+
++ Response 404

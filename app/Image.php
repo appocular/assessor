@@ -8,7 +8,7 @@ class Image extends Model
 {
 
     protected $fillable = ['id', 'name', 'commit_sha', 'image_sha'];
-
+    protected $visible = ['name', 'image_sha'];
     protected $keyType = 'string';
 
     /**

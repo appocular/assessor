@@ -11,9 +11,16 @@
 |
 */
 
-$factory->define(Appocular\Assessor\User::class, function (Faker\Generator $faker) {
+$factory->define(Appocular\Assessor\Commit::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->email,
+        'sha' => $faker->sha1,
+    ];
+});
+
+$factory->define(Appocular\Assessor\Image::class, function (Faker\Generator $faker) {
+    return [
+        'id' => $faker->sha1,
+        'name' => $faker->text(20),
+        'image_sha' => $faker->sha1,
     ];
 });
