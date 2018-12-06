@@ -8,9 +8,11 @@ class Commit extends Model
 {
     protected $fillable = ['sha'];
 
+    public $incrementing = false;
     protected $primaryKey = 'sha';
     protected $keyType = 'string';
 
+    protected $visible = ['sha', 'images'];
     /**
      * Get the images for the commit.
      */
