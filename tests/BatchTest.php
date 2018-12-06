@@ -45,7 +45,6 @@ class BatchTest extends TestCase
                 'sha' => [0 => 'The sha field is required.'],
             ],
         ]);
-        $json = json_decode($this->response->getContent());
     }
 
     public function testImageValidation()
@@ -62,7 +61,6 @@ class BatchTest extends TestCase
                 'image' => [0 => 'The image field is required.'],
             ],
         ]);
-        $json = json_decode($this->response->getContent());
     }
 
     public function testBadImage()
