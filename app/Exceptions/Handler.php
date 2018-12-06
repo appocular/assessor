@@ -54,6 +54,8 @@ class Handler extends ExceptionHandler
 
         if ($e instanceof ValidationException) {
             $content['validation_errors'] = $e->errors();
+        } elseif ($e instanceof ModelNotFoundException) {
+            $content = null;
         }
 
         return new Response($content, $rendered->getStatusCode());
