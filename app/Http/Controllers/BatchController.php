@@ -18,7 +18,7 @@ class BatchController extends BaseController
     /**
      * @var ImageStore
      */
-    protected $ImageStore;
+    protected $imageStore;
 
     public function __construct(ImageStore $imageStore)
     {
