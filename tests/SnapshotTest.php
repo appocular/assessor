@@ -34,23 +34,4 @@ class SnapshotTest extends TestCase
             'checkpoints' => $jsonImages,
         ]);
     }
-
-    public function testCaseInsensitivity()
-    {
-        $snapshot = factory(Appocular\Assessor\Snapshot::class)->create();
-
-        $this->get('snapshot/' . $snapshot->id);
-        $this->assertResponseStatus(200);
-        $this->seeJsonEquals([
-            'id' => $snapshot->id,
-            'checkpoints' => [],
-        ]);
-
-        $this->get('snapshot/' . strtoupper($snapshot->id));
-        $this->assertResponseStatus(200);
-
-        $this->get('snapshot/' . strtolower($snapshot->id));
-        $this->assertResponseStatus(200);
-    }
-
 }

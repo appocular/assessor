@@ -10,8 +10,6 @@ class SnapshotController extends BaseController
 {
     public function index($id)
     {
-        $id = strtolower($id);
-
         $snapshot = Snapshot::with('checkpoints')->findOrFail($id);
 
         return (new Response($snapshot->toJson()));

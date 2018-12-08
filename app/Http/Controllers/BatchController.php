@@ -28,16 +28,13 @@ class BatchController extends BaseController
     public function create(Request $request)
     {
         $this->validate($request, [
-            'id' => 'required|regex:/[0-9A-Fa-f]{40}/',
+            'id' => 'required|string|min:1|max:255',
             // 'variants' => 'array',
         ]);
-        //$sha = strtolower($request->input('sha'));
-
 
         $batch = new Batch();
         $snapshot = Snapshot::firstOrCreate(['id' => $request->input('id')]);
         $batch->snapshot()->associate($snapshot);
-        //$batch = new Batch(['snapshot_id' => $request->input('id')]);
         $batch->save();
 
         return (new Response(['id' => $batch->id]));

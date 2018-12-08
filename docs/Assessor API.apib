@@ -33,12 +33,14 @@ Note that the id is case insensitive.
             "id": "58444f87-0525-429d-ba3c-d7b06cab748a"
         }
 
++ Request Validation error.
+
 + Response 422 (application/json)
 
         {
             "message": "The given data was invalid.",
             "validation_errors": {
-                "sha": ["The sha field is required."]
+                "id": ["The id field is required."]
             }
         }
 
@@ -121,7 +123,7 @@ Get information about a snapshot, including checkpoints.
 
 + Parameters
 
-    + id: `d8f4590320e1343a915b6394170650a8f35d6926` - Id of snapshot.
+    + id: `d8f4590320e1343a915b6394170650a8f35d6926` - The snapshot id.
 
 + Request (application/json)
 
