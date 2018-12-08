@@ -59,9 +59,9 @@ $app->singleton(
 |
 */
 
-// $app->middleware([
-//    Appocular\Assessor\Http\Middleware\ExampleMiddleware::class
-// ]);
+$app->middleware([
+    Appocular\Assessor\Http\Middleware\CorsMiddleware::class
+]);
 
 // $app->routeMiddleware([
 //     'auth' => Appocular\Assessor\Http\Middleware\Authenticate::class,
