@@ -1,7 +1,6 @@
 <?php
 
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Appocular\Assessor\ImageStore;
 use Prophecy\Argument;
 
 class SnapshotTest extends TestCase
