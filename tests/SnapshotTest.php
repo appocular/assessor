@@ -24,7 +24,7 @@ class SnapshotTest extends TestCase
             $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
         ];
         $jsonImages = array_map(function ($checkpoint) {
-            return ['name' => $checkpoint->name, 'image_sha' => $checkpoint->image_sha];
+            return ['id' => $checkpoint->id, 'name' => $checkpoint->name, 'image_sha' => $checkpoint->image_sha];
         }, $checkpoints);
 
         $this->get('snapshot/' . $snapshot->id);

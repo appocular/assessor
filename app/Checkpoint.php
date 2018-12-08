@@ -8,7 +8,8 @@ class Checkpoint extends Model
 {
 
     protected $fillable = ['id', 'name', 'snapshot_id', 'image_sha'];
-    protected $visible = ['name', 'image_sha'];
+    protected $visible = ['id', 'name', 'image_sha'];
+    public $incrementing = false;
     protected $keyType = 'string';
 
     /**
