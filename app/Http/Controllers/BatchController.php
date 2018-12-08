@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Appocular\Assessor\Batch;
-use Appocular\Assessor\Commit;
-use Appocular\Assessor\Image;
+use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\ImageStore;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
@@ -28,15 +28,17 @@ class BatchController extends BaseController
     public function create(Request $request)
     {
         $this->validate($request, [
-            'sha' => 'required|regex:/[0-9A-Fa-f]{40}/',
+            'id' => 'required|regex:/[0-9A-Fa-f]{40}/',
             // 'variants' => 'array',
         ]);
-        $sha = strtolower($request->input('sha'));
+        //$sha = strtolower($request->input('sha'));
 
-        $batch = new Batch(['sha' => $sha]);
+
+        $batch = new Batch();
+        $snapshot = Snapshot::firstOrCreate(['id' => $request->input('id')]);
+        $batch->snapshot()->associate($snapshot);
+        //$batch = new Batch(['snapshot_id' => $request->input('id')]);
         $batch->save();
-
-        $commit = Commit::firstOrCreate(['sha' => $request->input('sha')]);
 
         return (new Response(['id' => $batch->id]));
     }
@@ -47,10 +49,10 @@ class BatchController extends BaseController
         $batch->delete();
     }
 
-    public function addImage(Request $request, $batchId)
+    public function addCheckpoint(Request $request, $batchId)
     {
         $batch = Batch::findOrFail($batchId);
-        $commit = $batch->commit;
+        $snapshot = $batch->snapshot;
 
         $this->validate($request, [
             'name' => 'required|string|min:1|max:255',
@@ -68,8 +70,8 @@ class BatchController extends BaseController
         }
         $sha = $this->imageStore->store($imageData);
 
-        $image = $commit->images()->firstOrNew([
-            'id' => hash('sha1', $commit->sha . $request->input('name')),
+        $image = $snapshot->checkpoints()->firstOrNew([
+            'id' => hash('sha1', $snapshot->id . $request->input('name')),
             'name' => $request->input('name'),
         ]);
         $image->image_sha = $sha;

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCommitsTable extends Migration
+class CreateSnapshotsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateCommitsTable extends Migration
      */
     public function up()
     {
-        Schema::create('commits', function (Blueprint $table) {
-            $table->string('sha')->primary();
+        Schema::create('snapshots', function (Blueprint $table) {
+            $table->string('id')->primary();
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ class CreateCommitsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('commits');
+        Schema::dropIfExists('snapshots');
     }
 }

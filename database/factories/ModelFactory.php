@@ -11,13 +11,13 @@
 |
 */
 
-$factory->define(Appocular\Assessor\Commit::class, function (Faker\Generator $faker) {
+$factory->define(Appocular\Assessor\Snapshot::class, function (Faker\Generator $faker) {
     return [
-        'sha' => $faker->sha1,
+        'id' => $faker->sha1,
     ];
 });
 
-$factory->define(Appocular\Assessor\Image::class, function (Faker\Generator $faker) {
+$factory->define(Appocular\Assessor\Checkpoint::class, function (Faker\Generator $faker) {
     return [
         'id' => $faker->sha1,
         'name' => $faker->text(20),

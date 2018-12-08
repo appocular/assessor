@@ -38,10 +38,10 @@ class Batch extends Model
     }
 
     /**
-     * Get the commit associated with this batch.
+     * Get the snapshot associated with this batch.
      */
-    public function commit()
+    public function snapshot()
     {
-        return $this->belongsTo('Appocular\Assessor\Commit', 'sha');
+        return $this->belongsTo('Appocular\Assessor\Snapshot');
     }
 }

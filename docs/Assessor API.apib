@@ -2,24 +2,29 @@ FORMAT: 1A
 
 # Assessor
 
-Assessor is the brains of Appocular. It keeps track of commits,
-batches and images.
+Assessor is the brains of Appocular. It keeps track of snapshots,
+checkpoints, batches and images.
 
 Images for visual testing is submitted by creating a batch. A batch is
-associated with a commit, and images submitted in the batch is put on
-the commit. Multiple batches may be run on the same commit,
-facilitating multiple test suites or parallel running.
+associated with a snapshot, and images submitted in the batch is put
+into checkpoints the on the snapshot. Multiple batches may be run on
+the same commit, facilitating multiple test suites or parallel
+running.
 
 ## Batch resource [/batch]
 
 ### Create batch [POST]
 
-Start a new batch run. Returns the id of the new batch.
+Start a new batch run. Returns the id of the new batch. The id
+supplied is the snapshot id, ether this batch will be associated with
+the snapshot with the given id, or a new snapshot will be created.
+
+Note that the id is case insensitive.
 
 + Request (application/json)
 
         {
-            "sha": "d8f4590320e1343a915b6394170650a8f35d6926"
+            "id": "d8f4590320e1343a915b6394170650a8f35d6926"
         }
 
 + Response 200 (application/json)
@@ -40,7 +45,7 @@ Start a new batch run. Returns the id of the new batch.
 ### Delete batch [DELETE /batch/{id}]
 
 Finishes batch run. No further images can be added to this batch, but
-further batches on the same commit can be created.
+further batches on the same snapshot can be created.
 
 + Parameters
 
@@ -58,10 +63,10 @@ further batches on the same commit can be created.
 
 + Response 404
 
-### Add image [POST /batch/{id}/image]
+### Add image [POST /batch/{id}/checkpoint]
 
-Add image to batch. Stores image and associates it with the commit of
-the current batch run.
+Add checkpoint image. Stores image and associates it with the snapshot
+of the current batch run.
 
 + Parameters
 
@@ -108,23 +113,23 @@ the current batch run.
                 "message": "Bad image data"
             }
 
-## Commit resource [/commit]
+## Snapshot resource [/snapshot]
 
-### Get commit [GET /commit/{sha}]
+### Get snapshot [GET /snapshot/{id}]
 
-Get information about a commit, including images.
+Get information about a snapshot, including checkpoints.
 
 + Parameters
 
-    + sha: `d8f4590320e1343a915b6394170650a8f35d6926` - The commit SHA.
+    + id: `d8f4590320e1343a915b6394170650a8f35d6926` - Id of snapshot.
 
 + Request (application/json)
 
 + Response 200
 
         {
-            "sha": "d8f4590320e1343a915b6394170650a8f35d6926",
-            "images": [
+            "id": "d8f4590320e1343a915b6394170650a8f35d6926",
+            "checkpoints": [
                 {
                     "name": "Frontpage",
                     "image_sha": "3a14fed556280d45d1542e9723d3cc62326c3777"
@@ -132,11 +137,11 @@ Get information about a commit, including images.
             ]
         }
 
-+ Request SHA not found (application/json)
++ Request Snapshot not found (application/json)
 
     + Parameters
 
-        + sha: `invalid`
+        + id: `invalid`
 
 
 + Response 404

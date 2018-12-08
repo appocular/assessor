@@ -28,11 +28,15 @@ Hooks::beforeEach(function (&$transaction) use (&$stash) {
 
 Hooks::afterEach(function (&$transaction) use (&$stash) {
     // Check that the JSON payload matches the documentation.
-    if (isset($transaction->real->body) || isset($transaction->expected->body)) {
-        $actual = json_encode(array_sort_recursive(
-            json_decode($transaction->real->body, true)
-        ));
-
+    if (!empty($transaction->expected->body)) {
+        if (!empty($transaction->real->body)) {
+            $actual = json_encode(array_sort_recursive(
+                json_decode($transaction->real->body, true)
+            ));
+        } else {
+            // No body, we'll compare with an empty result.
+            $actual = json_encode([]);
+        }
         $expected = array_sort_recursive(
             json_decode($transaction->expected->body, true)
         );

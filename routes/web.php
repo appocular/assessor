@@ -17,7 +17,7 @@ $router->get('/', function () use ($router) {
 
 $router->group([], function () use ($router) {
     $router->post('batch', 'BatchController@create');
-    $router->post('batch/{batchId}/image', 'BatchController@addImage');
+    $router->post('batch/{batchId}/checkpoint', 'BatchController@addCheckpoint');
     $router->delete('batch/{batchId}', 'BatchController@delete');
-    $router->get('commit/{sha}', 'CommitController@index');
+    $router->get('snapshot/{id}', 'SnapshotController@index');
 });
