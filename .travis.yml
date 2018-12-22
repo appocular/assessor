@@ -1,0 +1,17 @@
+language: php
+
+php:
+  - '7.2'
+
+install: composer install --prefer-source
+
+before_install:
+  - npm install dredd@5.2.0 --no-optional --global
+
+script:
+  - ./vendor/bin/phpspec run
+  - ./vendor/bin/phpunit --coverage-clover=clover-unit.xml
+  - dredd
+
+after_script:
+  - bash <(curl -s https://codecov.io/bash)
