@@ -27,5 +27,6 @@
           (inherited from SGML). ?>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
+        <env name="KEEPER_BASE_URI" value="http://keeper"/>
     </php>
 </phpunit>

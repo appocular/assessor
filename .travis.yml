@@ -10,7 +10,7 @@ before_install:
 
 script:
   - ./vendor/bin/phpspec run
-  - ./vendor/bin/phpunit --coverage-clover=clover-unit.xml
+  - ./vendor/bin/phpunit --coverage-clover=coverage-unit.clover
   - dredd
 
 after_script:
