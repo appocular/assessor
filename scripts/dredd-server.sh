@@ -16,6 +16,8 @@ function cleanup {
 trap "exit" INT TERM ERR
 trap cleanup EXIT
 
+./artisan migrate:fresh
+
 php -S 0.0.0.0:8081 -t keeper/public &
 php -S 0.0.0.0:8080 -t public &
 
