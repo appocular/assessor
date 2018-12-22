@@ -7,7 +7,7 @@ export CACHE_DRIVER=file
 export KEEPER_BASE_URI=http://localhost:8081/
 
 if [[ ! -d keeper ]]; then
-    git clone https://github.com/appocular/keeper.git keeper
+    echo "Please clone https://github.com/appocular/keeper.git and run composer install in it."
 fi
 
 function cleanup {

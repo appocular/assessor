@@ -7,6 +7,12 @@ install: composer install --prefer-source
 
 before_install:
   - npm install dredd@5.2.0 --no-optional --global
+  # Clone keeper for dredd tests.
+  - git clone https://github.com/appocular/keeper.git keeper
+  - cd keeper && composer install
+  # Remember to restore CWD, or else we'll be testing keeper instead.
+  - cd ..
+
 
 script:
   - ./vendor/bin/phpspec run
