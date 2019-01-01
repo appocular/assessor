@@ -27,28 +27,37 @@ Hooks::beforeEach(function (&$transaction) use (&$stash) {
 });
 
 Hooks::afterEach(function (&$transaction) use (&$stash) {
-    // Check that the JSON payload matches the documentation.
+    // Check that the headers matches the documentation.
+    if (!empty($transaction->expected->headers)) {
+        foreach ($transaction->expected->headers as $name => $content) {
+            if ($transaction->real->headers->{strtolower($name)} != $content) {
+                $transaction->fail = "Difference in $name header payload.";
+            }
+        }
+    }
+    // Check that the payload matches the documentation.
     if (!empty($transaction->expected->body)) {
-        if (!empty($transaction->real->body)) {
-            $actual = json_encode(array_sort_recursive(
-                json_decode($transaction->real->body, true)
-            ));
-        } else {
-            // No body, we'll compare with an empty result.
-            $actual = json_encode([]);
-        }
-        $expected = array_sort_recursive(
-            json_decode($transaction->expected->body, true)
-        );
+        $contentType = isset($transaction->expected->headers->{"Content-Type"}) ?
+            $transaction->expected->headers->{"Content-Type"} : "";
+        switch ($contentType) {
+            case 'application/json':
+                print("json");
+                $actual = normalize_json($transaction->real->body);
+                $expected = normalize_json($transaction->expected->body);
+                break;
 
-        // For the batch creation call, expect the ID that was just returned.
-        if (isset($stash['batch_id']) &&
-            $transaction->fullPath == '/batch' &&
-            isset($expected['id']) &&
-            $expected['id'] == '58444f87-0525-429d-ba3c-d7b06cab748a') {
-            $expected['id'] = $stash['batch_id'];
+            default:
+                print("other");
+                // Simple comparison for everything else. This includes
+                // text/plain which dredd apparently checks itself, but what
+                // the hell, we'll check it too.
+                $actual = $transaction->real->body;
+                $expected = $transaction->expected->body;
         }
-        $expected = json_encode($expected);
+
+        // Replace documentation batch id with the current one.
+        $replacements = array('58444f87-0525-429d-ba3c-d7b06cab748a' => $stash['batch_id']);
+        $expected = strtr($expected, $replacements);
 
         if ($actual != $expected) {
             $transaction->fail = "Difference in JSON payload.";
@@ -61,3 +70,11 @@ Hooks::after('Batch resource > Create batch > Example 1', function (&$transactio
     $json_data = json_decode($transaction->real->body);
     $stash['batch_id'] = $json_data->id;
 });
+
+function normalize_json($json)
+{
+    if (!empty($json)) {
+        return json_encode(array_sort_recursive(json_decode($json, true)));
+    }
+    return "";
+}
