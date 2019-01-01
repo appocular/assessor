@@ -40,10 +40,7 @@ Note that the id is case insensitive.
 + Response 422 (application/json)
 
         {
-            "message": "The given data was invalid.",
-            "validation_errors": {
-                "id": ["The id field is required."]
-            }
+            "id": ["The id field is required."]
         }
 
 ### Delete batch [DELETE /batch/{id}]
@@ -94,10 +91,7 @@ of the current batch run.
 + Response 422 (application/json)
 
         {
-            "message": "The given data was invalid.",
-            "validation_errors": {
-                "name": ["The name field is required."]
-            }
+            "name": ["The name field is required."]
         }
 
 + Request Bad image data (application/json)
@@ -107,15 +101,13 @@ of the current batch run.
             "image": "<bad base64 PNG data>"
         }
 
-+ Response 400 (application/json)
++ Response 400 (text/plain;charset=UTF-8)
 
     Base64 data not a valid PNG.
 
     + Body
 
-            {
-                "message": "Bad image data"
-            }
+            Bad image data
 
 ## Snapshot resource [/snapshot]
 

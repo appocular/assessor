@@ -48,16 +48,11 @@ class Handler extends ExceptionHandler
     {
         $rendered = parent::render($request, $e);
 
-        $content = [
-            'message' => $e->getMessage(),
-        ];
-
         if ($e instanceof ValidationException) {
-            $content['validation_errors'] = $e->errors();
+            return new Response($e->errors(), $rendered->getStatusCode());
         } elseif ($e instanceof ModelNotFoundException) {
-            $content = null;
+            return new Response("", $rendered->getStatusCode(), ['Content-Type' => 'text/plain']);
         }
-
-        return new Response($content, $rendered->getStatusCode());
+        return new Response($e->getMessage() . "\n", $rendered->getStatusCode(), ['Content-Type' => 'text/plain']);
     }
 }

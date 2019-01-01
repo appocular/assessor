@@ -40,10 +40,7 @@ class BatchTest extends TestCase
         $this->json('POST', '/batch', []);
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
-            'message' => 'The given data was invalid.',
-            'validation_errors' => [
-                'id' => [0 => 'The id field is required.'],
-            ],
+            'id' => [0 => 'The id field is required.'],
         ]);
     }
 
@@ -55,11 +52,8 @@ class BatchTest extends TestCase
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', []);
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
-            'message' => 'The given data was invalid.',
-            'validation_errors' => [
-                'name' => [0 => 'The name field is required.'],
-                'image' => [0 => 'The image field is required.'],
-            ],
+            'name' => [0 => 'The name field is required.'],
+            'image' => [0 => 'The image field is required.'],
         ]);
     }
 
@@ -70,7 +64,7 @@ class BatchTest extends TestCase
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => 'random data']);
         $this->assertResponseStatus(400);
-        $this->seeJson(['message' => 'Bad image data']);
+        $this->assertEquals("Bad image data\n", $this->response->getContent());
     }
 
     public function testAddingCheckpoint()
