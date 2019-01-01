@@ -13,7 +13,10 @@ test-unit:
 test-api:
 	dredd
 
-docs: docs.html
+docs: docs/Assessor\ API.html
 
-docs.html: docs/Assessor\ API.apib
-	docker run -ti --rm -v $(PWD):/docs humangeo/aglio --theme-template triple -i docs/Assessor\ API.apib -o docs.html
+docs/Assessor\ API.html: docs/Assessor\ API.apib
+	docker run -ti --rm -v $(PWD):/docs humangeo/aglio --theme-template triple -i docs/Assessor\ API.apib -o docs/Assessor\ API.html
+
+clean:
+	rm -rf docs/Assessor\ API.html
