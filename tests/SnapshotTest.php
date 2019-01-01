@@ -22,7 +22,7 @@ class SnapshotTest extends TestCase
             $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
             $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
         ];
-        $jsonImages = array_map(function ($checkpoint) {
+        $checkpointsJson = array_map(function ($checkpoint) {
             return ['id' => $checkpoint->id, 'name' => $checkpoint->name, 'image_sha' => $checkpoint->image_sha];
         }, $checkpoints);
 
@@ -30,7 +30,7 @@ class SnapshotTest extends TestCase
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
             'id' => $snapshot->id,
-            'checkpoints' => $jsonImages,
+            'checkpoints' => $checkpointsJson,
         ]);
     }
 }
