@@ -46,6 +46,24 @@ class ImageStoreSpec extends ObjectBehavior
         $this->shouldThrow(new RuntimeException('Bad response from Keeper.'))->duringStore('image data');
     }
 
-    // it_should_deal_with_bad_responses
-    // non-200 codes, bad json/missing data
+    function it_should_return_images_from_keeper(Client $client, Response $response)
+    {
+        $response->getStatusCode()->willReturn(200);
+        $response->getBody()->willReturn('<png data>');
+
+        $client->get('image/somesha')->willReturn($response);
+
+        $this->beConstructedWith($client);
+        $this->get('somesha')->shouldReturn('<png data>');
+    }
+
+    function it_should_deal_with_missing_image(Client $client, Response $response)
+    {
+        $response->getStatusCode()->willReturn(404);
+
+        $client->get('image/somesha')->willReturn($response);
+
+        $this->beConstructedWith($client);
+        $this->get('somesha')->shouldReturn(null);
+    }
 }

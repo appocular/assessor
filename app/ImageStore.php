@@ -46,18 +46,25 @@ class ImageStore
     }
 
     /**
-     * Get image URL.
-     *
-     * Returns the URL of the image with the given SHA. Ensures that the SHA
-     * corresponds to a stored image.
+     * Get image.
      *
      * @param string $sha
-     *   SHA of image.
+     *   Image SHA to fetch.
      *
-     * @return string
-     *   URL of image.
+     * @return null|string
+     *   PNG data or null if not found.
      */
-    public function url(string $sha) : string
+    public function get($sha) : ?string
     {
+        try {
+            // We're relying on Guzzle following redirects.
+            $response = $this->client->get('image/' . $sha);
+            if ($response->getStatusCode() == 200) {
+                return $response->getBody();
+            }
+        } catch (\Exception $e) {
+            //
+        }
+        return null;
     }
 }

@@ -148,3 +148,29 @@ Get information about a snapshot, including checkpoints.
 
 
 + Response 404
+
+## Checkpoint resource [/checkpoint]
+
+### Get image [GET /checkpoint/{checkpoint_id}/image]
+
+Get image of checkpoint.
+
++ Parameters
+
+    + checkpoint_id: `a1c2e7f2912f4844186ff988b44d30d6a191ecb1` - Id of checkpoint.
+
++ Request
+
++ Response 200
+
+    + Headers
+
+            Content-Type: image/png
+
++ Request Image not found
+
+    + Parameters
+
+        + checkpoint_id: `bad id`
+
++ Response 404
