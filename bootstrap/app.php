@@ -8,6 +8,24 @@ try {
     //
 }
 
+if (env('REPORT_COVERAGE', false)) {
+    $coverage = new SebastianBergmann\CodeCoverage\CodeCoverage();
+
+    $coverage->filter()->addDirectoryToWhitelist(__DIR__ . '/../app');
+
+    $coverage->start('api-test');
+
+    // Save code coverage when the request ends.
+    $handler = function () use ($coverage) {
+        $coverage->stop();
+
+        $writer = new \SebastianBergmann\CodeCoverage\Report\PHP();
+        $writer->process($coverage, __DIR__ . '/../coverage/api.' . uniqid() . '.cov');
+    };
+
+    register_shutdown_function($handler);
+}
+
 /*
 |--------------------------------------------------------------------------
 | Create The Application

@@ -16,8 +16,11 @@ before_install:
 
 script:
   - ./vendor/bin/phpspec run
-  - ./vendor/bin/phpunit --coverage-clover=coverage-unit.clover
-  - dredd
-
-after_script:
-  - bash <(curl -s https://codecov.io/bash)
+  - make coverage-clover
+  - bash <(curl -s https://codecov.io/bash) -c -F spec
+  - ./vendor/bin/phpunit --coverage-php=coverage/unit.cov
+  - make coverage-clover
+  - bash <(curl -s https://codecov.io/bash) -c -F unit
+  - env REPORT_COVERAGE=true dredd
+  - make coverage-clover
+  - bash <(curl -s https://codecov.io/bash) -c -F api

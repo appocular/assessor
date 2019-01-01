@@ -6,3 +6,6 @@ Homestead.yaml
 clover.xml
 # Ignore generated docs.
 docs/Assessor API.html
+# Code coverage.
+coverage/*
+clover.xml

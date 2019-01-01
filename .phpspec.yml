@@ -9,9 +9,9 @@ extensions:
   #   testing_environment: "testing"
   LeanPHP\PhpSpec\CodeCoverage\CodeCoverageExtension:
     format:
-      - clover
+      - php
     output:
-      clover: clover.xml
+      php: coverage/spec.cov
     whitelist:
       - app
 formatter.name: pretty
