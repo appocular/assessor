@@ -41,13 +41,11 @@ Hooks::afterEach(function (&$transaction) use (&$stash) {
             $transaction->expected->headers->{"Content-Type"} : "";
         switch ($contentType) {
             case 'application/json':
-                print("json");
                 $actual = normalize_json($transaction->real->body);
                 $expected = normalize_json($transaction->expected->body);
                 break;
 
             default:
-                print("other");
                 // Simple comparison for everything else. This includes
                 // text/plain which dredd apparently checks itself, but what
                 // the hell, we'll check it too.
