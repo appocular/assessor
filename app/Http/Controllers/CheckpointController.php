@@ -20,6 +20,12 @@ class CheckpointController extends BaseController
         $this->imageStore = $imageStore;
     }
 
+    public function get($id)
+    {
+        $checkpoint = Checkpoint::findOrFail($id);
+        return new Response($checkpoint->toArray());
+    }
+
     public function image($id)
     {
         $checkpoint = Checkpoint::findOrFail($id);

@@ -20,5 +20,6 @@ $router->group([], function () use ($router) {
     $router->post('batch/{batchId}/checkpoint', 'BatchController@addCheckpoint');
     $router->delete('batch/{batchId}', 'BatchController@delete');
     $router->get('snapshot/{id}', 'SnapshotController@index');
+    $router->get('checkpoint/{checkpoint_id}', 'CheckpointController@get');
     $router->get('checkpoint/{checkpoint_id}/image', 'CheckpointController@image');
 });

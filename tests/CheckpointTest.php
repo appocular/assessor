@@ -8,6 +8,26 @@ class CheckpointTest extends TestCase
 {
     use DatabaseMigrations;
 
+    public function testGettingCheckpoint()
+    {
+        $snapshot = factory(Appocular\Assessor\Snapshot::class)->create();
+        $checkpoints = [
+            $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
+        ];
+
+        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->assertResponseStatus(200);
+        $this->seeJsonEquals(['id' => $checkpoints[0]->id, 'name' => $checkpoints[0]->name, 'image_sha' => $checkpoints[0]->image_sha]);
+
+        $this->get('checkpoint/' . $checkpoints[1]->id);
+        $this->assertResponseStatus(200);
+        $this->seeJsonEquals(['id' => $checkpoints[1]->id, 'name' => $checkpoints[1]->name, 'image_sha' => $checkpoints[1]->image_sha]);
+
+        $this->get('checkpoint/random');
+        $this->assertResponseStatus(404);
+    }
+
     public function testGettingImage()
     {
         $snapshot = factory(Appocular\Assessor\Snapshot::class)->create();
