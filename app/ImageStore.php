@@ -57,7 +57,6 @@ class ImageStore
     public function get($sha) : ?string
     {
         try {
-            // We're relying on Guzzle following redirects.
             $response = $this->client->get('image/' . $sha);
             if ($response->getStatusCode() == 200) {
                 return $response->getBody();
