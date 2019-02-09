@@ -10,6 +10,7 @@ class History extends Model
     protected $fillable = ['snapshot_id', 'history',];
     protected $visible = ['snapshot_id', 'history'];
     public $incrementing = false;
+    protected $primaryKey = 'snapshot_id';
     protected $keyType = 'string';
     protected $table = 'history';
     public $timestamps = false;
