@@ -1,7 +1,8 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Appocular\Assessor\Events\NewBatch;
 use Appocular\Assessor\ImageStore;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 use Prophecy\Argument;
 
 class BatchTest extends TestCase
@@ -167,6 +168,15 @@ class BatchTest extends TestCase
      */
     public function startBatch($id, $history = null)
     {
+        // Use workaround from
+        // https://github.com/laravel/framework/issues/18066#issuecomment-342630971
+        // until we upgrade illuminate/support to >5.6.34.
+        $initialDispatcher = Event::getFacadeRoot();
+        Event::fake([
+            NewBatch::class,
+        ]);
+        \Illuminate\Database\Eloquent\Model::setEventDispatcher($initialDispatcher);
+
         $data = ['id' => $id];
         if ($history) {
             $data['history'] = $history;
@@ -175,6 +185,11 @@ class BatchTest extends TestCase
 
         $this->assertResponseStatus(200);
         $this->seeJsonStructure(['id']);
+
+        Event::assertDispatched(NewBatch::class, function ($e) use ($id) {
+            return $e->snapshotId === $id;
+        });
+
         $json = json_decode($this->response->getContent());
         return $json->id;
     }

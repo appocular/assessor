@@ -4,6 +4,7 @@ namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Batch;
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Events\NewBatch;
 use Appocular\Assessor\ImageStore;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Database\QueryException;
@@ -41,6 +42,8 @@ class BatchController extends BaseController
         }
         $batch->snapshot()->associate($snapshot);
         $batch->save();
+
+        event(new NewBatch($snapshot->id));
 
         return (new Response(['id' => $batch->id]));
     }
