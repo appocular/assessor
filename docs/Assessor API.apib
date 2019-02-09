@@ -19,12 +19,27 @@ Start a new batch run. Returns the id of the new batch. The id
 supplied is the snapshot id, ether this batch will be associated with
 the snapshot with the given id, or a new snapshot will be created.
 
-Note that the id is case insensitive.
+#### History
+
+The history of the snapshot is supplied as a newline separated list of
+snapshot ids. It is used for the first batch of a snapshot to find the
+parent (baseline) snapshot to compare against.
+
+When using Git SHAs as snapshot ids, the easiest way to create the
+history is `git rev-list HEAD`.
+
+The history does not need to be complete, but just contain enough to
+find the parent. A client that knows the ID of the previously
+submitted snapshot can use a history of a single entry.
+
+If no parent snapshot was found in the history, the new snapshot will
+be a "root" snapshot without any baseline.
 
 + Request (application/json)
 
         {
-            "id": "d8f4590320e1343a915b6394170650a8f35d6926"
+            "id": "d8f4590320e1343a915b6394170650a8f35d6926",
+            "history": "271ac93c44ac198d92e706c6d6f1d84aefcfa337\n7bee8f3b184e1e141ff76efe369c3b8bfc50e64c"
         }
 
 + Response 200 (application/json)

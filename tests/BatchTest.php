@@ -16,11 +16,12 @@ class BatchTest extends TestCase
     public function testCreateAndDelete()
     {
         $id = str_repeat('0', 40);
-        $batch_id = $this->startBatch($id);
+        $batch_id = $this->startBatch($id, "one\ntwo");
 
         // Assert that we can see the batch and snapshot in the database.
         $this->seeInDatabase('batches', ['id' => $batch_id, 'snapshot_id' => $id]);
         $this->seeInDatabase('snapshots', ['id' => $id]);
+        $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
 
         $this->delete('/batch/' . $batch_id);
         $this->assertResponseStatus(200);
@@ -42,6 +43,26 @@ class BatchTest extends TestCase
         $this->seeJsonEquals([
             'id' => [0 => 'The id field is required.'],
         ]);
+    }
+
+    public function testHistoryHandling()
+    {
+        $id = 'first';
+        $batch_id = $this->startBatch($id, "one\ntwo");
+
+        // Assert that the history is saved.
+        $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
+
+        $this->delete('/batch/' . $batch_id);
+        $this->assertResponseStatus(200);
+        // Assert that the history is still there.
+        $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
+
+        $batch_id = $this->startBatch($id, "three\nfour");
+
+        // Assert that the history is still the same.
+        $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
+        $this->missingFromDatabase('history', ['snapshot_id' => $id, 'history' => "three\nfour"]);
     }
 
     public function testCheckpointValidation()
@@ -144,9 +165,13 @@ class BatchTest extends TestCase
     /**
      * Start a batch and return the id.
      */
-    public function startBatch($id)
+    public function startBatch($id, $history = null)
     {
-        $this->json('POST', '/batch', ['id' => $id]);
+        $data = ['id' => $id];
+        if ($history) {
+            $data['history'] = $history;
+        }
+        $this->json('POST', '/batch', $data);
 
         $this->assertResponseStatus(200);
         $this->seeJsonStructure(['id']);

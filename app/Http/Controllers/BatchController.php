@@ -2,14 +2,14 @@
 
 namespace Appocular\Assessor\Http\Controllers;
 
+use Appocular\Assessor\Batch;
+use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\ImageStore;
+use Appocular\Assessor\Snapshot;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Appocular\Assessor\Batch;
-use Appocular\Assessor\Snapshot;
-use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\ImageStore;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
@@ -29,11 +29,16 @@ class BatchController extends BaseController
     {
         $this->validate($request, [
             'id' => 'required|string|min:1|max:255',
+            'history' => 'string',
             // 'variants' => 'array',
         ]);
 
         $batch = new Batch();
         $snapshot = Snapshot::firstOrCreate(['id' => $request->input('id')]);
+        // Add history if this is a new snapshot.
+        if ($request->has('history') && $snapshot->wasRecentlyCreated) {
+            $history = $snapshot->history()->create(['history' => $request->input('history')]);
+        }
         $batch->snapshot()->associate($snapshot);
         $batch->save();
 
