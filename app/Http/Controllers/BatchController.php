@@ -38,7 +38,7 @@ class BatchController extends BaseController
         $snapshot = Snapshot::firstOrCreate(['id' => $request->input('id')]);
         // Add history if this is a new snapshot.
         if ($request->has('history') && $snapshot->wasRecentlyCreated) {
-            $history = $snapshot->history()->create(['history' => $request->input('history')]);
+            $snapshot->history()->create(['history' => $request->input('history')]);
         }
         $batch->snapshot()->associate($snapshot);
         $batch->save();
