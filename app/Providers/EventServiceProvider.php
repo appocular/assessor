@@ -12,8 +12,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Appocular\Assessor\Events\SomeEvent' => [
-            'Appocular\Assessor\Listeners\EventListener',
+        'Appocular\Assessor\Events\NewBatch' => [
+            'Appocular\Assessor\Listeners\FindBaseline',
         ],
     ];
 }

@@ -28,4 +28,39 @@ class Snapshot extends Model
     {
         return $this->hasOne('Appocular\Assessor\History');
     }
+
+    /**
+     * Whether the baseline has been identified.
+     */
+    public function baselineIdentified() : bool
+    {
+        return !empty($this->baseline);
+    }
+
+    /**
+     * Set the baseline.
+     */
+    public function setBaseline(Snapshot $baseline) : void
+    {
+        $this->baseline = $baseline->id;
+    }
+
+    /**
+     * Set the baseline to none.
+     */
+    public function setNoBaseline() : void
+    {
+        $this->baseline = '';
+    }
+
+    /**
+     * Get baseline.
+     */
+    public function getBaseline() : ?Snapshot
+    {
+        if ($this->baselineIdentified()) {
+            return self::find($this->baseline);
+        }
+        return null;
+    }
 }
