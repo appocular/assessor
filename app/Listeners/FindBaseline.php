@@ -7,6 +7,7 @@ use Appocular\Assessor\History;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 
 class FindBaseline implements ShouldQueue
 {
@@ -29,6 +30,7 @@ class FindBaseline implements ShouldQueue
     public function handle(NewBatch $event)
     {
         $snapshot = Snapshot::findOrFail($event->snapshotId);
+        Log::info(sprintf('Finding baseline for snapshot %s', $snapshot->id));
         $history = $snapshot->history;
         $foundBaseline = null;
         foreach (explode("\n", $history->history) as $id) {
@@ -39,10 +41,15 @@ class FindBaseline implements ShouldQueue
         }
 
         if ($foundBaseline) {
-            $snapshot->setBaseline($baseline);
+            $snapshot->setBaseline($foundBaseline);
         } else {
             $snapshot->setNoBaseline();
         }
+        Log::info(sprintf(
+            'Setting baseline for snapshot %s to $s',
+            $snapshot->id,
+            $foundBaseline ? $foundBaseline->id : '"none"'
+        ));
 
         $snapshot->save();
         $history->delete();
