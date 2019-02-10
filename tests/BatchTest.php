@@ -1,6 +1,7 @@
 <?php
 
 use Appocular\Assessor\Events\NewBatch;
+use Appocular\Assessor\Events\SnapshotCreated;
 use Appocular\Assessor\ImageStore;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Prophecy\Argument;
@@ -16,6 +17,10 @@ class BatchTest extends TestCase
      */
     public function testCreateAndDelete()
     {
+        Event::fake([
+            SnapshotCreated::class,
+        ]);
+
         $id = str_repeat('0', 40);
         $batch_id = $this->startBatch($id, "one\ntwo");
 
@@ -48,14 +53,25 @@ class BatchTest extends TestCase
 
     public function testHistoryHandling()
     {
+        Event::fake([
+            SnapshotCreated::class,
+        ]);
         $id = 'first';
         $batch_id = $this->startBatch($id, "one\ntwo");
+
+        Event::assertDispatched(SnapshotCreated::class, function ($e) use ($id) {
+            return $e->snapshot->id === $id;
+        });
 
         // Assert that the history is saved.
         $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
 
         $this->delete('/batch/' . $batch_id);
         $this->assertResponseStatus(200);
+
+        // The event should still only have been fired once.
+        Event::assertDispatchedTimes(SnapshotCreated::class, 1);
+
         // Assert that the history is still there.
         $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
 
@@ -168,14 +184,6 @@ class BatchTest extends TestCase
      */
     public function startBatch($id, $history = null)
     {
-        // Use workaround from
-        // https://github.com/laravel/framework/issues/18066#issuecomment-342630971
-        // until we upgrade illuminate/support to >5.6.34.
-        $initialDispatcher = Event::getFacadeRoot();
-        Event::fake([
-            NewBatch::class,
-        ]);
-        \Illuminate\Database\Eloquent\Model::setEventDispatcher($initialDispatcher);
 
         $data = ['id' => $id];
         if ($history) {
@@ -185,10 +193,6 @@ class BatchTest extends TestCase
 
         $this->assertResponseStatus(200);
         $this->seeJsonStructure(['id']);
-
-        Event::assertDispatched(NewBatch::class, function ($e) use ($id) {
-            return $e->snapshotId === $id;
-        });
 
         $json = json_decode($this->response->getContent());
         return $json->id;

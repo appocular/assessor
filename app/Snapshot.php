@@ -2,6 +2,7 @@
 
 namespace Appocular\Assessor;
 
+use Appocular\Assessor\Events\SnapshotCreated;
 use Illuminate\Database\Eloquent\Model;
 
 class Snapshot extends Model
@@ -13,6 +14,9 @@ class Snapshot extends Model
 
     protected $visible = ['id', 'checkpoints'];
 
+    protected $dispatchesEvents = [
+        'created' => SnapshotCreated::class,
+    ];
     /**
      * Get the checkpoints for the snapshot.
      */

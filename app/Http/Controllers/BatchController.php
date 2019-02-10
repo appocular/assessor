@@ -36,16 +36,16 @@ class BatchController extends BaseController
         ]);
 
         $batch = new Batch();
-        $snapshot = Snapshot::firstOrCreate(['id' => $request->input('id')]);
+        $snapshot = Snapshot::firstOrNew(['id' => $request->input('id')]);
         // Add history if this is a new snapshot.
-        if ($request->has('history') && $snapshot->wasRecentlyCreated) {
+        if ($request->has('history') && !$snapshot->exists) {
             $snapshot->history()->create(['history' => $request->input('history')]);
         }
+        $snapshot->save();
         $batch->snapshot()->associate($snapshot);
         $batch->save();
 
         Log::info(sprintf('Starting batch %s for snapshot %s', $batch->id, $snapshot->id));
-        event(new NewBatch($snapshot->id));
 
         return (new Response(['id' => $batch->id]));
     }
