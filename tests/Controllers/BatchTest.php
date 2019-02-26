@@ -114,7 +114,7 @@ class BatchTest extends TestCase
         $batch_id = $this->startBatch($id);
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
-        $image = file_get_contents(__DIR__ . '/../fixtures/images/basn6a16.png');
+        $image = file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png');
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->seeInDatabase('checkpoints', [
