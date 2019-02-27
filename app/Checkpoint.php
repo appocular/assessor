@@ -19,4 +19,24 @@ class Checkpoint extends Model
     {
         return $this->belongsTo('Appocular\Assessor\Snapshot');
     }
+
+    /**
+     * Reset Checkpoint baselines for snapshot.
+     *
+     * Deletes checkpoints without an image (they're placeholders for deleted
+     * files) and sets baseline for the rest to null.
+     *
+     * @param string $snapshotId
+     *   Id of the snapshot to reset for.
+     */
+    public static function resetBaseline(string $snapshotId) : void
+    {
+        $checkpoint = new static();
+        $checkpoint->newModelQuery()
+            ->where([['snapshot_id', $snapshotId], ['image_sha', null]])
+            ->delete();
+        $checkpoint->newModelQuery()
+            ->where('snapshot_id', $snapshotId)
+            ->update(['baseline_sha' => null]);
+    }
 }

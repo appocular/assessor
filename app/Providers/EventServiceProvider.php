@@ -15,5 +15,8 @@ class EventServiceProvider extends ServiceProvider
         'Appocular\Assessor\Events\SnapshotCreated' => [
             'Appocular\Assessor\Listeners\FindSnapshotBaseline',
         ],
+        'Appocular\Assessor\Events\SnapshotUpdated' => [
+            'Appocular\Assessor\Listeners\ResetCheckpointBaselines',
+        ],
     ];
 }

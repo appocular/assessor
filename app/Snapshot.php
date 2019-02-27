@@ -3,6 +3,7 @@
 namespace Appocular\Assessor;
 
 use Appocular\Assessor\Events\SnapshotCreated;
+use Appocular\Assessor\Events\SnapshotUpdated;
 use Illuminate\Database\Eloquent\Model;
 
 class Snapshot extends Model
@@ -16,6 +17,7 @@ class Snapshot extends Model
 
     protected $dispatchesEvents = [
         'created' => SnapshotCreated::class,
+        'updated' => SnapshotUpdated::class,
     ];
     /**
      * Get the checkpoints for the snapshot.
