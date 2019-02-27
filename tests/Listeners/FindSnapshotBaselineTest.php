@@ -1,11 +1,11 @@
 <?php
 
 use Appocular\Assessor\Events\SnapshotCreated;
-use Appocular\Assessor\Listeners\SnapshotCreatedListener;
+use Appocular\Assessor\Listeners\FindSnapshotBaseline;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class SnapshotCreatedListenerTest extends TestCase
+class FindSnapshotBaselineTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -16,7 +16,7 @@ class SnapshotCreatedListenerTest extends TestCase
 
         $snapshot->history()->create(['history' => "banana\n" . $baseline->id . "\napple\n"]);
 
-        $listener = new SnapshotCreatedListener();
+        $listener = new FindSnapshotBaseline();
         $listener->handle(new SnapshotCreated($snapshot));
 
         $this->seeInDatabase('snapshots', ['id' => $snapshot->id, 'baseline' => $baseline->id]);
@@ -31,7 +31,7 @@ class SnapshotCreatedListenerTest extends TestCase
 
         $snapshot->history()->create(['history' => "banana\npineapple\napple\n"]);
 
-        $listener = new SnapshotCreatedListener();
+        $listener = new FindSnapshotBaseline();
         $listener->handle(new SnapshotCreated($snapshot));
 
         $this->seeInDatabase('snapshots', ['id' => $snapshot->id, 'baseline' => '']);
