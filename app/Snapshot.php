@@ -2,9 +2,12 @@
 
 namespace Appocular\Assessor;
 
+use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Events\SnapshotCreated;
 use Appocular\Assessor\Events\SnapshotUpdated;
+use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Snapshot extends Model
 {
@@ -68,5 +71,41 @@ class Snapshot extends Model
             return self::find($this->baseline);
         }
         return null;
+    }
+
+    public function triggerCheckpointBaselining()
+    {
+        if ($baseline = $this->getBaseline()) {
+            Log::info(sprintf('Collectiong Checkpoints for baselines finding for snapshot %s', $this->id));
+            $baselineCheckpoints = [];
+            foreach ($baseline->checkpoints()->get() as $checkpoint) {
+                if ($checkpoint->shouldPropagate()) {
+                    $baselineCheckpoints[$checkpoint->name] = $checkpoint;
+                }
+            }
+
+            foreach ($this->checkpoints()->get() as $checkpoint) {
+                unset($baselineCheckpoints[$checkpoint->name]);
+                dispatch(new FindCheckpointBaseline($checkpoint));
+            }
+
+            // Create imageless checkpoints for the remaining checkpoints in
+            // the baseline so they exist in this snapshot.
+            foreach ($baselineCheckpoints as $baseCheckpoint) {
+                try {
+                    $checkpoint = new Checkpoint([
+                        'id' => hash('sha1', $this->id . $baseCheckpoint->name),
+                        'snapshot_id' => $this->id,
+                        'name' => $baseCheckpoint->name,
+                        'image_sha' => '',
+                    ]);
+                    $checkpoint->save();
+                    dispatch(new FindCheckpointBaseline($checkpoint));
+                } catch (Throwable $e) {
+                    // We'll assume that any errors is because someone beat us
+                    // in creating the checkpoint, and quietly chug along.
+                }
+            }
+        }
     }
 }
