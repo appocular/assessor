@@ -6,9 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Checkpoint extends Model
 {
+    const STATUS_UNKNOWN = 0;
+    const STATUS_APPROVED = 1;
+    const STATUS_REJECTED = 2;
+    const STATUS_IGNORED = 3;
 
     protected $fillable = ['id', 'name', 'snapshot_id', 'image_sha'];
     protected $visible = ['id', 'name', 'image_sha'];
+    // Default attributes.
+    protected $attributes = ['status' => 0];
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -38,5 +44,15 @@ class Checkpoint extends Model
         $checkpoint->newModelQuery()
             ->where('snapshot_id', $snapshotId)
             ->update(['baseline_sha' => null]);
+    }
+
+    /**
+     * Should this propagate to later snapshots?
+     *
+     * Unless it's an approved removal, it should.
+     */
+    public function shouldPropagate() : bool
+    {
+        return !(empty($this->image_sha) && $this->status == self::STATUS_APPROVED);
     }
 }

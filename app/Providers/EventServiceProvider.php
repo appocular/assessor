@@ -17,6 +17,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'Appocular\Assessor\Events\SnapshotUpdated' => [
             'Appocular\Assessor\Listeners\ResetCheckpointBaselines',
+            'Appocular\Assessor\Listeners\TriggerFindingCheckpointBaseline',
         ],
     ];
 }

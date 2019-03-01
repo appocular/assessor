@@ -20,8 +20,8 @@ class ResetCheckpointBaselines implements ShouldQueue
     public function handle(SnapshotUpdated $event)
     {
         $snapshot = $event->snapshot;
-        Log::info(sprintf('Resetting Checkpoint baselines for snapshot %s', $snapshot->id));
         if ($snapshot->wasChanged('baseline')) {
+            Log::info(sprintf('Resetting Checkpoint baselines for snapshot %s', $snapshot->id));
             Checkpoint::resetBaseline($snapshot->id);
         }
     }

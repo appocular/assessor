@@ -19,6 +19,7 @@ class CreateCheckpointsTable extends Migration
             $table->string('snapshot_id');
             $table->string('image_sha')->nullable();
             $table->string('baseline_sha')->nullable();
+            $table->tinyInteger('status');
             $table->timestamps();
         });
     }
