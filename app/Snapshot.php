@@ -125,7 +125,6 @@ class Snapshot extends Model
             $this->status = self::STATUS_PASSED;
         }
 
-        fwrite(STDOUT, $this->checkpoints->where('status', Checkpoint::STATUS_UNKNOWN)->count());
         $this->save();
     }
 }
