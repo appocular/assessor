@@ -13,8 +13,6 @@ class Checkpoint extends Model
 
     protected $fillable = ['id', 'name', 'snapshot_id', 'image_sha'];
     protected $visible = ['id', 'name', 'image_sha'];
-    // Default attributes.
-    protected $attributes = ['status' => 0];
     public $incrementing = false;
     protected $keyType = 'string';
 
