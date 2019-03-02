@@ -2,17 +2,11 @@
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Events\SnapshotUpdated;
-use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Appocular\Assessor\Listeners\TriggerFindingCheckpointBaseline;
 use Appocular\Assessor\Snapshot;
-use Illuminate\Support\Facades\Queue;
-use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class TriggerFindingCheckpointBaselineTest extends TestCase
 {
-    use DatabaseMigrations;
-
     public function testTriggering()
     {
         $snapshot = $this->prophesize(Snapshot::class);
