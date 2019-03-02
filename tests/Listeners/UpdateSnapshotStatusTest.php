@@ -15,13 +15,13 @@ class UpdateSnapshotStatusTest extends TestCase
         $checkpoint = $this->prophesize(Checkpoint::class);
         $snapshot = $this->prophesize(Snapshot::class);
         $snapshot->updateStatus()->shouldNotBeCalled();
-        $checkpoint->wasChanged('status')->willReturn(false);
+        $checkpoint->isDirty('status')->willReturn(false);
         $checkpoint->getAttribute('snapshot')->shouldNotBeCalled();
 
         (new UpdateSnapshotStatus())->handle(new CheckpointUpdated($checkpoint->reveal()));
 
         $checkpoint = $this->prophesize(Checkpoint::class);
-        $checkpoint->wasChanged('status')->willReturn(true);
+        $checkpoint->isDirty('status')->willReturn(true);
         $snapshot = $this->prophesize(Snapshot::class);
         $snapshot->updateStatus()->shouldBeCalled();
         $checkpoint->getAttribute('snapshot')->willReturn($snapshot->reveal());

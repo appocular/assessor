@@ -16,7 +16,7 @@ class QueueCheckpointsBaselining
      */
     public function handle(SnapshotUpdated $event)
     {
-        if ($event->snapshot->wasChanged('baseline') && $baseline = $event->snapshot->getBaseline()) {
+        if ($event->snapshot->isDirty('baseline') && $baseline = $event->snapshot->getBaseline()) {
             dispatch(new QueueCheckpointBaselining($event->snapshot));
         }
     }

@@ -16,7 +16,7 @@ class UpdateSnapshotStatus
     public function handle(CheckpointUpdated $event)
     {
         $checkpoint = $event->checkpoint;
-        if ($checkpoint->wasChanged('status')) {
+        if ($checkpoint->isDirty('status')) {
             $checkpoint->snapshot->updateStatus();
         }
     }

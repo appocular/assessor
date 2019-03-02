@@ -18,7 +18,7 @@ class ResetCheckpointBaselines
     public function handle(SnapshotUpdated $event)
     {
         $snapshot = $event->snapshot;
-        if ($snapshot->wasChanged('baseline')) {
+        if ($snapshot->isDirty('baseline')) {
             Log::info(sprintf('Resetting Checkpoint baselines for snapshot %s', $snapshot->id));
             Checkpoint::resetBaseline($snapshot->id);
         }
