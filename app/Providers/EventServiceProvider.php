@@ -13,7 +13,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'Appocular\Assessor\Events\SnapshotCreated' => [
-            'Appocular\Assessor\Listeners\FindSnapshotBaseline',
+            'Appocular\Assessor\Listeners\QueueSnapshotBaselining',
         ],
         'Appocular\Assessor\Events\SnapshotUpdated' => [
             'Appocular\Assessor\Listeners\ResetCheckpointBaselines',

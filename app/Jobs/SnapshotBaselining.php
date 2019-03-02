@@ -1,27 +1,34 @@
 <?php
 
-namespace Appocular\Assessor\Listeners;
+namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Events\SnapshotCreated;
-use Appocular\Assessor\History;
 use Appocular\Assessor\Snapshot;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
-class FindSnapshotBaseline implements ShouldQueue
+class SnapshotBaselining extends Job
 {
     /**
-     * Handle the event.
+     * @var Snapshot
+     */
+    public $snapshot;
+
+    public function __construct(Snapshot $snapshot)
+    {
+        $this->snapshot = $snapshot;
+    }
+
+    /**
+     * Execute the job.
      *
-     * @param  SnapshotCreated  $event
      * @return void
      */
-    public function handle(SnapshotCreated $event)
+    public function handle()
     {
-        $snapshot = $event->snapshot;
+        $snapshot = $this->snapshot;
+        $snapshot->refresh();
         $history = $snapshot->history;
         if (!$history) {
+            // Someone beat us to it.
             return;
         }
         Log::info(sprintf('Finding baseline for snapshot %s', $snapshot->id));
