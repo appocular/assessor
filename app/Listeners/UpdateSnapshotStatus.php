@@ -4,12 +4,8 @@ namespace Appocular\Assessor\Listeners;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Events\CheckpointUpdated;
-use Appocular\Assessor\Snapshot;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-use Throwable;
 
-class UpdateSnapshotStatus implements ShouldQueue
+class UpdateSnapshotStatus
 {
     /**
      * Handle the event.
