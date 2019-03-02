@@ -2,6 +2,7 @@
 
 namespace Appocular\Assessor;
 
+use Appocular\Assessor\Events\CheckpointUpdated;
 use Illuminate\Database\Eloquent\Model;
 
 class Checkpoint extends Model
@@ -15,6 +16,10 @@ class Checkpoint extends Model
     protected $visible = ['id', 'name', 'image_sha'];
     public $incrementing = false;
     protected $keyType = 'string';
+
+    protected $dispatchesEvents = [
+        'updated' => CheckpointUpdated::class,
+    ];
 
     /**
      * Get the snapshot for the checkpoint.

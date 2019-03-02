@@ -282,4 +282,51 @@ class SnapshotModelTest extends TestCase
 
         $this->assertCount(0, $expectedCheckpoints);
     }
+
+    public function testStatusUpdate()
+    {
+        $checkpoints = [];
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoints[] = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'one',
+            'status' => 0,
+        ]);
+        $checkpoints[] = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'one',
+            'status' => 0,
+        ]);
+
+        $snapshot->updateStatus();
+        $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
+
+        $checkpoints[0]->status = Checkpoint::STATUS_APPROVED;
+        $checkpoints[0]->save();
+
+        $snapshot->updateStatus();
+        // Should stay at unknown as long as there's unknown checkpoints.
+        $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
+
+        $checkpoints[1]->status = Checkpoint::STATUS_IGNORED;
+        $checkpoints[1]->save();
+
+        $snapshot->updateStatus();
+        // Should pass when all checkpoints are either approved or ignore.
+        $this->assertEquals(Snapshot::STATUS_PASSED, $snapshot->status);
+
+        $checkpoints[1]->status = Checkpoint::STATUS_REJECTED;
+        $checkpoints[1]->save();
+
+        $snapshot->updateStatus();
+        // Should fail if there's rejected checkpoints.
+        $this->assertEquals(Snapshot::STATUS_FAILED, $snapshot->status);
+
+        $checkpoints[0]->status = Checkpoint::STATUS_UNKNOWN;
+        $checkpoints[0]->save();
+
+        $snapshot->updateStatus();
+        // Rejected trumps unknown.
+        $this->assertEquals(Snapshot::STATUS_FAILED, $snapshot->status);
+    }
 }

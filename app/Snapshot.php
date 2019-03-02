@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Log;
 
 class Snapshot extends Model
 {
+    const STATUS_UNKNOWN = 0;
+    const STATUS_PASSED = 1;
+    const STATUS_FAILED = 2;
+
     protected $fillable = ['id'];
 
     public $incrementing = false;
@@ -22,6 +26,7 @@ class Snapshot extends Model
         'created' => SnapshotCreated::class,
         'updated' => SnapshotUpdated::class,
     ];
+
     /**
      * Get the checkpoints for the snapshot.
      */
@@ -107,5 +112,20 @@ class Snapshot extends Model
                 }
             }
         }
+    }
+
+    public function updateStatus()
+    {
+        $this->refresh();
+        if ($this->checkpoints->where('status', Checkpoint::STATUS_REJECTED)->count() > 0) {
+            $this->status = self::STATUS_FAILED;
+        } elseif ($this->checkpoints->where('status', Checkpoint::STATUS_UNKNOWN)->count() > 0) {
+            $this->status = self::STATUS_UNKNOWN;
+        } else {
+            $this->status = self::STATUS_PASSED;
+        }
+
+        fwrite(STDOUT, $this->checkpoints->where('status', Checkpoint::STATUS_UNKNOWN)->count());
+        $this->save();
     }
 }

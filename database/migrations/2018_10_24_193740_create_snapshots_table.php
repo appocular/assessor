@@ -16,6 +16,7 @@ class CreateSnapshotsTable extends Migration
         Schema::create('snapshots', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('baseline')->nullable();
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
     }
