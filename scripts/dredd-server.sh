@@ -13,9 +13,10 @@ fi
 function cleanup {
         local pids=$(jobs -pr)
         [ -n "$pids" ] && kill $pids
+        rm -f /tmp/assessor-dredd.sqlite
 }
 
-trap "exit" INT TERM ERR
+trap cleanup INT TERM ERR
 trap cleanup EXIT
 
 ./artisan migrate:fresh
