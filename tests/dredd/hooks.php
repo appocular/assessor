@@ -72,7 +72,10 @@ Hooks::after('Batch resource > Create batch > Example 1', function (&$transactio
 function normalize_json($json)
 {
     if (!empty($json)) {
-        return json_encode(array_sort_recursive(json_decode($json, true)));
+        $data = json_decode($json, true);
+        if (is_array($data)) {
+            return json_encode(array_sort_recursive($data));
+        }
     }
     return "";
 }
