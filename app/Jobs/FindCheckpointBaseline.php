@@ -33,7 +33,11 @@ class FindCheckpointBaseline extends Job
             return;
         }
 
-        Log::info(sprintf('Finding Checkpoint baselines for %s (snapshot $s)', $checkpoint->id, $checkpoint->snapshot->id));
+        Log::info(sprintf(
+            'Finding Checkpoint baselines for %s (snapshot $s)',
+            $checkpoint->id,
+            $checkpoint->snapshot->id
+        ));
         $baseline_sha = '';
         $baseline = $checkpoint->snapshot->getBaseline();
         // Bail out if baseline has disappeared in the meantime.

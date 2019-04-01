@@ -75,7 +75,11 @@ class BatchController extends BaseController
         $pngHeader = chr(137) . chr(80) . chr(78) . chr(71) . chr(13) . chr(10) . chr(26) . chr(10);
         if (!$imageData || substr($imageData, 0, 8) !== $pngHeader) {
             throw new BadRequestHttpException('Bad image data');
-            Log::error(sprintf('Error saving image for checkpoint "%s" in batch %s', $request->input('name'), $batch->id));
+            Log::error(sprintf(
+                'Error saving image for checkpoint "%s" in batch %s',
+                $request->input('name'),
+                $batch->id
+            ));
         }
         $sha = $this->imageStore->store($imageData);
 

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class CreateCheckpointsTable extends Migration
 {
     /**
