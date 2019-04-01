@@ -13,12 +13,12 @@ class AddRepoCommandTest extends TestCase
         $this->artisan('assessor:add-repo', ['uri' => 'repo without token']);
         $this->seeInDatabase('repos', ['uri' => 'repo without token']);
         $repo = Repo::find('repo without token');
-        $this->assertNotEmpty($repo->token);
+        $this->assertNotEmpty($repo->api_token);
     }
 
     public function testAddWithoutTokenGeneration()
     {
         $this->artisan('assessor:add-repo', ['uri' => 'repo with token', 'token' => 'a token']);
-        $this->seeInDatabase('repos', ['uri' => 'repo with token', 'token' => 'a token']);
+        $this->seeInDatabase('repos', ['uri' => 'repo with token', 'api_token' => 'a token']);
     }
 }

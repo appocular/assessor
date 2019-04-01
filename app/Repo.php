@@ -22,8 +22,8 @@ class Repo extends Model
     {
         parent::boot();
         self::creating(function ($model) {
-            if (empty($model->token)) {
-                $model->token = hash('sha256', $model->uri . (string) Uuid::generate(4));
+            if (empty($model->api_token)) {
+                $model->api_token = hash('sha256', $model->uri . (string) Uuid::generate(4));
             }
         });
     }

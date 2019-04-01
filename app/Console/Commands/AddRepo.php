@@ -41,9 +41,9 @@ class AddRepo extends Command
         $repo = new Repo(['uri' => $this->argument('uri')]);
         $token = $this->argument('token');
         if ($token) {
-            $repo->token = $token;
+            $repo->api_token = $token;
         }
         $repo->save();
-        $this->line($repo->uri . ' added with token: ' . $repo->token);
+        $this->line($repo->uri . ' added with token: ' . $repo->api_token);
     }
 }

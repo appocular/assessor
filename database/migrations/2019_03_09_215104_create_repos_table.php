@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRepasTable extends Migration
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class CreateReposTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +16,11 @@ class CreateRepasTable extends Migration
     {
         Schema::create('repos', function (Blueprint $table) {
             $table->string('uri')->primary();
-            $table->string('token');
+            $table->string('api_token', 80)
+                ->unique()
+                ->nullable()
+                ->default(null);
+            ;
             $table->timestamps();
         });
     }
