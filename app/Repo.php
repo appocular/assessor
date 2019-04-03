@@ -23,7 +23,12 @@ class Repo extends Model
         parent::boot();
         self::creating(function ($model) {
             if (empty($model->api_token)) {
-                $model->api_token = hash('sha256', $model->uri . (string) Uuid::generate(4));
+                // The database schema will enforce uniqueness of token, so
+                // we'll just regenerate on the (extremely unlikely) chance we
+                // hit an existing.
+                do {
+                    $model->api_token = hash('sha256', $model->uri . (string) Uuid::generate(4));
+                } while ($model->where('api_token', $model->api_token)->exists());
             }
         });
     }

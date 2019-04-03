@@ -30,4 +30,15 @@ class RepoModelTest extends TestCase
         $repo = Repo::find('provided test');
         $this->assertEquals('the token', $repo->api_token);
     }
+    public function testUniqueTokens()
+    {
+        $repo = new Repo(['uri' => 'unique test']);
+        $repo->api_token = 'the token';
+        $repo->save();
+
+        $this->expectException(RuntimeException::class);
+        $repo = new Repo(['uri' => 'unique test 2']);
+        $repo->api_token = 'the token';
+        $repo->save();
+    }
 }
