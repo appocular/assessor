@@ -19,6 +19,9 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->post('batch', 'BatchController@create');
     $router->post('batch/{batchId}/checkpoint', 'BatchController@addCheckpoint');
     $router->delete('batch/{batchId}', 'BatchController@delete');
+});
+
+$router->group([], function () use ($router) {
     $router->get('snapshot/{id}', 'SnapshotController@index');
     $router->get('checkpoint/{checkpoint_id}', 'CheckpointController@get');
     $router->get('checkpoint/{checkpoint_id}/image', 'CheckpointController@image');
