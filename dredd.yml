@@ -1,13 +1,9 @@
-dry-run: null
 hookfiles: ./tests/dredd/hooks.php
 language: vendor/bin/dredd-hooks-php
-sandbox: false
 server: ./scripts/dredd-server.sh
 server-wait: 0
 init: false
 custom: {}
-names: false
-only: []
 reporter: []
 output: []
 header: []
