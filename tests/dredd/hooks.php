@@ -27,6 +27,11 @@ Hooks::beforeEach(function (&$transaction) use (&$stash) {
 });
 
 Hooks::afterEach(function (&$transaction) use (&$stash) {
+    // Dry run support.
+    if (!isset($transaction->real)) {
+        return;
+    }
+
     // Check that the headers matches the documentation.
     if (!empty($transaction->expected->headers)) {
         foreach ($transaction->expected->headers as $name => $content) {
@@ -35,6 +40,7 @@ Hooks::afterEach(function (&$transaction) use (&$stash) {
             }
         }
     }
+
     // Check that the payload matches the documentation.
     if (!empty($transaction->expected->body)) {
         $contentType = isset($transaction->expected->headers->{"Content-Type"}) ?
@@ -64,6 +70,10 @@ Hooks::afterEach(function (&$transaction) use (&$stash) {
 });
 
 Hooks::after('Batch resource > Create batch > Example 1', function (&$transaction) use (&$stash) {
+    // Dry run support.
+    if (!isset($transaction->real)) {
+        return;
+    }
     // Save created batch ID for use in subsequent tests.
     $json_data = json_decode($transaction->real->body);
     $stash['batch_id'] = $json_data->id;
