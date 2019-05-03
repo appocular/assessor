@@ -1,5 +1,7 @@
 <?php
 
+namespace Listeners;
+
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Events\CheckpointUpdated;
 use Appocular\Assessor\Listeners\UpdateSnapshotStatus;
@@ -8,7 +10,8 @@ use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class UpdateSnapshotStatusTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class UpdateSnapshotStatusTest extends \TestCase
 {
     public function testSnapshotUpdate()
     {

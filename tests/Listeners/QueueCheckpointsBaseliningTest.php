@@ -1,13 +1,17 @@
 <?php
 
+namespace Listeners;
+
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Events\SnapshotUpdated;
 use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
 use Appocular\Assessor\Listeners\QueueCheckpointsBaselining;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Queue;
 
-class QueueCheckpointsBaseliningTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class QueueCheckpointsBaseliningTest extends \TestCase
 {
     use DatabaseMigrations;
 

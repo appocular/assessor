@@ -1,9 +1,12 @@
 <?php
 
+namespace Commands;
+
 use Appocular\Assessor\Repo;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class AddRepoCommandTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class AddRepoCommandTest extends \TestCase
 {
 
     use DatabaseMigrations;

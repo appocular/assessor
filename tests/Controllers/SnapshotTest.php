@@ -1,15 +1,20 @@
 <?php
 
+namespace Controllers;
+
+use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Prophecy\Argument;
 
-class SnapshotTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class SnapshotTest extends \TestCase
 {
     use DatabaseMigrations;
 
     public function testGettingSnapshot()
     {
-        $snapshot = factory(Appocular\Assessor\Snapshot::class)->create();
+        $snapshot = factory(Snapshot::class)->create();
 
         $this->get('snapshot/' . $snapshot->id);
         $this->assertResponseStatus(200);
@@ -19,8 +24,8 @@ class SnapshotTest extends TestCase
         ]);
 
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
         $checkpointsJson = array_map(function ($checkpoint) {
             return ['id' => $checkpoint->id, 'name' => $checkpoint->name, 'image_sha' => $checkpoint->image_sha];

@@ -1,12 +1,15 @@
 <?php
 
+namespace Models;
+
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class SnapshotModelTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class SnapshotModelTest extends \TestCase
 {
     use DatabaseMigrations;
 

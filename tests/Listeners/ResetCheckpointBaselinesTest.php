@@ -1,5 +1,7 @@
 <?php
 
+namespace Listeners;
+
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Events\SnapshotUpdated;
 use Appocular\Assessor\Listeners\ResetCheckpointBaselines;
@@ -7,7 +9,8 @@ use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class ResetCheckpointBaselinesTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class ResetCheckpointBaselinesTest extends \TestCase
 {
     use DatabaseMigrations;
 

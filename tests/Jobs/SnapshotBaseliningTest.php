@@ -1,17 +1,20 @@
 <?php
 
+namespace Jobs;
+
 use Appocular\Assessor\Jobs\SnapshotBaselining;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class SnapshotBaseliningTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class SnapshotBaseliningTest extends \TestCase
 {
     use DatabaseMigrations;
 
     public function testFindingBaseline()
     {
-        $baseline = factory(Appocular\Assessor\Snapshot::class)->create();
-        $snapshot = factory(Appocular\Assessor\Snapshot::class)->create();
+        $baseline = factory(Snapshot::class)->create();
+        $snapshot = factory(Snapshot::class)->create();
 
         $snapshot->history()->create(['history' => "banana\n" . $baseline->id . "\napple\n"]);
 
@@ -25,8 +28,8 @@ class SnapshotBaseliningTest extends TestCase
 
     public function testNotFindingBaseline()
     {
-        $baseline = factory(Appocular\Assessor\Snapshot::class)->create();
-        $snapshot = factory(Appocular\Assessor\Snapshot::class)->create();
+        $baseline = factory(Snapshot::class)->create();
+        $snapshot = factory(Snapshot::class)->create();
 
         $snapshot->history()->create(['history' => "banana\npineapple\napple\n"]);
 

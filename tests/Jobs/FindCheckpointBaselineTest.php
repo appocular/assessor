@@ -1,12 +1,15 @@
 <?php
 
+namespace Jobs;
+
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class FindCheckpointBaselineTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class FindCheckpointBaselineTest extends \TestCase
 {
     use DatabaseMigrations;
 

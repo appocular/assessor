@@ -1,12 +1,16 @@
 <?php
 
+namespace Controllers;
+
 use Appocular\Assessor\Events\NewBatch;
 use Appocular\Assessor\Events\SnapshotCreated;
 use Appocular\Assessor\ImageStore;
+use Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Prophecy\Argument;
 
-class BatchTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class BatchTest extends \TestCase
 {
     use DatabaseMigrations;
 

@@ -1,19 +1,24 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseMigrations;
+namespace Controllers;
+
+use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\ImageStore;
+use Appocular\Assessor\Snapshot;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 use Prophecy\Argument;
 
-class CheckpointTest extends TestCase
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class CheckpointTest extends \TestCase
 {
     use DatabaseMigrations;
 
     public function testGettingCheckpoint()
     {
-        $snapshot = factory(Appocular\Assessor\Snapshot::class)->create();
+        $snapshot = factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
         $this->get('checkpoint/' . $checkpoints[0]->id);
@@ -30,10 +35,10 @@ class CheckpointTest extends TestCase
 
     public function testGettingImage()
     {
-        $snapshot = factory(Appocular\Assessor\Snapshot::class)->create();
+        $snapshot = factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Appocular\Assessor\Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
         $imageStore = $this->prophesize(ImageStore::class);
