@@ -5,12 +5,14 @@ namespace Controllers;
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class SnapshotTest extends \TestCase
 {
     use DatabaseMigrations;
+    use WithoutMiddleware;
 
     public function testGettingSnapshot()
     {

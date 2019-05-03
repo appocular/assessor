@@ -20,6 +20,7 @@ trap cleanup INT TERM ERR
 trap cleanup EXIT
 
 ./artisan migrate:fresh
+./artisan assessor:add-repo test MySecretToken
 
 php -S 0.0.0.0:8081 -t keeper/public &
 php -S 0.0.0.0:8080 -t public &

@@ -7,12 +7,14 @@ use Appocular\Assessor\Events\SnapshotCreated;
 use Appocular\Assessor\ImageStore;
 use Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class BatchTest extends \TestCase
 {
     use DatabaseMigrations;
+    use WithoutMiddleware;
 
     /**
      * Test that a batch can be created and deleted.
