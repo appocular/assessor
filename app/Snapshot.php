@@ -11,8 +11,19 @@ use Illuminate\Support\Facades\Log;
 
 class Snapshot extends Model
 {
+    /**
+     * Snapshot status is pending.
+     */
     const STATUS_UNKNOWN = 0;
+
+    /**
+     * Snapshot passed. All checkpoints either passed or is approved.
+     */
     const STATUS_PASSED = 1;
+
+    /**
+     * Snapshot failed. Unapproved failed checkpoints exists.
+     */
     const STATUS_FAILED = 2;
 
     protected $fillable = ['id'];
@@ -78,6 +89,12 @@ class Snapshot extends Model
         return null;
     }
 
+    /**
+     * Trigger finding baselines of this snapshots checkpoints.
+     *
+     * Queues FindCheckpointBaseline jobs to find the baseline of the
+     * individual checkpoints.
+     */
     public function triggerCheckpointBaselining()
     {
         if ($baseline = $this->getBaseline()) {
@@ -114,6 +131,11 @@ class Snapshot extends Model
         }
     }
 
+    /**
+     * Update snapshot status.
+     *
+     * Updates the status depending on the status of it's checkpoints.
+     */
     public function updateStatus()
     {
         $this->refresh();
