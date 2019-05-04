@@ -12,8 +12,8 @@ class Checkpoint extends Model
     const STATUS_REJECTED = 2;
     const STATUS_IGNORED = 3;
 
-    protected $fillable = ['id', 'name', 'snapshot_id', 'image_sha'];
-    protected $visible = ['id', 'name', 'image_sha'];
+    protected $fillable = ['id', 'name', 'snapshot_id', 'image_sha', 'baseline_sha'];
+    protected $visible = ['id', 'name', 'image_sha', 'baseline_sha'];
     public $incrementing = false;
     protected $keyType = 'string';
 
