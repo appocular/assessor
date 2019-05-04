@@ -30,7 +30,12 @@ class SnapshotTest extends \TestCase
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
         $checkpointsJson = array_map(function ($checkpoint) {
-            return ['id' => $checkpoint->id, 'name' => $checkpoint->name, 'image_sha' => $checkpoint->image_sha];
+            return [
+                'id' => $checkpoint->id,
+                'name' => $checkpoint->name,
+                'image_sha' => $checkpoint->image_sha,
+                'baseline_sha' => $checkpoint->baseline_sha,
+            ];
         }, $checkpoints);
 
         $this->get('snapshot/' . $snapshot->id);
