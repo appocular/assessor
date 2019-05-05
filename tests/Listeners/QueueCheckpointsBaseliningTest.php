@@ -20,21 +20,28 @@ class QueueCheckpointsBaseliningTest extends \TestCase
         $snapshot = factory(Snapshot::class)->create();
 
         (new QueueCheckpointsBaselining())->handle(new SnapshotUpdated($snapshot));
-
+        // Shouldn't fire QueueCheckpointBaselining if there's no baseline.
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
         $snapshot->baseline = '';
         $snapshot->syncChanges();
 
         (new QueueCheckpointsBaselining())->handle(new SnapshotUpdated($snapshot));
-
+        // Shouldn't fire QueueCheckpointBaselining when baseline is empty.
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
         $baseline = factory(Snapshot::class)->create();
         $snapshot->setBaseline($baseline);
 
         (new QueueCheckpointsBaselining())->handle(new SnapshotUpdated($snapshot));
+        // Should fire when baseline has been changed to a valid baseline.
+        Queue::assertPushed(QueueCheckpointBaselining::class);
 
+        $baseline = factory(Snapshot::class)->create();
+        $snapshot->setBaseline($baseline);
+
+        (new QueueCheckpointsBaselining())->handle(new SnapshotUpdated($snapshot));
+        // Should fire again when baseline has been changed.
         Queue::assertPushed(QueueCheckpointBaselining::class);
     }
 }
