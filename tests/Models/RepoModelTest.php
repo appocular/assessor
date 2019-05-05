@@ -6,7 +6,6 @@ use Appocular\Assessor\Repo;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use RuntimeException;
 
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class RepoModelTest extends \TestCase
 {
 

@@ -8,7 +8,6 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
 
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class SnapshotTest extends \TestCase
 {
     use DatabaseMigrations;

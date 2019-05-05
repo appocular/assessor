@@ -64,7 +64,7 @@ Hooks::afterEach(function (&$transaction) use (&$stash) {
         $expected = strtr($expected, $replacements);
 
         if ($actual != $expected) {
-            $transaction->fail = "Difference in JSON payload.";
+            $transaction->fail = "Difference in payload.";
         }
     }
 });

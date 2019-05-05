@@ -8,7 +8,6 @@ use Appocular\Assessor\Snapshot;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class SnapshotModelTest extends \TestCase
 {
     use DatabaseMigrations;

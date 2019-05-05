@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class UpdateSnapshotStatusTest extends \TestCase
 {
     public function testSnapshotUpdate()

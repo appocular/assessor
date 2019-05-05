@@ -8,7 +8,6 @@ use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class FindCheckpointBaselineTest extends \TestCase
 {
     use DatabaseMigrations;

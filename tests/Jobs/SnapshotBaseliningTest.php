@@ -6,7 +6,6 @@ use Appocular\Assessor\Jobs\SnapshotBaselining;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class SnapshotBaseliningTest extends \TestCase
 {
     use DatabaseMigrations;
