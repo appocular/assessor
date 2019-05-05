@@ -1,7 +1,7 @@
 {
-    "name": "laravel/lumen",
-    "description": "The Laravel Lumen Framework.",
-    "keywords": ["framework", "laravel", "lumen"],
+    "name": "appocular/assessor",
+    "description": "Appocular Assessor.",
+    "keywords": ["testing"],
     "license": "MIT",
     "type": "project",
     "require": {
