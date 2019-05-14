@@ -1,36 +1,30 @@
 <?php
 
-namespace Listeners;
+namespace Jobs;
 
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Events\CheckpointUpdated;
-use Appocular\Assessor\Events\DiffSubmitted;
-use Appocular\Assessor\Listeners\UpdateCheckpointsDiffs;
+use Appocular\Assessor\Jobs\UpdateDiff;
 use Appocular\Assessor\Snapshot;
-use Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class UpdateCheckpointsDiffsTest extends \TestCase
+class UpdateDiffTest extends \TestCase
 {
     use DatabaseMigrations;
 
     /**
-     * Test that DiffSubmitted events updates checkpoints.
+     * Test that job updates checkpoints.
      */
-    public function testUpdating()
+    public function testUpdatingDiff()
     {
-        Event::fake([
-            CheckpointUpdated::class,
-        ]);
-
         $snapshot = factory(Snapshot::class)->create();
         $checkpoints = [
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
-        $event = new DiffSubmitted($checkpoints[0]->image_sha, $checkpoints[0]->baseline_sha, 'diff', 1);
-        (new UpdateCheckpointsDiffs())->handle($event);
+        $job = new UpdateDiff($checkpoints[0]->image_sha, $checkpoints[0]->baseline_sha, 'diff', 1);
+        $job->handle();
+
         $checkpoints[0]->refresh();
 
         $this->assertEquals('diff', $checkpoints[0]->diff_sha);
@@ -45,10 +39,6 @@ class UpdateCheckpointsDiffsTest extends \TestCase
      */
     public function testNotUpdatingProcessed()
     {
-        Event::fake([
-            CheckpointUpdated::class,
-        ]);
-
         $snapshot = factory(Snapshot::class)->create();
         $checkpoints = [
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
@@ -63,8 +53,9 @@ class UpdateCheckpointsDiffsTest extends \TestCase
             ]));
         }
 
-        $event = new DiffSubmitted($checkpoints[0]->image_sha, $checkpoints[0]->baseline_sha, 'diff', 1);
-        (new UpdateCheckpointsDiffs())->handle($event);
+        $job = new UpdateDiff($checkpoints[0]->image_sha, $checkpoints[0]->baseline_sha, 'diff', 1);
+        $job->handle();
+
         $checkpoints[0]->refresh();
 
         $this->assertEquals('diff', $checkpoints[0]->diff_sha);

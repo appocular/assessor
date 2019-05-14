@@ -2,9 +2,8 @@
 
 namespace Controllers;
 
-use Appocular\Assessor\Events\DiffSubmitted;
-use Appocular\Assessor\Snapshot;
-use Event;
+use Appocular\Assessor\Jobs\UpdateDiff;
+use Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 
@@ -18,9 +17,7 @@ class DiffTest extends \TestCase
      */
     public function testPostingDiff()
     {
-        Event::fake([
-            DiffSubmitted::class,
-        ]);
+        Queue::fake();
 
         $data = [
             'image_kid' => 'image_kid',
@@ -30,11 +27,8 @@ class DiffTest extends \TestCase
         ];
 
         $this->json('POST', '/diff', $data);
-        print_r($this->response->getContent());
         $this->assertResponseStatus(200);
 
-        Event::assertDispatched(DiffSubmitted::class, function ($e) {
-            return true;
-        });
+        Queue::assertPushed(UpdateDiff::class);
     }
 }

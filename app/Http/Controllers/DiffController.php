@@ -2,7 +2,7 @@
 
 namespace Appocular\Assessor\Http\Controllers;
 
-use Appocular\Assessor\Events\DiffSubmitted;
+use Appocular\Assessor\Jobs\UpdateDiff;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
@@ -23,13 +23,12 @@ class DiffController extends BaseController
             'different' => 'required|boolean',
         ]);
 
-        $event = new DiffSubmitted(
+        dispatch(new UpdateDiff(
             $request->input('image_kid'),
             $request->input('baseline_kid'),
             $request->input('diff_kid'),
             $request->input('different')
-        );
-        event($event);
+        ));
 
         // Always return success.
         return new Response();
