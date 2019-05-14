@@ -3,9 +3,9 @@
 namespace Controllers;
 
 use Appocular\Assessor\Jobs\UpdateDiff;
-use Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
+use Queue;
 
 class DiffTest extends \TestCase
 {
