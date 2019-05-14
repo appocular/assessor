@@ -59,6 +59,20 @@ class Checkpoint extends Model
     }
 
     /**
+     * Reset diff for checkpoint.
+     *
+     * Will not reset diff for checkpoints the user has already
+     * accepted/rejected.
+     */
+    public function resetDiff()
+    {
+        if ($this->status == self::STATUS_UNKNOWN) {
+            $this->diff_sha = null;
+            $this->diff_status = self::DIFF_STATUS_UNKNOWN;
+        }
+    }
+
+    /**
      * Update checkpoints with new diff.
      *
      * @param string $image_sha

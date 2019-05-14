@@ -21,6 +21,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'Appocular\Assessor\Events\CheckpointUpdated' => [
             'Appocular\Assessor\Listeners\UpdateSnapshotStatus',
+            'Appocular\Assessor\Listeners\ResetCheckpointDiff',
         ],
         'Appocular\Assessor\Events\DiffSubmitted' => [
             'Appocular\Assessor\Listeners\UpdateCheckpointsDiffs',
