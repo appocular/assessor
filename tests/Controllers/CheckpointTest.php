@@ -29,6 +29,7 @@ class CheckpointTest extends \TestCase
             'name' => $checkpoints[0]->name,
             'image_sha' => $checkpoints[0]->image_sha,
             'baseline_sha' => $checkpoints[0]->baseline_sha,
+            'diff_sha' => $checkpoints[0]->diff_sha,
         ]);
 
         $this->get('checkpoint/' . $checkpoints[1]->id);
@@ -38,6 +39,7 @@ class CheckpointTest extends \TestCase
             'name' => $checkpoints[1]->name,
             'image_sha' => $checkpoints[1]->image_sha,
             'baseline_sha' => $checkpoints[1]->baseline_sha,
+            'diff_sha' => $checkpoints[1]->diff_sha,
         ]);
 
         $this->get('checkpoint/random');

@@ -204,7 +204,8 @@ Get information about a snapshot, including checkpoints.
                     "id": "a1c2e7f2912f4844186ff988b44d30d6a191ecb1",
                     "name": "Frontpage",
                     "image_sha": "3a14fed556280d45d1542e9723d3cc62326c3777",
-                    "baseline_sha": null
+                    "baseline_sha": null,
+                    "diff_sha": null
                 }
             ]
         }
@@ -244,7 +245,8 @@ Get information about a checkpoint.
             "id": "a1c2e7f2912f4844186ff988b44d30d6a191ecb1",
             "name": "Frontpage",
             "image_sha": "3a14fed556280d45d1542e9723d3cc62326c3777",
-            "baseline_sha": null
+            "baseline_sha": null,
+            "diff_sha": null
         }
 
 + Request Checkpoint not found
@@ -292,3 +294,20 @@ Get an image, baseline or diff.
         + image_sha: `bad sha`
 
 + Response 404
+
+## Diff resource [/diff]
+
+Endpoint for reporting differences. For internal use.
+
+### Post diff [POST]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "image_kid": "3a14fed556280d45d1542e9723d3cc62326c3777",
+                "baseline_kid": "893ad2d85ff62b3fe5a64cd04a686abfe9f910f7",
+                "diff_kid": "ce0bae5357fc9db204dee766675bb7c5a0122320",
+                "different": true
+            }

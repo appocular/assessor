@@ -34,6 +34,7 @@ class SnapshotTest extends \TestCase
                 'name' => $checkpoint->name,
                 'image_sha' => $checkpoint->image_sha,
                 'baseline_sha' => $checkpoint->baseline_sha,
+                'diff_sha' => $checkpoint->diff_sha,
             ];
         }, $checkpoints);
 

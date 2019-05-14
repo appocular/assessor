@@ -23,6 +23,8 @@ $factory->define(Appocular\Assessor\Checkpoint::class, function (Faker\Generator
         'name' => $faker->text(20),
         'image_sha' => $faker->sha1,
         'baseline_sha' => $faker->sha1,
+        'diff_sha' => $faker->sha1,
         'status' => 0,
+        'diff_status' => 0,
     ];
 });
