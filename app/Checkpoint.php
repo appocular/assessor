@@ -37,12 +37,12 @@ class Checkpoint extends Model
      * Reset Checkpoint baselines for snapshot.
      *
      * Deletes checkpoints without an image (they're placeholders for deleted
-     * files) and sets baseline for the rest to null.
+     * files), sets baseline for the rest to null and resets statuses.
      *
      * @param string $snapshotId
      *   Id of the snapshot to reset for.
      */
-    public static function resetBaseline(string $snapshotId) : void
+    public static function resetBaselines(string $snapshotId) : void
     {
         $checkpoint = new static();
         $checkpoint->newModelQuery()
@@ -50,7 +50,12 @@ class Checkpoint extends Model
             ->delete();
         $checkpoint->newModelQuery()
             ->where('snapshot_id', $snapshotId)
-            ->update(['baseline_sha' => null]);
+            ->update([
+                'baseline_sha' => null,
+                'diff_sha' => null,
+                'status' => self::STATUS_UNKNOWN,
+                'diff_status' => self::DIFF_STATUS_UNKNOWN,
+            ]);
     }
 
     /**
