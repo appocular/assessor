@@ -29,7 +29,7 @@ class SnapshotObserverTest extends \TestCase
 
         $observer->created($snapshot);
 
-        \Queue::assertPushed(SnapshotBaselining::class);
+        Queue::assertPushed(SnapshotBaselining::class);
     }
 
     /**

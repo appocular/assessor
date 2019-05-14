@@ -45,5 +45,4 @@ class CheckpointTest extends \TestCase
         $this->get('checkpoint/random');
         $this->assertResponseStatus(404);
     }
-
 }

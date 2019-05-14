@@ -2,10 +2,7 @@
 
 namespace Controllers;
 
-use Appocular\Assessor\Events\NewBatch;
-use Appocular\Assessor\Events\SnapshotCreated;
 use Appocular\Assessor\ImageStore;
-use Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
@@ -22,10 +19,6 @@ class BatchTest extends \TestCase
      */
     public function testCreateAndDelete()
     {
-        Event::fake([
-            SnapshotCreated::class,
-        ]);
-
         $id = str_repeat('0', 40);
         $batch_id = $this->startBatch($id, "one\ntwo");
 

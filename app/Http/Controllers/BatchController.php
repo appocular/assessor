@@ -4,7 +4,6 @@ namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Batch;
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Events\NewBatch;
 use Appocular\Assessor\ImageStore;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Database\QueryException;

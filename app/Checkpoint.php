@@ -2,8 +2,6 @@
 
 namespace Appocular\Assessor;
 
-use Appocular\Assessor\Events\CheckpointUpdated;
-use Appocular\Assessor\Events\CheckpointUpdating;
 use Illuminate\Database\Eloquent\Model;
 
 class Checkpoint extends Model

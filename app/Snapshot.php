@@ -3,8 +3,6 @@
 namespace Appocular\Assessor;
 
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Events\SnapshotCreated;
-use Appocular\Assessor\Events\SnapshotUpdated;
 use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
