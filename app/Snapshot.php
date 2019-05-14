@@ -33,11 +33,6 @@ class Snapshot extends Model
 
     protected $visible = ['id', 'checkpoints'];
 
-    protected $dispatchesEvents = [
-        'created' => SnapshotCreated::class,
-        'updated' => SnapshotUpdated::class,
-    ];
-
     /**
      * Get the checkpoints for the snapshot.
      */

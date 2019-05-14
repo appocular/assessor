@@ -10,7 +10,7 @@ class UpdateCheckpointsDiffs
     /**
      * Handle the event.
      *
-     * @param  SnapshotUpdated  $event
+     * @param  DiffSubmitted  $event
      * @return void
      */
     public function handle(DiffSubmitted $event)

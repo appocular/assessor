@@ -58,24 +58,14 @@ class BatchTest extends \TestCase
 
     public function testHistoryHandling()
     {
-        Event::fake([
-            SnapshotCreated::class,
-        ]);
         $id = 'first';
         $batch_id = $this->startBatch($id, "one\ntwo");
-
-        Event::assertDispatched(SnapshotCreated::class, function ($e) use ($id) {
-            return $e->snapshot->id === $id;
-        });
 
         // Assert that the history is saved.
         $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
 
         $this->delete('/batch/' . $batch_id);
         $this->assertResponseStatus(200);
-
-        // The event should still only have been fired once.
-        Event::assertDispatchedTimes(SnapshotCreated::class, 1);
 
         // Assert that the history is still there.
         $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);

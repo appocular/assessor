@@ -2,10 +2,22 @@
 
 namespace Appocular\Assessor\Providers;
 
+use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Observers\SnapshotObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        Snapshot::observe(SnapshotObserver::class);
+    }
+
     /**
      * Register any application services.
      *

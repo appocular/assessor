@@ -22,11 +22,6 @@ class Checkpoint extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $dispatchesEvents = [
-        'updating' => CheckpointUpdating::class,
-        'updated' => CheckpointUpdated::class,
-    ];
-
     /**
      * Get the snapshot for the checkpoint.
      */
