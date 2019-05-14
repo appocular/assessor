@@ -21,7 +21,7 @@ class ImageStoreSpec extends ObjectBehavior
     {
         $response->getStatusCode()->willReturn(200);
         $response->getBody()->willReturn(json_encode(['sha' => 'the sha']));
-        $client->post('image', ['body' => 'image data'])->willReturn($response);
+        $client->post('image', ['body' => 'image data'])->willReturn($response)->shouldBeCalled();
         $this->beConstructedWith($client);
         $this->store('image data')->shouldReturn('the sha');
     }
@@ -30,7 +30,7 @@ class ImageStoreSpec extends ObjectBehavior
     {
         $response->getStatusCode()->willReturn(200);
         $response->getBody()->willReturn(json_encode(['lala' => 'the sha']));
-        $client->post('image', ['body' => 'image data'])->willReturn($response);
+        $client->post('image', ['body' => 'image data'])->willReturn($response)->shouldBeCalled();
 
         $this->beConstructedWith($client);
         $this->shouldThrow(new RuntimeException('Bad response from Keeper.'))->duringStore('image data');
@@ -40,7 +40,7 @@ class ImageStoreSpec extends ObjectBehavior
     {
         $response->getStatusCode()->willReturn(300);
         $response->getBody()->willReturn(json_encode(['sha' => 'the sha']));
-        $client->post('image', ['body' => 'image data'])->willReturn($response);
+        $client->post('image', ['body' => 'image data'])->willReturn($response)->shouldBeCalled();
 
         $this->beConstructedWith($client);
         $this->shouldThrow(new RuntimeException('Bad response from Keeper.'))->duringStore('image data');
@@ -51,7 +51,7 @@ class ImageStoreSpec extends ObjectBehavior
         $response->getStatusCode()->willReturn(200);
         $response->getBody()->willReturn('<png data>');
 
-        $client->get('image/somesha')->willReturn($response);
+        $client->get('image/somesha')->willReturn($response)->shouldBeCalled();
 
         $this->beConstructedWith($client);
         $this->get('somesha')->shouldReturn('<png data>');
@@ -61,7 +61,7 @@ class ImageStoreSpec extends ObjectBehavior
     {
         $response->getStatusCode()->willReturn(404);
 
-        $client->get('image/somesha')->willReturn($response);
+        $client->get('image/somesha')->willReturn($response)->shouldBeCalled();
 
         $this->beConstructedWith($client);
         $this->get('somesha')->shouldReturn(null);
