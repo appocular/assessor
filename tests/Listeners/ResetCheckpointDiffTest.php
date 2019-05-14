@@ -3,7 +3,7 @@
 namespace Listeners;
 
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Events\CheckpointUpdated;
+use Appocular\Assessor\Events\CheckpointUpdating;
 use Appocular\Assessor\Listeners\ResetCheckpointDiff;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
@@ -33,7 +33,7 @@ class ResetCheckpointDiffTest extends \TestCase
         $checkpoint->syncChanges();
 
         $listener = new ResetCheckpointDiff();
-        $listener->handle(new CheckpointUpdated($checkpoint));
+        $listener->handle(new CheckpointUpdating($checkpoint));
         $this->assertEquals(null, $checkpoint->diff_sha);
         $this->assertEquals(Checkpoint::DIFF_STATUS_UNKNOWN, $checkpoint->diff_status);
     }
@@ -61,7 +61,7 @@ class ResetCheckpointDiffTest extends \TestCase
         $checkpoint->syncChanges();
 
         $listener = new ResetCheckpointDiff();
-        $listener->handle(new CheckpointUpdated($checkpoint));
+        $listener->handle(new CheckpointUpdating($checkpoint));
         $this->assertEquals('a diff', $checkpoint->diff_sha);
         $this->assertEquals(Checkpoint::DIFF_STATUS_DIFFERENT, $checkpoint->diff_status);
     }

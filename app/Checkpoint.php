@@ -3,6 +3,7 @@
 namespace Appocular\Assessor;
 
 use Appocular\Assessor\Events\CheckpointUpdated;
+use Appocular\Assessor\Events\CheckpointUpdating;
 use Illuminate\Database\Eloquent\Model;
 
 class Checkpoint extends Model
@@ -22,6 +23,7 @@ class Checkpoint extends Model
     protected $keyType = 'string';
 
     protected $dispatchesEvents = [
+        'updating' => CheckpointUpdating::class,
         'updated' => CheckpointUpdated::class,
     ];
 
