@@ -80,6 +80,7 @@ class Checkpoint extends Model
             ->whereNested(function ($query) use ($diff_sha) {
                 $query->where('diff_sha')->where('diff_sha', '<>', $diff_sha, 'or');
             })
+            ->where('status', self::STATUS_UNKNOWN)
             ->get();
 
         foreach ($checkpoints as $checkpoint) {

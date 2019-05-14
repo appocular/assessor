@@ -41,34 +41,50 @@ class UpdateCheckpointsDiffsTest extends \TestCase
     }
 
     /**
-     * Test that approved checkpoints doesn't get updated.
+     * Test that approved/rejected checkpoints doesn't get updated.
      */
-    // waiting for user status
-    // public function testNotUpdatingProcessed()
-    // {
-    //     Event::fake([
-    //         CheckpointUpdated::class,
-    //     ]);
+    public function testNotUpdatingProcessed()
+    {
+        Event::fake([
+            CheckpointUpdated::class,
+        ]);
 
-    //     $snapshot = factory(Snapshot::class)->create();
-    //     $checkpoints = [
-    //         $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
-    //     ];
-    //     $checkpoints[] = $snapshot->checkpoints()->save(factory(Checkpoint::class)->make([
-    //         'image_sha' => $checkpoints[0]->image_sha,
-    //         'baseline_sha' => $checkpoints[0]->baseline_sha,
-    //         'diff_sha' => 'original diff',
-    //         'status' => Checkpoint::STATUS_APPROVED,
-    //     ]));
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoints = [
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+        ];
 
-    //     $event = new DiffSubmitted($checkpoints[0]->image_sha, $checkpoints[0]->baseline_sha, 'diff', 1);
-    //     (new UpdateCheckpointsDiffs())->handle($event);
-    //     $checkpoints[0]->refresh();
+        foreach ([Checkpoint::STATUS_APPROVED, Checkpoint::STATUS_REJECTED, Checkpoint::STATUS_IGNORED] as $status) {
+            $checkpoints[] = $snapshot->checkpoints()->save(factory(Checkpoint::class)->make([
+                'image_sha' => $checkpoints[0]->image_sha,
+                'baseline_sha' => $checkpoints[0]->baseline_sha,
+                'diff_sha' => 'original diff',
+                'status' => $status,
+            ]));
+        }
 
-    //     $this->assertEquals('diff', $checkpoints[0]->diff_sha);
-    //     $this->assertEquals(Checkpoint::DIFF_STATUS_DIFFERENT, $checkpoints[0]->diff_status);
+        $event = new DiffSubmitted($checkpoints[0]->image_sha, $checkpoints[0]->baseline_sha, 'diff', 1);
+        (new UpdateCheckpointsDiffs())->handle($event);
+        $checkpoints[0]->refresh();
 
-    //     // Check that the other checkpoint wasn't changed.
-    //     $this->assertEquals($checkpoints[1]->getAttributes(), $checkpoints[1]->fresh()->getAttributes());
-    // }
+        $this->assertEquals('diff', $checkpoints[0]->diff_sha);
+        $this->assertEquals(Checkpoint::DIFF_STATUS_DIFFERENT, $checkpoints[0]->diff_status);
+
+        // Check that the approved/rejected/ignored checkpoints wasn't changed.
+        $this->assertEquals(
+            $checkpoints[1]->getAttributes(),
+            $checkpoints[1]->fresh()->getAttributes(),
+            'Approved checkpoint was updated.'
+        );
+        $this->assertEquals(
+            $checkpoints[2]->getAttributes(),
+            $checkpoints[2]->fresh()->getAttributes(),
+            'Rejected checkpoint was updated.'
+        );
+        $this->assertEquals(
+            $checkpoints[3]->getAttributes(),
+            $checkpoints[3]->fresh()->getAttributes(),
+            'Ignored checkpoint was updated.'
+        );
+    }
 }
