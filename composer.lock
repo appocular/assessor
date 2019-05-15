@@ -4,15 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc6779defe2ff9720fe5f9d5988f6c5d",
+    "content-hash": "e458c95c2aaebcc58c4c6f335657ec9b",
     "packages": [
         {
             "name": "appocular/clients-laravel",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/appocular/clients-laravel.git",
+                "reference": "4fff39d17f01a2cb1c68aa435d26d47b4674f753"
+            },
             "dist": {
-                "type": "path",
-                "url": "../clients-laravel",
-                "reference": "302bdf11bd7cacc97c311a4877777c1b4a3331e7"
+                "type": "zip",
+                "url": "https://api.github.com/repos/appocular/clients-laravel/zipball/4fff39d17f01a2cb1c68aa435d26d47b4674f753",
+                "reference": "4fff39d17f01a2cb1c68aa435d26d47b4674f753",
+                "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.3",
@@ -38,7 +44,12 @@
                     "email": "xen@xen.dk"
                 }
             ],
-            "description": "Laravel service providers for Assessor, Keeper and differ."
+            "description": "Laravel service providers for Assessor, Keeper and differ.",
+            "support": {
+                "source": "https://github.com/appocular/clients-laravel/tree/master",
+                "issues": "https://github.com/appocular/clients-laravel/issues"
+            },
+            "time": "2019-05-15T20:04:47+00:00"
         },
         {
             "name": "doctrine/inflector",

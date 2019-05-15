@@ -46,8 +46,8 @@
     },
     "repositories": [
         {
-            "type": "path",
-            "url": "../clients-laravel"
+            "type": "vcs",
+            "url": "https://github.com/appocular/clients-laravel.git"
         }
     ]
 }
