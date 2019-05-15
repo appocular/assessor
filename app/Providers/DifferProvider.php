@@ -16,7 +16,7 @@ class DifferProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(ImageStore::class, function ($app) {
+        $this->app->singleton(Differ::class, function ($app) {
             $uri = $app['config']->get('app.differ_base_uri');
             if (empty($uri)) {
                 throw new RuntimeException('No base uri for Differ.');
