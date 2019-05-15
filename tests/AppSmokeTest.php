@@ -3,7 +3,7 @@
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:ignore PSR1.Classes.ClassDeclaration.MissingNamespace
 class AppSmokeTest extends TestCase
 {
     /**

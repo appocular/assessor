@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:ignore PSR1.Classes.ClassDeclaration.MissingNamespace
 class CreateJobsTable extends Migration
 {
     /**
