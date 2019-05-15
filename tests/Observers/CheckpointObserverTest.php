@@ -3,6 +3,7 @@
 namespace Observers;
 
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Differ;
 use Appocular\Assessor\Observers\CheckpointObserver;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class CheckpointObserverTest extends \TestCase
      */
     public function testUpdatingResetsDiffWhenImageOrBaselineChanges()
     {
-        $observer = new CheckpointObserver();
+        $observer = new CheckpointObserver($this->prophesize(Differ::class)->reveal());
 
         $snapshot = factory(Snapshot::class)->create();
 
@@ -45,7 +46,7 @@ class CheckpointObserverTest extends \TestCase
      */
     public function testUpdatingDoesNotResetDiffForUserProcessedCheckpoints($status)
     {
-        $observer = new CheckpointObserver();
+        $observer = new CheckpointObserver($this->prophesize(Differ::class)->reveal());
 
         $snapshot = factory(Snapshot::class)->create();
 
@@ -80,7 +81,7 @@ class CheckpointObserverTest extends \TestCase
      */
     public function testUpdatedTriggersSnapshotStatusUpdateOnCheckpointStatusChange()
     {
-        $observer = new CheckpointObserver();
+        $observer = new CheckpointObserver($this->prophesize(Differ::class)->reveal());
 
         $snapshot = factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
 
@@ -119,5 +120,30 @@ class CheckpointObserverTest extends \TestCase
         $observer->updated($checkpoint);
 
         $this->assertEquals(Snapshot::STATUS_FAILED, $snapshot->refresh()->status);
+    }
+
+    /**
+     * Test that diff requests are submitted when image or baseline changed.
+     */
+    public function testUpdatedTriggersDiffWhenImageOrBaselineChanges()
+    {
+        $differ = $this->prophesize(Differ::class);
+        $differ->submit('image', 'baseline')->shouldBeCalled();
+        $observer = new CheckpointObserver($differ->reveal());
+
+        $snapshot = factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
+
+        $checkpoint = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'image_sha' => 'image',
+            'baseline_sha' => null,
+            'diff_sha' => null,
+            'status' => Checkpoint::STATUS_UNKNOWN,
+            'diff_status' => Checkpoint::DIFF_STATUS_UNKNOWN,
+        ]);
+
+        $checkpoint->baseline_sha = 'baseline';
+        $this->assertFalse($checkpoint->hasDiff());
+        $observer->updated($checkpoint);
     }
 }

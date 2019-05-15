@@ -102,6 +102,14 @@ class Checkpoint extends Model
     }
 
     /**
+     * Does checkpoint have a diff.
+     */
+    public function hasDiff()
+    {
+        return $this->diff_status !== self::DIFF_STATUS_UNKNOWN;
+    }
+
+    /**
      * Should this propagate to later snapshots?
      *
      * Unless it's an approved removal, it should.
