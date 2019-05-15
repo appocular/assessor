@@ -3,7 +3,7 @@
 namespace Appocular\Assessor\Observers;
 
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Differ;
+use Appocular\Clients\Contracts\Differ;
 use Illuminate\Support\Facades\Log;
 
 class CheckpointObserver

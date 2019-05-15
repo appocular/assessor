@@ -15,9 +15,6 @@ before_install:
 
 
 script:
-  - ./vendor/bin/phpspec run
-  - make coverage-clover
-  - bash <(curl -s https://codecov.io/bash) -c -F spec
   - ./vendor/bin/phpunit --coverage-php=coverage/unit.cov
   - make coverage-clover
   - bash <(curl -s https://codecov.io/bash) -c -F unit

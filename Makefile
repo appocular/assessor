@@ -1,10 +1,6 @@
 
 .PHONEY: test
-test: test-spec test-unit test-api
-
-.PHONEY: test-spec
-test-spec:
-	phpdbg -qrr ./vendor/bin/phpspec run
+test: test-unit test-api
 
 .PHONEY: test-unit
 test-unit:
