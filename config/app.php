@@ -39,5 +39,4 @@ return [
     */
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
-    'image_store_base_uri' => env('KEEPER_BASE_URI', ''),
 ];

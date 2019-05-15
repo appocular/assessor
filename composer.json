@@ -9,7 +9,8 @@
         "laravel/lumen-framework": "5.6.*",
         "vlucas/phpdotenv": "~2.2",
         "webpatser/laravel-uuid": "^3.0",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "appocular/clients-laravel": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -42,5 +43,11 @@
     "prefer-stable": true,
     "config": {
         "optimize-autoloader": true
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/appocular/clients-laravel.git"
+        }
+    ]
 }

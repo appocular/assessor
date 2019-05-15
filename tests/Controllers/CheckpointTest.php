@@ -3,7 +3,6 @@
 namespace Controllers;
 
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\ImageStore;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;

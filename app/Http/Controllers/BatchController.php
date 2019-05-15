@@ -4,8 +4,8 @@ namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Batch;
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\ImageStore;
 use Appocular\Assessor\Snapshot;
+use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,13 +17,13 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class BatchController extends BaseController
 {
     /**
-     * @var ImageStore
+     * @var Keeper
      */
-    protected $imageStore;
+    protected $keeper;
 
-    public function __construct(ImageStore $imageStore)
+    public function __construct(Keeper $keeper)
     {
-        $this->imageStore = $imageStore;
+        $this->keeper = $keeper;
     }
 
     public function create(Request $request)
@@ -80,7 +80,7 @@ class BatchController extends BaseController
                 $batch->id
             ));
         }
-        $sha = $this->imageStore->store($imageData);
+        $sha = $this->keeper->store($imageData);
 
         $checkpoint = $snapshot->checkpoints()->firstOrNew([
             'id' => hash('sha1', $snapshot->id . $request->input('name')),

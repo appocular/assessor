@@ -3,7 +3,7 @@
 namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\ImageStore;
+use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -11,13 +11,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class CheckpointController extends BaseController
 {
     /**
-     * @var ImageStore
+     * @var Keeper
      */
     protected $imageStore;
 
-    public function __construct(ImageStore $imageStore)
+    public function __construct(Keeper $keeper)
     {
-        $this->imageStore = $imageStore;
+        $this->keeper = $keeper;
     }
 
     public function get($id)
@@ -29,7 +29,7 @@ class CheckpointController extends BaseController
     public function image($id)
     {
         $checkpoint = Checkpoint::findOrFail($id);
-        $image = $this->imageStore->get($checkpoint->image_sha);
+        $image = $this->keeper->get($checkpoint->image_sha);
         if (!$image) {
             throw new NotFoundHttpException();
         }

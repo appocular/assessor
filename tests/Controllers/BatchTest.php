@@ -2,7 +2,7 @@
 
 namespace Controllers;
 
-use Appocular\Assessor\ImageStore;
+use Appocular\Clients\Contracts\Keeper;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
@@ -95,9 +95,9 @@ class BatchTest extends \TestCase
 
     public function testAddingCheckpoint()
     {
-        $imageStore = $this->prophesize(ImageStore::class);
-        $imageStore->store(Argument::any())->willReturn('XXX');
-        $this->app->instance(ImageStore::class, $imageStore->reveal());
+        $keeper = $this->prophesize(Keeper::class);
+        $keeper->store(Argument::any())->willReturn('XXX');
+        $this->app->instance(Keeper::class, $keeper->reveal());
         $id = str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
@@ -105,6 +105,7 @@ class BatchTest extends \TestCase
         $image = file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png');
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => base64_encode($image)]);
+        print($this->response->getContent());
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
@@ -113,7 +114,7 @@ class BatchTest extends \TestCase
         $this->assertResponseStatus(200);
 
         // Submitting an image with the same name should replace the data of image.
-        $imageStore->store(Argument::any())->willReturn('YYY');
+        $keeper->store(Argument::any())->willReturn('YYY');
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('checkpoints', [

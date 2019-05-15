@@ -2,7 +2,7 @@
 
 namespace Controllers;
 
-use Appocular\Assessor\ImageStore;
+use Appocular\Clients\Contracts\Keeper;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
@@ -14,11 +14,11 @@ class ImageTest extends \TestCase
 
     public function testGettingImage()
     {
-        $imageStore = $this->prophesize(ImageStore::class);
-        $imageStore->get('existing')->willReturn('<png data>');
-        $imageStore->get('not-existing')->willReturn(null);
+        $keeper = $this->prophesize(Keeper::class);
+        $keeper->get('existing')->willReturn('<png data>');
+        $keeper->get('not-existing')->willReturn(null);
 
-        $this->app->instance(ImageStore::class, $imageStore->reveal());
+        $this->app->instance(Keeper::class, $keeper->reveal());
 
         $this->get('image/existing');
         $this->assertResponseStatus(200);
