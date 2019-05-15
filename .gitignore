@@ -3,7 +3,6 @@
 Homestead.json
 Homestead.yaml
 .env
-clover.xml
 # Ignore generated docs.
 docs/Assessor API.html
 # Code coverage.
