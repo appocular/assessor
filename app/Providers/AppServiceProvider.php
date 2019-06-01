@@ -2,8 +2,10 @@
 
 namespace Appocular\Assessor\Providers;
 
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Observers\CheckpointObserver;
 use Appocular\Assessor\Observers\SnapshotObserver;
+use Appocular\Assessor\Snapshot;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
