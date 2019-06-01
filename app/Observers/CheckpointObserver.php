@@ -3,20 +3,12 @@
 namespace Appocular\Assessor\Observers;
 
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Jobs\SubmitDiff;
 use Appocular\Clients\Contracts\Differ;
 use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class CheckpointObserver
 {
-    /**
-     * Create new observer.
-     */
-    public function __construct(Differ $differ)
-    {
-        $this->differ = $differ;
-    }
-
     /**
      * Handle to the Snapshot "updating" event.
      */
@@ -38,22 +30,7 @@ class CheckpointObserver
             !empty($checkpoint->image_sha) &&
             !empty($checkpoint->baseline_sha) &&
             $checkpoint->isDirty('image_sha', 'baseline_sha')) {
-            Log::info(sprintf(
-                'Submitting diff for image %s, baseline %s',
-                $checkpoint->image_sha,
-                $checkpoint->baseline_sha
-            ));
-            try {
-                $this->differ->submit($checkpoint->image_sha, $checkpoint->baseline_sha);
-            } catch (Throwable $e) {
-                Log::error(sprintf(
-                    'Error submitting diff image %s, baseline %s: %s',
-                    $checkpoint->image_sha,
-                    $checkpoint->baseline_sha,
-                    $e->getMessage()
-                ));
-            }
-            Log::debug('Submitted');
+            dispatch(new SubmitDiff($checkpoint->image_sha, $checkpoint->baseline_sha));
         }
 
         // Update snapshot status when checkpoint status changes.

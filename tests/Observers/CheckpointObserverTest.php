@@ -3,11 +3,12 @@
 namespace Observers;
 
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Jobs\SubmitDiff;
 use Appocular\Assessor\Observers\CheckpointObserver;
 use Appocular\Assessor\Snapshot;
-use Appocular\Clients\Contracts\Differ;
 use Illuminate\Support\Facades\DB;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Queue;
 
 class CheckpointObserverTest extends \TestCase
 {
@@ -18,7 +19,7 @@ class CheckpointObserverTest extends \TestCase
      */
     public function testUpdatingResetsDiffWhenImageOrBaselineChanges()
     {
-        $observer = new CheckpointObserver($this->prophesize(Differ::class)->reveal());
+        $observer = new CheckpointObserver();
 
         $snapshot = factory(Snapshot::class)->create();
 
@@ -46,7 +47,7 @@ class CheckpointObserverTest extends \TestCase
      */
     public function testUpdatingDoesNotResetDiffForUserProcessedCheckpoints($status)
     {
-        $observer = new CheckpointObserver($this->prophesize(Differ::class)->reveal());
+        $observer = new CheckpointObserver();
 
         $snapshot = factory(Snapshot::class)->create();
 
@@ -81,7 +82,7 @@ class CheckpointObserverTest extends \TestCase
      */
     public function testUpdatedTriggersSnapshotStatusUpdateOnCheckpointStatusChange()
     {
-        $observer = new CheckpointObserver($this->prophesize(Differ::class)->reveal());
+        $observer = new CheckpointObserver();
 
         $snapshot = factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
 
@@ -127,9 +128,9 @@ class CheckpointObserverTest extends \TestCase
      */
     public function testUpdatedTriggersDiffWhenImageOrBaselineChanges()
     {
-        $differ = $this->prophesize(Differ::class);
-        $differ->submit('image', 'baseline')->shouldBeCalled();
-        $observer = new CheckpointObserver($differ->reveal());
+        Queue::fake();
+
+        $observer = new CheckpointObserver();
 
         $snapshot = factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
 
@@ -144,6 +145,8 @@ class CheckpointObserverTest extends \TestCase
 
         $checkpoint->baseline_sha = 'baseline';
         $this->assertFalse($checkpoint->hasDiff());
+        Queue::assertNotPushed(SubmitDiff::class);
         $observer->updated($checkpoint);
+        Queue::assertPushed(SubmitDiff::class);
     }
 }
