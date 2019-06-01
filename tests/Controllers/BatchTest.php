@@ -2,12 +2,14 @@
 
 namespace Controllers;
 
+use Appocular\Clients\Contracts\Differ;
 use Appocular\Clients\Contracts\Keeper;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
+use Queue;
 
-class BatchTest extends \TestCase
+class BatchTest extends ControllerTestBase
 {
     use DatabaseMigrations;
     use WithoutMiddleware;
@@ -20,12 +22,11 @@ class BatchTest extends \TestCase
     public function testCreateAndDelete()
     {
         $id = str_repeat('0', 40);
-        $batch_id = $this->startBatch($id, "one\ntwo");
+        $batch_id = $this->startBatch($id);
 
         // Assert that we can see the batch and snapshot in the database.
         $this->seeInDatabase('batches', ['id' => $batch_id, 'snapshot_id' => $id]);
         $this->seeInDatabase('snapshots', ['id' => $id]);
-        $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
 
         $this->delete('/batch/' . $batch_id);
         $this->assertResponseStatus(200);
@@ -51,6 +52,8 @@ class BatchTest extends \TestCase
 
     public function testHistoryHandling()
     {
+        // Suppress jobs so the history isn't processed before we have chance to inpect it.
+        Queue::fake();
         $id = 'first';
         $batch_id = $this->startBatch($id, "one\ntwo");
 
@@ -95,9 +98,9 @@ class BatchTest extends \TestCase
 
     public function testAddingCheckpoint()
     {
-        $keeper = $this->prophesize(Keeper::class);
-        $keeper->store(Argument::any())->willReturn('XXX');
-        $this->app->instance(Keeper::class, $keeper->reveal());
+        //$keeper = $this->prophesize(Keeper::class);
+        $this->keeperProphecy->store(Argument::any())->willReturn('XXX');
+        //$this->app->instance(Keeper::class, $keeper->reveal());
         $id = str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
@@ -105,7 +108,6 @@ class BatchTest extends \TestCase
         $image = file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png');
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => base64_encode($image)]);
-        print($this->response->getContent());
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
@@ -114,7 +116,7 @@ class BatchTest extends \TestCase
         $this->assertResponseStatus(200);
 
         // Submitting an image with the same name should replace the data of image.
-        $keeper->store(Argument::any())->willReturn('YYY');
+        $this->keeperProphecy->store(Argument::any())->willReturn('YYY');
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => base64_encode($image)]);
         $this->assertResponseStatus(200);
         $this->seeInDatabase('checkpoints', [

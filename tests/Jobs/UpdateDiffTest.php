@@ -5,11 +5,21 @@ namespace Jobs;
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\UpdateDiff;
 use Appocular\Assessor\Snapshot;
+use Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class UpdateDiffTest extends \TestCase
 {
     use DatabaseMigrations;
+
+    /**
+     * Suppress model events so we can test in isolation.
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        Event::fake();
+    }
 
     /**
      * Test that job updates checkpoints.

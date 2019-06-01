@@ -8,7 +8,7 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
 
-class CheckpointTest extends \TestCase
+class CheckpointTest extends ControllerTestBase
 {
     use DatabaseMigrations;
     use WithoutMiddleware;

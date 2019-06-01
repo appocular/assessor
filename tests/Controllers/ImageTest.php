@@ -7,7 +7,7 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
 
-class ImageTest extends \TestCase
+class ImageTest extends ControllerTestBase
 {
     use DatabaseMigrations;
     use WithoutMiddleware;

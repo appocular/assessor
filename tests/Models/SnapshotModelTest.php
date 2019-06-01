@@ -286,6 +286,7 @@ class SnapshotModelTest extends \TestCase
 
     public function testStatusUpdate()
     {
+        Queue::fake();
         $checkpoints = [];
         $snapshot = factory(Snapshot::class)->create();
         $checkpoints[] = factory(Checkpoint::class)->create([

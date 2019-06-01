@@ -7,12 +7,22 @@ use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
 use Appocular\Assessor\Jobs\SnapshotBaselining;
 use Appocular\Assessor\Observers\SnapshotObserver;
 use Appocular\Assessor\Snapshot;
+use Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Queue;
 
 class SnapshotObserverTest extends \TestCase
 {
     use DatabaseMigrations;
+
+    /**
+     * Suppress model events so we can test in isolation.
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        Event::fake();
+    }
 
     /**
      * Test that creating snapshot with history triggers baseline finding job.

@@ -7,7 +7,7 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Queue;
 
-class DiffTest extends \TestCase
+class DiffTest extends ControllerTestBase
 {
     use DatabaseMigrations;
     use WithoutMiddleware;

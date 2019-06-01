@@ -5,12 +5,22 @@ namespace Jobs;
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Appocular\Assessor\Snapshot;
+use Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class FindCheckpointBaselineTest extends \TestCase
 {
     use DatabaseMigrations;
+
+    /**
+     * Suppress model events so we can test in isolation.
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        Event::fake();
+    }
 
     public function testDeletedCheckpointHandling()
     {
