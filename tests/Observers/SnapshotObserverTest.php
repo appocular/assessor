@@ -7,9 +7,9 @@ use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
 use Appocular\Assessor\Jobs\SnapshotBaselining;
 use Appocular\Assessor\Observers\SnapshotObserver;
 use Appocular\Assessor\Snapshot;
-use Event;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Queue;
 
 class SnapshotObserverTest extends \TestCase
 {

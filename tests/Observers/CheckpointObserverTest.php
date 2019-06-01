@@ -7,8 +7,8 @@ use Appocular\Assessor\Jobs\SubmitDiff;
 use Appocular\Assessor\Observers\CheckpointObserver;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Queue;
 
 class CheckpointObserverTest extends \TestCase
 {

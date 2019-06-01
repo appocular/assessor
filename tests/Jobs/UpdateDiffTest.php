@@ -5,7 +5,7 @@ namespace Jobs;
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\UpdateDiff;
 use Appocular\Assessor\Snapshot;
-use Event;
+use Illuminate\Support\Facades\Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class UpdateDiffTest extends \TestCase

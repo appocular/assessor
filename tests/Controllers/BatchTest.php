@@ -4,10 +4,10 @@ namespace Controllers;
 
 use Appocular\Clients\Contracts\Differ;
 use Appocular\Clients\Contracts\Keeper;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
-use Queue;
 
 class BatchTest extends ControllerTestBase
 {

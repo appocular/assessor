@@ -3,7 +3,7 @@
 namespace Appocular\Assessor\Jobs;
 
 use Appocular\Clients\Contracts\Differ;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class SubmitDiff extends Job
