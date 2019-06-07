@@ -36,6 +36,8 @@ class SnapshotTest extends ControllerTestBase
                 'image_sha' => $checkpoint->image_sha,
                 'baseline_sha' => $checkpoint->baseline_sha,
                 'diff_sha' => $checkpoint->diff_sha,
+                'status' => 'unknown',
+                'diff_status' => 'unknown',
             ];
         }, $checkpoints);
 

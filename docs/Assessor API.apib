@@ -304,7 +304,7 @@ Endpoint for reporting differences. For internal use.
 ### Properties
 + `id`: `d8f4590320e1343a915b6394170650a8f35d6926` (string) - Id of snapshot.
 + `checkpoints` (array[Checkpoint]) - Checkpoints of snapshot.
-+ `status`: unknown, passed, failed (enum)
++ `status`: unknown, passed, failed (enum) - Snapshot status.
 
 ## Checkpoint
 
@@ -314,3 +314,5 @@ Endpoint for reporting differences. For internal use.
 + `image_sha`: `3a14fed556280d45d1542e9723d3cc62326c3777` (string) - Id of image.
 + `baseline_sha` (string, nullable) - Id of baseline.
 + `diff_sha` (string, nullable) - Id of diff.
++ `status`: unknown, approved, rejected, ignored (enum) - Checkpoint status.
++ `diff_status`: unknown, identical, different (enum) - Checkpoint diff status.

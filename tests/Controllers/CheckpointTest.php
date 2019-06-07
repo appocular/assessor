@@ -29,6 +29,8 @@ class CheckpointTest extends ControllerTestBase
             'image_sha' => $checkpoints[0]->image_sha,
             'baseline_sha' => $checkpoints[0]->baseline_sha,
             'diff_sha' => $checkpoints[0]->diff_sha,
+            'status' => 'unknown',
+            'diff_status' => 'unknown',
         ]);
 
         $this->get('checkpoint/' . $checkpoints[1]->id);
@@ -39,6 +41,8 @@ class CheckpointTest extends ControllerTestBase
             'image_sha' => $checkpoints[1]->image_sha,
             'baseline_sha' => $checkpoints[1]->baseline_sha,
             'diff_sha' => $checkpoints[1]->diff_sha,
+            'status' => 'unknown',
+            'diff_status' => 'unknown',
         ]);
 
         $this->get('checkpoint/random');
