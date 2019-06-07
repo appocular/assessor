@@ -197,18 +197,7 @@ Get information about a snapshot, including checkpoints.
 
 + Response 200 (application/json)
 
-        {
-            "id": "d8f4590320e1343a915b6394170650a8f35d6926",
-            "checkpoints": [
-                {
-                    "id": "a1c2e7f2912f4844186ff988b44d30d6a191ecb1",
-                    "name": "Frontpage",
-                    "image_sha": "3a14fed556280d45d1542e9723d3cc62326c3777",
-                    "baseline_sha": null,
-                    "diff_sha": null
-                }
-            ]
-        }
+    + Attributes (Snapshot)
 
 + Request Snapshot not found (application/json)
 
@@ -241,13 +230,7 @@ Get information about a checkpoint.
 
 + Response 200 (application/json)
 
-        {
-            "id": "a1c2e7f2912f4844186ff988b44d30d6a191ecb1",
-            "name": "Frontpage",
-            "image_sha": "3a14fed556280d45d1542e9723d3cc62326c3777",
-            "baseline_sha": null,
-            "diff_sha": null
-        }
+    + Attributes (Checkpoint)
 
 + Request Checkpoint not found
 
@@ -313,3 +296,20 @@ Endpoint for reporting differences. For internal use.
             }
 
 + Response 200
+
+# Data Structures
+
+## Snapshot
+
+### Properties
++ `id`: `d8f4590320e1343a915b6394170650a8f35d6926` (string) - Id of snapshot.
++ `checkpoints` (array[Checkpoint]) - Checkpoints of snapshot.
+
+## Checkpoint
+
+### Properties
++ `id`: `a1c2e7f2912f4844186ff988b44d30d6a191ecb1` (string) - Id of checkpoint.
++ `name`: `Frontpage` (string) - Name of checkpoint.
++ `image_sha`: `3a14fed556280d45d1542e9723d3cc62326c3777` (string) - Id of image.
++ `baseline_sha` (string, nullable) - Id of baseline.
++ `diff_sha` (string, nullable) - Id of diff.
