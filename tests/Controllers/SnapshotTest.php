@@ -22,6 +22,7 @@ class SnapshotTest extends ControllerTestBase
         $this->seeJsonEquals([
             'id' => $snapshot->id,
             'checkpoints' => [],
+            'status' => 'unknown',
         ]);
 
         $checkpoints = [
@@ -43,6 +44,7 @@ class SnapshotTest extends ControllerTestBase
         $this->seeJsonEquals([
             'id' => $snapshot->id,
             'checkpoints' => $checkpointsJson,
+            'status' => 'unknown',
         ]);
     }
 }
