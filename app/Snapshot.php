@@ -12,17 +12,17 @@ class Snapshot extends Model
     /**
      * Snapshot status is pending.
      */
-    const STATUS_UNKNOWN = 0;
+    const STATUS_UNKNOWN = 'unknown';
 
     /**
      * Snapshot passed. All checkpoints either passed or is approved.
      */
-    const STATUS_PASSED = 1;
+    const STATUS_PASSED = 'passed';
 
     /**
      * Snapshot failed. Unapproved failed checkpoints exists.
      */
-    const STATUS_FAILED = 2;
+    const STATUS_FAILED = 'failed';
 
     protected $fillable = ['id'];
 

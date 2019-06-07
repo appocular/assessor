@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Checkpoint extends Model
 {
-    const STATUS_UNKNOWN = 0;
-    const STATUS_APPROVED = 1;
-    const STATUS_REJECTED = 2;
-    const STATUS_IGNORED = 3;
+    const STATUS_UNKNOWN = 'unknown';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_REJECTED = 'rejected';
+    const STATUS_IGNORED = 'ignored';
 
-    const DIFF_STATUS_UNKNOWN = 0;
-    const DIFF_STATUS_IDENTICAL = 1;
-    const DIFF_STATUS_DIFFERENT = 2;
+    const DIFF_STATUS_UNKNOWN = 'unknown';
+    const DIFF_STATUS_IDENTICAL = 'identical';
+    const DIFF_STATUS_DIFFERENT = 'different';
 
     protected $fillable = ['id', 'name', 'snapshot_id', 'image_sha', 'baseline_sha', 'diff_sha'];
     protected $visible = ['id', 'name', 'image_sha', 'baseline_sha', 'diff_sha'];

@@ -14,6 +14,7 @@
 $factory->define(Appocular\Assessor\Snapshot::class, function (Faker\Generator $faker) {
     return [
         'id' => $faker->sha1,
+        'status' => 'unknown',
     ];
 });
 
@@ -24,7 +25,7 @@ $factory->define(Appocular\Assessor\Checkpoint::class, function (Faker\Generator
         'image_sha' => $faker->sha1,
         'baseline_sha' => $faker->sha1,
         'diff_sha' => $faker->sha1,
-        'status' => 0,
-        'diff_status' => 0,
+        'status' => 'unknown',
+        'diff_status' => 'unknown',
     ];
 });

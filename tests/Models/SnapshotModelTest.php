@@ -292,12 +292,12 @@ class SnapshotModelTest extends \TestCase
         $checkpoints[] = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'one',
-            'status' => 0,
+            'status' => 'unknown',
         ]);
         $checkpoints[] = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'one',
-            'status' => 0,
+            'status' => 'unknown',
         ]);
 
         $snapshot->updateStatus();
