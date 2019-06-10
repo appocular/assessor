@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/appocular/clients-laravel.git",
-                "reference": "f9d048f420a34b5c0833db124bea2398aade68a2"
+                "reference": "75f261e4d1046b15487cae49be5dd1ee1c9b4216"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/appocular/clients-laravel/zipball/f9d048f420a34b5c0833db124bea2398aade68a2",
-                "reference": "f9d048f420a34b5c0833db124bea2398aade68a2",
+                "url": "https://api.github.com/repos/appocular/clients-laravel/zipball/75f261e4d1046b15487cae49be5dd1ee1c9b4216",
+                "reference": "75f261e4d1046b15487cae49be5dd1ee1c9b4216",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                 "source": "https://github.com/appocular/clients-laravel/tree/master",
                 "issues": "https://github.com/appocular/clients-laravel/issues"
             },
-            "time": "2019-05-16T21:26:36+00:00"
+            "time": "2019-06-10T21:16:24+00:00"
         },
         {
             "name": "doctrine/inflector",
