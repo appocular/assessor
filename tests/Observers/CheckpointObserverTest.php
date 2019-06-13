@@ -15,7 +15,8 @@ class CheckpointObserverTest extends \TestCase
     use DatabaseMigrations;
 
     /**
-     * Test that diffs gets reset when image or baseline is updated.
+     * Test that diffs gets reset when image or baseline is updated. Should
+     * also reset status.
      */
     public function testUpdatingResetsDiffWhenImageOrBaselineChanges()
     {
@@ -28,7 +29,7 @@ class CheckpointObserverTest extends \TestCase
             'image_sha' => 'image',
             'baseline_sha' => 'baseline',
             'diff_sha' => 'a diff',
-            'status' => Checkpoint::STATUS_UNKNOWN,
+            'status' => Checkpoint::STATUS_REJECTED,
             'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
         $checkpoint->save();
@@ -38,43 +39,7 @@ class CheckpointObserverTest extends \TestCase
 
         $this->assertEquals(null, $checkpoint->diff_sha);
         $this->assertEquals(Checkpoint::DIFF_STATUS_UNKNOWN, $checkpoint->diff_status);
-    }
-
-    /**
-     * Test that checkpoints processed by the user isn't reset.
-     *
-     * @dataProvider processedStatuses
-     */
-    public function testUpdatingDoesNotResetDiffForUserProcessedCheckpoints($status)
-    {
-        $observer = new CheckpointObserver();
-
-        $snapshot = factory(Snapshot::class)->create();
-
-        $checkpoint = factory(Checkpoint::class)->create([
-            'snapshot_id' => $snapshot->id,
-            'image_sha' => 'image',
-            'baseline_sha' => 'baseline',
-            'diff_sha' => 'a diff',
-            'status' => $status,
-            'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
-        ]);
-        $checkpoint->save();
-        $checkpoint->image_sha = 'new image';
-
-        $observer->updating($checkpoint);
-
-        $this->assertEquals('a diff', $checkpoint->diff_sha);
-        $this->assertEquals(Checkpoint::DIFF_STATUS_DIFFERENT, $checkpoint->diff_status);
-    }
-
-    public function processedStatuses()
-    {
-        return [
-            [Checkpoint::STATUS_APPROVED],
-            [Checkpoint::STATUS_REJECTED],
-            [Checkpoint::STATUS_IGNORED],
-        ];
+        $this->assertEquals(Checkpoint::STATUS_UNKNOWN, $checkpoint->status);
     }
 
     /**
@@ -148,5 +113,60 @@ class CheckpointObserverTest extends \TestCase
         Queue::assertNotPushed(SubmitDiff::class);
         $observer->updated($checkpoint);
         Queue::assertPushed(SubmitDiff::class);
+    }
+
+    /**
+     * Test that updating diff results in an state change.
+     *
+     * @dataProvider diffStatusChecks
+     */
+    public function testNoDiffAutomaticallyAproves(
+        $existingStatus,
+        $existingDiffStatus,
+        $change,
+        $expectedStatus,
+        $expectedDiffStatus
+    ) {
+        $observer = new CheckpointObserver();
+
+        $snapshot = factory(Snapshot::class)->create();
+
+        $checkpoint = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'image_sha' => 'image',
+            'baseline_sha' => 'baseline',
+            'diff_sha' => 'a diff',
+            'status' => $existingStatus,
+            'diff_status' => $existingDiffStatus,
+        ]);
+        $checkpoint->save();
+        $checkpoint->diff_status = $change;
+
+        $observer->updating($checkpoint);
+
+        $this->assertEquals($expectedStatus, $checkpoint->status);
+        $this->assertEquals($expectedDiffStatus, $checkpoint->diff_status);
+    }
+
+    public function diffStatusChecks()
+    {
+        return[
+            // Approve identical diffs.
+            [
+                Checkpoint::STATUS_UNKNOWN,
+                Checkpoint::DIFF_STATUS_UNKNOWN,
+                Checkpoint::DIFF_STATUS_IDENTICAL,
+                Checkpoint::STATUS_APPROVED,
+                Checkpoint::DIFF_STATUS_IDENTICAL,
+            ],
+            // Reject different diffs.
+            [
+                Checkpoint::STATUS_UNKNOWN,
+                Checkpoint::DIFF_STATUS_UNKNOWN,
+                Checkpoint::DIFF_STATUS_DIFFERENT,
+                Checkpoint::STATUS_REJECTED,
+                Checkpoint::DIFF_STATUS_DIFFERENT,
+            ],
+        ];
     }
 }

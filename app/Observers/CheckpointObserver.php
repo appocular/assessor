@@ -18,6 +18,11 @@ class CheckpointObserver
         if ($checkpoint->isDirty('image_sha') || $checkpoint->isDirty('baseline_sha')) {
             $checkpoint->resetDiff();
         }
+
+        // Update status when diff_status is set.
+        if ($checkpoint->isDirty('diff_status')) {
+            $checkpoint->updateStatus();
+        }
     }
 
     /**
