@@ -18,6 +18,7 @@ class CreateSnapshotsTable extends Migration
             $table->string('id')->primary();
             $table->string('baseline')->nullable();
             $table->string('status')->default('unknown');
+            $table->string('run_status')->default('running');
             $table->timestamps();
         });
     }

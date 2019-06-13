@@ -15,7 +15,7 @@ class Snapshot extends Model
     const STATUS_UNKNOWN = 'unknown';
 
     /**
-     * Snapshot passed. All checkpoints either passed or is approved.
+     * Snapshot passed. All checkpoints either passed or is approved or ignored.
      */
     const STATUS_PASSED = 'passed';
 
@@ -23,6 +23,16 @@ class Snapshot extends Model
      * Snapshot failed. Unapproved failed checkpoints exists.
      */
     const STATUS_FAILED = 'failed';
+
+    /**
+     * Snapshot is still running (unknown checkpoints exists).
+     */
+    const RUN_STATUS_RUNNING = 'running';
+
+    /**
+     * Snapshot is done (all checkpoints have status).
+     */
+    const RUN_STATUS_DONE = 'done';
 
     protected $fillable = ['id'];
 
@@ -132,13 +142,15 @@ class Snapshot extends Model
     public function updateStatus()
     {
         $this->refresh();
+        $unknownCount = $this->checkpoints->where('status', Checkpoint::STATUS_UNKNOWN)->count();
         if ($this->checkpoints->where('status', Checkpoint::STATUS_REJECTED)->count() > 0) {
             $this->status = self::STATUS_FAILED;
-        } elseif ($this->checkpoints->where('status', Checkpoint::STATUS_UNKNOWN)->count() > 0) {
+        } elseif ($unknownCount > 0) {
             $this->status = self::STATUS_UNKNOWN;
         } else {
             $this->status = self::STATUS_PASSED;
         }
+        $this->run_status = $unknownCount > 0 ? self::RUN_STATUS_RUNNING : self::RUN_STATUS_DONE;
 
         $this->save();
     }
