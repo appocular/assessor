@@ -39,7 +39,7 @@ class Snapshot extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $visible = ['id', 'status', 'checkpoints'];
+    protected $visible = ['id', 'status', 'run_status', 'checkpoints'];
 
     /**
      * Get the checkpoints for the snapshot.
