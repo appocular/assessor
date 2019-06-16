@@ -93,6 +93,14 @@ class Snapshot extends Model
     }
 
     /**
+     * Is snapshot done running?
+     */
+    public function isDone()
+    {
+        return $this->run_status == self::RUN_STATUS_DONE;
+    }
+
+    /**
      * Trigger finding baselines of this snapshots checkpoints.
      *
      * Queues FindCheckpointBaseline jobs to find the baseline of the
@@ -153,5 +161,13 @@ class Snapshot extends Model
         $this->run_status = $unknownCount > 0 ? self::RUN_STATUS_RUNNING : self::RUN_STATUS_DONE;
 
         $this->save();
+    }
+
+    /**
+     * Get descendant snapshots.
+     */
+    public function getDescendants()
+    {
+        return self::where(['baseline' => $this->id])->get();
     }
 }

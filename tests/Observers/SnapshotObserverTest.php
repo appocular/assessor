@@ -92,6 +92,8 @@ class SnapshotObserverTest extends \TestCase
 
         $snapshot->refresh();
         $this->assertEquals(null, $snapshot->checkpoints()->first()->baseline_sha);
+        // There should only be two checkpoints, as the new image (the one
+        // with null sha) should have been deleted.
         $this->assertCount(2, $snapshot->checkpoints()->get());
     }
 
@@ -100,8 +102,6 @@ class SnapshotObserverTest extends \TestCase
      */
     public function testUpdateTriggersCheckpointBaseliningWhenSnopshotBaselineChanges()
     {
-        $observer = new SnapshotObserver();
-
         Queue::fake();
         $snapshot = factory(Snapshot::class)->create();
 
@@ -133,4 +133,30 @@ class SnapshotObserverTest extends \TestCase
         Queue::assertPushed(QueueCheckpointBaselining::class);
     }
 
+    /**
+     * Test that descendant snapshots gets re-baselined when the snapshot
+     * status changes to done.
+     */
+    public function testStatusChangeTriggersDescendantBaselining()
+    {
+        Queue::fake();
+        $snapshot = factory(Snapshot::class)->create([
+            'status' => Snapshot::STATUS_UNKNOWN,
+            'run_status' => Snapshot::RUN_STATUS_RUNNING,
+        ]);
+        $descendant = factory(Snapshot::class)->create(['baseline' => $snapshot->id]);
+
+        $observer = new SnapshotObserver();
+        $snapshot->status = Snapshot::STATUS_PASSED;
+        $observer->updated($snapshot);
+
+        // Shouldn't fire any baselining job while not done.
+        Queue::assertNotPushed(QueueCheckpointBaselining::class);
+
+        $snapshot->run_status = Snapshot::RUN_STATUS_DONE;
+        $observer->updated($snapshot);
+
+        // Should trigger descendant re-baselining when done.
+        Queue::assertPushed(QueueCheckpointBaselining::class);
+    }
 }
