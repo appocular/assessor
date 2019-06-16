@@ -28,8 +28,8 @@ class FindCheckpointBaseline extends Job
         // Ensure that checkpoint is up to date.
         $checkpoint->refresh();
 
-        // Bail out if checkpoint disappeared or the baseline is already set.
-        if (!$checkpoint->exists || !is_null($checkpoint->baseline_sha)) {
+        // Bail out if checkpoint disappeared.
+        if (!$checkpoint->exists) {
             return;
         }
 

@@ -227,4 +227,38 @@ class FindCheckpointBaselineTest extends \TestCase
 
         $this->assertEquals('', $checkpoint->baseline_sha);
     }
+
+    /**
+     * Test that an existing baseline gets replaced.
+     */
+    public function testRebaselining()
+    {
+        $baseline = factory(Snapshot::class)->create();
+        factory(Checkpoint::class)->create([
+            'snapshot_id' => $baseline->id,
+            'name' => 'an existing image',
+            'image_sha' => 'approved in baseline',
+            'status' => Checkpoint::STATUS_APPROVED,
+        ]);
+
+        factory(Checkpoint::class)->create([
+            'snapshot_id' => $baseline->id,
+            'name' => 'an unrelated image',
+            'image_sha' => 'not related',
+            'status' => Checkpoint::STATUS_APPROVED,
+        ]);
+
+        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'an existing image',
+            'baseline_sha' => 'old baseline',
+        ]);
+
+        $job = new FindCheckpointBaseline($checkpoint);
+        $job->handle();
+        $checkpoint->refresh();
+
+        $this->assertEquals('approved in baseline', $checkpoint->baseline_sha);
+    }
 }
