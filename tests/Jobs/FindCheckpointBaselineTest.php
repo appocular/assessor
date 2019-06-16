@@ -22,6 +22,9 @@ class FindCheckpointBaselineTest extends \TestCase
         Event::fake();
     }
 
+    /**
+     * Test that the job handles deleted checkpoints without throwing up.
+     */
     public function testDeletedCheckpointHandling()
     {
         $checkpoint = factory(Checkpoint::class)->create([
@@ -39,6 +42,9 @@ class FindCheckpointBaselineTest extends \TestCase
         $this->missingFromDatabase('checkpoints', ['name' => 'new image']);
     }
 
+    /**
+     * Check that the baseline_sha remains empty when no parent exists.
+     */
     public function testNewCheckpoint()
     {
         $baseline = factory(Snapshot::class)->create();
@@ -63,6 +69,9 @@ class FindCheckpointBaselineTest extends \TestCase
         $this->assertEquals('', $checkpoint->baseline_sha);
     }
 
+    /**
+     * Test that an approved ancestor gets used as baseline.
+     */
     public function testAcceptedBaseline()
     {
         $baseline = factory(Snapshot::class)->create();
@@ -94,6 +103,9 @@ class FindCheckpointBaselineTest extends \TestCase
         $this->assertEquals('approved in baseline', $checkpoint->baseline_sha);
     }
 
+    /**
+     * Test that rejected and ignored ancestors are not used.
+     */
     public function testRejectedOrIgnoredBaseline()
     {
         // If there's no approved baseline, baseline_sha should be ''.
@@ -157,6 +169,10 @@ class FindCheckpointBaselineTest extends \TestCase
         $this->assertEquals('approved in baseline parent', $checkpoint->baseline_sha);
     }
 
+    /**
+     * Test that if there's no approved ancestor, it's handled as a new
+     * checkpoint.
+     */
     public function testDeletedBaseline()
     {
         // If there's no approved baseline, baseline_sha should be ''.
@@ -211,5 +227,4 @@ class FindCheckpointBaselineTest extends \TestCase
 
         $this->assertEquals('', $checkpoint->baseline_sha);
     }
-
 }
