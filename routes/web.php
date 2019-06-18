@@ -24,6 +24,5 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 $router->group([], function () use ($router) {
     $router->get('snapshot/{id}', 'SnapshotController@index');
     $router->get('checkpoint/{checkpoint_id}', 'CheckpointController@get');
-    $router->get('image/{sha}', 'ImageController@get');
     $router->post('diff', 'DiffController@submit');
 });
