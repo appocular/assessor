@@ -8,8 +8,6 @@ use Webpatser\Uuid\Uuid;
 class Batch extends Model
 {
 
-    protected $fillable = ['sha'];
-
     /**
      * We don't use an incrementing key.
      */
