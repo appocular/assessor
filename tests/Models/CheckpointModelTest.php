@@ -17,19 +17,19 @@ class CheckpointModelTest extends \TestCase
         $name,
         $existingStatus,
         $existingDiffStatus,
-        $existingDiffSha,
+        $existingDiffUrl,
         $difference,
         $expectedStatus,
         $expectedDiffStatus,
-        $expectedDiffSha
+        $expectedDiffUrl
     ) {
         $snapshot = factory(Snapshot::class)->create();
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => $name,
-            'image_sha' => 'image',
-            'baseline_sha' => 'baseline',
-            'diff_sha' => $existingDiffSha,
+            'image_url' => 'image',
+            'baseline_url' => 'baseline',
+            'diff_url' => $existingDiffUrl,
             'status' => $existingStatus,
             'diff_status' => $existingDiffStatus,
         ]);
@@ -40,7 +40,7 @@ class CheckpointModelTest extends \TestCase
             'name' => $name,
             'status' => $expectedStatus,
             'diff_status' => $expectedDiffStatus,
-            'diff_sha' => $expectedDiffSha,
+            'diff_url' => $expectedDiffUrl,
         ]);
     }
 

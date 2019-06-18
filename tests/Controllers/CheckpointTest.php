@@ -26,9 +26,9 @@ class CheckpointTest extends ControllerTestBase
         $this->seeJsonEquals([
             'id' => $checkpoints[0]->id,
             'name' => $checkpoints[0]->name,
-            'image_sha' => $checkpoints[0]->image_sha,
-            'baseline_sha' => $checkpoints[0]->baseline_sha,
-            'diff_sha' => $checkpoints[0]->diff_sha,
+            'image_url' => $checkpoints[0]->image_url,
+            'baseline_url' => $checkpoints[0]->baseline_url,
+            'diff_url' => $checkpoints[0]->diff_url,
             'status' => 'unknown',
             'diff_status' => 'unknown',
         ]);
@@ -38,9 +38,9 @@ class CheckpointTest extends ControllerTestBase
         $this->seeJsonEquals([
             'id' => $checkpoints[1]->id,
             'name' => $checkpoints[1]->name,
-            'image_sha' => $checkpoints[1]->image_sha,
-            'baseline_sha' => $checkpoints[1]->baseline_sha,
-            'diff_sha' => $checkpoints[1]->diff_sha,
+            'image_url' => $checkpoints[1]->image_url,
+            'baseline_url' => $checkpoints[1]->baseline_url,
+            'diff_url' => $checkpoints[1]->diff_url,
             'status' => 'unknown',
             'diff_status' => 'unknown',
         ]);

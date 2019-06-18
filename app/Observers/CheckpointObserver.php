@@ -15,7 +15,7 @@ class CheckpointObserver
     public function updating(Checkpoint $checkpoint)
     {
         // Reset diff if image or baseline changes.
-        if ($checkpoint->isDirty('image_sha') || $checkpoint->isDirty('baseline_sha')) {
+        if ($checkpoint->isDirty('image_url') || $checkpoint->isDirty('baseline_url')) {
             $checkpoint->resetDiff();
         }
 
@@ -32,10 +32,10 @@ class CheckpointObserver
     {
         // Submit diff when there isn't one and image or baseline changes.
         if (!$checkpoint->hasDiff() &&
-            !empty($checkpoint->image_sha) &&
-            !empty($checkpoint->baseline_sha) &&
-            $checkpoint->isDirty('image_sha', 'baseline_sha')) {
-            dispatch(new SubmitDiff($checkpoint->image_sha, $checkpoint->baseline_sha));
+            !empty($checkpoint->image_url) &&
+            !empty($checkpoint->baseline_url) &&
+            $checkpoint->isDirty('image_url', 'baseline_url')) {
+            dispatch(new SubmitDiff($checkpoint->image_url, $checkpoint->baseline_url));
         }
 
         // Update snapshot status when checkpoint status changes.

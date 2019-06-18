@@ -69,18 +69,18 @@ class SnapshotObserverTest extends \TestCase
 
         $baseline = factory(Snapshot::class)->create();
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create(['snapshot_id' => $snapshot->id, 'baseline_sha' => 'deadbeef']);
-        factory(Checkpoint::class)->create(['snapshot_id' => $snapshot->id, 'baseline_sha' => 'deadbeef']);
+        factory(Checkpoint::class)->create(['snapshot_id' => $snapshot->id, 'baseline_url' => 'deadbeef']);
+        factory(Checkpoint::class)->create(['snapshot_id' => $snapshot->id, 'baseline_url' => 'deadbeef']);
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
-            'image_sha' => null,
-            'baseline_sha' => 'deadbeef',
+            'image_url' => null,
+            'baseline_url' => 'deadbeef',
         ]);
 
         $observer->updated($snapshot);
 
         // Shouldn't change when snapshot baseline didn't change.
-        $this->assertEquals('deadbeef', $snapshot->checkpoints()->first()->baseline_sha);
+        $this->assertEquals('deadbeef', $snapshot->checkpoints()->first()->baseline_url);
         // And imageless checkpoints should be left alone.
         $this->assertCount(3, $snapshot->checkpoints()->get());
 
@@ -91,9 +91,9 @@ class SnapshotObserverTest extends \TestCase
         $observer->updated($snapshot);
 
         $snapshot->refresh();
-        $this->assertEquals(null, $snapshot->checkpoints()->first()->baseline_sha);
+        $this->assertEquals(null, $snapshot->checkpoints()->first()->baseline_url);
         // There should only be two checkpoints, as the new image (the one
-        // with null sha) should have been deleted.
+        // with null URL) should have been deleted.
         $this->assertCount(2, $snapshot->checkpoints()->get());
     }
 

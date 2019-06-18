@@ -80,13 +80,13 @@ class BatchController extends BaseController
                 $batch->id
             ));
         }
-        $sha = $this->keeper->store($imageData);
+        $image_url = $this->keeper->store($imageData);
 
         $checkpoint = $snapshot->checkpoints()->firstOrNew([
             'id' => hash('sha1', $snapshot->id . $request->input('name')),
             'name' => $request->input('name'),
         ]);
-        $checkpoint->image_sha = $sha;
+        $checkpoint->image_url = $image_url;
         $checkpoint->save();
         Log::info(sprintf('Added checkpoint "%s" in batch %s', $request->input('name'), $batch->id));
     }

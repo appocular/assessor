@@ -30,7 +30,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'new image',
-            'baseline_sha' => null,
+            'baseline_url' => null,
         ]);
 
         $snapshot->triggerCheckpointBaselining();
@@ -64,7 +64,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
-            'baseline_sha' => null,
+            'baseline_url' => null,
         ]);
 
         $snapshot->triggerCheckpointBaselining();
@@ -97,7 +97,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a deleted image',
-            'image_sha' => '',
+            'image_url' => '',
             'status' => Checkpoint::STATUS_APPROVED,
         ]);
 
@@ -105,7 +105,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
-            'baseline_sha' => null,
+            'baseline_url' => null,
         ]);
 
         $snapshot->triggerCheckpointBaselining();
@@ -142,7 +142,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
-            'image_sha' => 'a rejected image',
+            'image_url' => 'a rejected image',
             'status' => Checkpoint::STATUS_REJECTED,
         ]);
 
@@ -150,7 +150,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
-            'baseline_sha' => null,
+            'baseline_url' => null,
         ]);
 
         $snapshot->triggerCheckpointBaselining();
@@ -171,7 +171,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
-            'image_sha' => 'lala',
+            'image_url' => 'lala',
             'status' => Checkpoint::STATUS_APPROVED,
         ]);
 
@@ -179,7 +179,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
-            'image_sha' => 'lala',
+            'image_url' => 'lala',
             'status' => Checkpoint::STATUS_REJECTED,
         ]);
 
@@ -193,7 +193,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
-            'image_sha' => '',
+            'image_url' => '',
             'status' => Checkpoint::STATUS_REJECTED,
         ]);
 
@@ -201,7 +201,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
-            'baseline_sha' => null,
+            'baseline_url' => null,
         ]);
 
         $snapshot->triggerCheckpointBaselining();
@@ -236,7 +236,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
-            'image_sha' => '',
+            'image_url' => '',
             'status' => Checkpoint::STATUS_IGNORED,
         ]);
 
@@ -244,7 +244,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
-            'baseline_sha' => null,
+            'baseline_url' => null,
         ]);
 
         $snapshot->triggerCheckpointBaselining();
@@ -265,7 +265,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
-            'image_sha' => 'lala',
+            'image_url' => 'lala',
             'status' => Checkpoint::STATUS_APPROVED,
         ]);
 
@@ -279,7 +279,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
-            'image_sha' => '',
+            'image_url' => '',
             'status' => Checkpoint::STATUS_IGNORED,
         ]);
 
@@ -287,7 +287,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
-            'baseline_sha' => null,
+            'baseline_url' => null,
         ]);
 
         $snapshot->triggerCheckpointBaselining();

@@ -32,12 +32,12 @@ class UpdateDiffTest extends \TestCase
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
-        $job = new UpdateDiff($checkpoints[0]->image_sha, $checkpoints[0]->baseline_sha, 'diff', 1);
+        $job = new UpdateDiff($checkpoints[0]->image_url, $checkpoints[0]->baseline_url, 'diff', 1);
         $job->handle();
 
         $checkpoints[0]->refresh();
 
-        $this->assertEquals('diff', $checkpoints[0]->diff_sha);
+        $this->assertEquals('diff', $checkpoints[0]->diff_url);
         $this->assertEquals(Checkpoint::DIFF_STATUS_DIFFERENT, $checkpoints[0]->diff_status);
 
         // Check that the other checkpoint wasn't changed.
@@ -56,19 +56,19 @@ class UpdateDiffTest extends \TestCase
 
         foreach ([Checkpoint::STATUS_APPROVED, Checkpoint::STATUS_REJECTED, Checkpoint::STATUS_IGNORED] as $status) {
             $checkpoints[] = $snapshot->checkpoints()->save(factory(Checkpoint::class)->make([
-                'image_sha' => $checkpoints[0]->image_sha,
-                'baseline_sha' => $checkpoints[0]->baseline_sha,
-                'diff_sha' => 'original diff',
+                'image_url' => $checkpoints[0]->image_url,
+                'baseline_url' => $checkpoints[0]->baseline_url,
+                'diff_url' => 'original diff',
                 'status' => $status,
             ]));
         }
 
-        $job = new UpdateDiff($checkpoints[0]->image_sha, $checkpoints[0]->baseline_sha, 'diff', 1);
+        $job = new UpdateDiff($checkpoints[0]->image_url, $checkpoints[0]->baseline_url, 'diff', 1);
         $job->handle();
 
         $checkpoints[0]->refresh();
 
-        $this->assertEquals('diff', $checkpoints[0]->diff_sha);
+        $this->assertEquals('diff', $checkpoints[0]->diff_url);
         $this->assertEquals(Checkpoint::DIFF_STATUS_DIFFERENT, $checkpoints[0]->diff_status);
 
         // Check that the approved/rejected/ignored checkpoints wasn't changed.

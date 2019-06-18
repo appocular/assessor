@@ -29,7 +29,7 @@ class CheckpointController extends BaseController
     public function image($id)
     {
         $checkpoint = Checkpoint::findOrFail($id);
-        $image = $this->keeper->get($checkpoint->image_sha);
+        $image = $this->keeper->get($checkpoint->image_url);
         if (!$image) {
             throw new NotFoundHttpException();
         }

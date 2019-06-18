@@ -34,9 +34,9 @@ class SnapshotTest extends ControllerTestBase
             return [
                 'id' => $checkpoint->id,
                 'name' => $checkpoint->name,
-                'image_sha' => $checkpoint->image_sha,
-                'baseline_sha' => $checkpoint->baseline_sha,
-                'diff_sha' => $checkpoint->diff_sha,
+                'image_url' => $checkpoint->image_url,
+                'baseline_url' => $checkpoint->baseline_url,
+                'diff_url' => $checkpoint->diff_url,
                 'status' => 'unknown',
                 'diff_status' => 'unknown',
             ];

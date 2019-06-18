@@ -18,9 +18,9 @@ class CreateCheckpointsTable extends Migration
             $table->string('id', 40)->primary();
             $table->string('name', 255);
             $table->string('snapshot_id');
-            $table->string('image_sha')->nullable();
-            $table->string('baseline_sha')->nullable();
-            $table->string('diff_sha')->nullable();
+            $table->string('image_url')->nullable();
+            $table->string('baseline_url')->nullable();
+            $table->string('diff_url')->nullable();
             $table->string('status')->default('unknown');
             $table->string('diff_status')->default('unknown');
             $table->timestamps();

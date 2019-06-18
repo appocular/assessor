@@ -130,7 +130,7 @@ class Snapshot extends Model
                         'id' => hash('sha1', $this->id . $baseCheckpoint->name),
                         'snapshot_id' => $this->id,
                         'name' => $baseCheckpoint->name,
-                        'image_sha' => '',
+                        'image_url' => '',
                     ]);
                     $checkpoint->save();
                     dispatch(new FindCheckpointBaseline($checkpoint));

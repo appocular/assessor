@@ -38,7 +38,7 @@ class FindCheckpointBaseline extends Job
             $checkpoint->id,
             $checkpoint->snapshot->id
         ));
-        $baseline_sha = '';
+        $baseline_url = '';
         $baseline = $checkpoint->snapshot->getBaseline();
         // Bail out if baseline has disappeared in the meantime.
         while ($baseline) {
@@ -50,16 +50,16 @@ class FindCheckpointBaseline extends Job
 
             // If the baseline is approved use it's image as our baseline
             // image. This even works for deleted images, as they have an
-            // empty string for sha, and new images gets an empty baseline
-            // sha.
+            // empty string for URL, and new images gets an empty baseline
+            // URL.
             if ($baseCheckpoint->status == Checkpoint::STATUS_APPROVED) {
-                $baseline_sha = $baseCheckpoint->image_sha;
+                $baseline_url = $baseCheckpoint->image_url;
                 break;
             }
             $baseline = $baseline->getBaseline();
         }
 
-        $checkpoint->baseline_sha = $baseline_sha;
+        $checkpoint->baseline_url = $baseline_url;
         $checkpoint->save();
     }
 }

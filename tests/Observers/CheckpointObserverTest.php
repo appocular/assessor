@@ -26,18 +26,18 @@ class CheckpointObserverTest extends \TestCase
 
         $checkpoint = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
-            'image_sha' => 'image',
-            'baseline_sha' => 'baseline',
-            'diff_sha' => 'a diff',
+            'image_url' => 'image',
+            'baseline_url' => 'baseline',
+            'diff_url' => 'a diff',
             'status' => Checkpoint::STATUS_REJECTED,
             'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
         $checkpoint->save();
-        $checkpoint->image_sha = 'new image';
+        $checkpoint->image_url = 'new image';
 
         $observer->updating($checkpoint);
 
-        $this->assertEquals(null, $checkpoint->diff_sha);
+        $this->assertEquals(null, $checkpoint->diff_url);
         $this->assertEquals(Checkpoint::DIFF_STATUS_UNKNOWN, $checkpoint->diff_status);
         $this->assertEquals(Checkpoint::STATUS_UNKNOWN, $checkpoint->status);
     }
@@ -53,9 +53,9 @@ class CheckpointObserverTest extends \TestCase
 
         $checkpoint = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
-            'image_sha' => 'image',
-            'baseline_sha' => 'baseline',
-            'diff_sha' => 'a diff',
+            'image_url' => 'image',
+            'baseline_url' => 'baseline',
+            'diff_url' => 'a diff',
             'status' => Checkpoint::STATUS_UNKNOWN,
             'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
@@ -101,14 +101,14 @@ class CheckpointObserverTest extends \TestCase
 
         $checkpoint = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
-            'image_sha' => 'image',
-            'baseline_sha' => null,
-            'diff_sha' => null,
+            'image_url' => 'image',
+            'baseline_url' => null,
+            'diff_url' => null,
             'status' => Checkpoint::STATUS_UNKNOWN,
             'diff_status' => Checkpoint::DIFF_STATUS_UNKNOWN,
         ]);
 
-        $checkpoint->baseline_sha = 'baseline';
+        $checkpoint->baseline_url = 'baseline';
         $this->assertFalse($checkpoint->hasDiff());
         Queue::assertNotPushed(SubmitDiff::class);
         $observer->updated($checkpoint);
@@ -133,9 +133,9 @@ class CheckpointObserverTest extends \TestCase
 
         $checkpoint = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
-            'image_sha' => 'image',
-            'baseline_sha' => 'baseline',
-            'diff_sha' => 'a diff',
+            'image_url' => 'image',
+            'baseline_url' => 'baseline',
+            'diff_url' => 'a diff',
             'status' => $existingStatus,
             'diff_status' => $existingDiffStatus,
         ]);

@@ -111,7 +111,7 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_sha' => 'XXX',
+            'image_url' => 'XXX',
         ]);
         $this->assertResponseStatus(200);
 
@@ -122,13 +122,13 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_sha' => 'YYY',
+            'image_url' => 'YYY',
         ]);
         // Check that the old data is missing.
         $this->missingFromDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image2',
-            'image_sha' => 'XXX',
+            'image_url' => 'XXX',
         ]);
 
         // Posting a second image should work.
@@ -137,14 +137,14 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image2',
-            'image_sha' => 'YYY',
+            'image_url' => 'YYY',
         ]);
 
         // The first image should still be there.
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_sha' => 'YYY',
+            'image_url' => 'YYY',
         ]);
 
         $this->delete('/batch/' . $batch_id);
@@ -159,14 +159,14 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id2,
             'name' => 'test image',
-            'image_sha' => 'YYY',
+            'image_url' => 'YYY',
         ]);
 
         // The image from the other run should still be there.
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_sha' => 'YYY',
+            'image_url' => 'YYY',
         ]);
     }
 

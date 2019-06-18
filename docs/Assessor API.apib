@@ -246,13 +246,13 @@ Get information about a checkpoint.
 
 ## Image resource [/image]
 
-### Get image [GET /image/{image_sha}]
+### Get image [GET /image/{image_url}]
 
 Get an image, baseline or diff.
 
 + Parameters
 
-    + image_sha: `3a14fed556280d45d1542e9723d3cc62326c3777` - Sha of image.
+    + image_url: `3a14fed556280d45d1542e9723d3cc62326c3777` - Sha of image.
 
 + Request (application/json)
 
@@ -274,7 +274,7 @@ Get an image, baseline or diff.
 
     + Parameters
 
-        + image_sha: `bad sha`
+        + image_url: `bad sha`
 
 + Response 404
 
@@ -312,8 +312,8 @@ Endpoint for reporting differences. For internal use.
 ### Properties
 + `id`: `a1c2e7f2912f4844186ff988b44d30d6a191ecb1` (string) - Id of checkpoint.
 + `name`: `Frontpage` (string) - Name of checkpoint.
-+ `image_sha`: `f71a33d3dabdd1669d66d58776b8674b496ae08f` (string) - Id of image.
-+ `baseline_sha` (string, nullable) - Id of baseline.
-+ `diff_sha` (string, nullable) - Id of diff.
++ `image_url`: `http://localhost:8081/image/f71a33d3dabdd1669d66d58776b8674b496ae08f` (string) - Url of image.
++ `baseline_url` (string, nullable) - Url of baseline.
++ `diff_url` (string, nullable) - Url of diff.
 + `status`: unknown, approved, rejected, ignored (enum) - Checkpoint status.
 + `diff_status`: unknown, identical, different (enum) - Checkpoint diff status.
