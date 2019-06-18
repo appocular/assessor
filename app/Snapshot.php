@@ -127,7 +127,7 @@ class Snapshot extends Model
             foreach ($baselineCheckpoints as $baseCheckpoint) {
                 try {
                     $checkpoint = new Checkpoint([
-                        'id' => hash('sha1', $this->id . $baseCheckpoint->name),
+                        'id' => hash('sha256', $this->id . $baseCheckpoint->name),
                         'snapshot_id' => $this->id,
                         'name' => $baseCheckpoint->name,
                         'image_url' => '',

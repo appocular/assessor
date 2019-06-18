@@ -83,7 +83,7 @@ class BatchController extends BaseController
         $image_url = $this->keeper->store($imageData);
 
         $checkpoint = $snapshot->checkpoints()->firstOrNew([
-            'id' => hash('sha1', $snapshot->id . $request->input('name')),
+            'id' => hash('sha256', $snapshot->id . $request->input('name')),
             'name' => $request->input('name'),
         ]);
         $checkpoint->image_url = $image_url;

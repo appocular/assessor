@@ -15,7 +15,7 @@ class CreateCheckpointsTable extends Migration
     public function up()
     {
         Schema::create('checkpoints', function (Blueprint $table) {
-            $table->string('id', 40)->primary();
+            $table->string('id')->primary();
             $table->string('name', 255);
             $table->string('snapshot_id');
             $table->string('image_url')->nullable();
