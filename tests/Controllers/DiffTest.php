@@ -20,9 +20,9 @@ class DiffTest extends ControllerTestBase
         Queue::fake();
 
         $data = [
-            'image_kid' => 'image_kid',
-            'baseline_kid' => 'baseline_kid',
-            'diff_kid' => 'first diff',
+            'image_url' => 'image_url',
+            'baseline_url' => 'baseline_url',
+            'diff_url' => 'first diff',
             'different' => true,
         ];
 

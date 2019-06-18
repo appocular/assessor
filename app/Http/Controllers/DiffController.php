@@ -17,16 +17,16 @@ class DiffController extends BaseController
     public function submit(Request $request)
     {
         $this->validate($request, [
-            'image_kid' => 'required|string|min:1|max:255',
-            'baseline_kid' => 'required|string|min:1|max:255',
-            'diff_kid' => 'required|string|min:1|max:255',
+            'image_url' => 'required|string|min:1|max:255',
+            'baseline_url' => 'required|string|min:1|max:255',
+            'diff_url' => 'required|string|min:1|max:255',
             'different' => 'required|boolean',
         ]);
 
         dispatch(new UpdateDiff(
-            $request->input('image_kid'),
-            $request->input('baseline_kid'),
-            $request->input('diff_kid'),
+            $request->input('image_url'),
+            $request->input('baseline_url'),
+            $request->input('diff_url'),
             $request->input('different')
         ));
 

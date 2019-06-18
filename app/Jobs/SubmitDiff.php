@@ -8,13 +8,13 @@ use Throwable;
 
 class SubmitDiff extends Job
 {
-    public $image_kid;
-    public $baseline_kid;
+    public $image_url;
+    public $baseline_url;
 
-    public function __construct(string $image_kid, string $baseline_kid)
+    public function __construct(string $image_url, string $baseline_url)
     {
-        $this->image_kid = $image_kid;
-        $this->baseline_kid = $baseline_kid;
+        $this->image_url = $image_url;
+        $this->baseline_url = $baseline_url;
     }
 
     /**
@@ -26,16 +26,16 @@ class SubmitDiff extends Job
     {
         Log::info(sprintf(
             'Submitting diff for image %s, baseline %s',
-            $this->image_kid,
-            $this->baseline_kid
+            $this->image_url,
+            $this->baseline_url
         ));
         try {
-            $differ->submit($this->image_kid, $this->baseline_kid);
+            $differ->submit($this->image_url, $this->baseline_url);
         } catch (Throwable $e) {
             Log::error(sprintf(
                 'Error submitting diff image %s, baseline %s: %s',
-                $this->image_kid,
-                $this->baseline_kid,
+                $this->image_url,
+                $this->baseline_url,
                 $e->getMessage()
             ));
         }

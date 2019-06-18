@@ -16,8 +16,8 @@ class SubmitDiffTest extends \TestCase
     public function testSubmittingDiff()
     {
         $differ = $this->prophesize(Differ::class);
-        $differ->submit('image_kid', 'baseline_kid')->shouldBeCalled();
-        $job = new SubmitDiff('image_kid', 'baseline_kid');
+        $differ->submit('image_url', 'baseline_url')->shouldBeCalled();
+        $job = new SubmitDiff('image_url', 'baseline_url');
         $job->handle($differ->reveal());
     }
 
@@ -31,12 +31,12 @@ class SubmitDiffTest extends \TestCase
 
         Log::shouldReceive('error')
             ->once()
-            ->with('Error submitting diff image image_kid, baseline baseline_kid: bad stuff')
+            ->with('Error submitting diff image image_url, baseline baseline_url: bad stuff')
             ->andReturn();
 
         $differ = $this->prophesize(Differ::class);
-        $differ->submit('image_kid', 'baseline_kid')->willThrow(new RuntimeException('bad stuff'))->shouldBeCalled();
-        $job = new SubmitDiff('image_kid', 'baseline_kid');
+        $differ->submit('image_url', 'baseline_url')->willThrow(new RuntimeException('bad stuff'))->shouldBeCalled();
+        $job = new SubmitDiff('image_url', 'baseline_url');
         $job->handle($differ->reveal());
     }
 }

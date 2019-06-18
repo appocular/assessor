@@ -6,9 +6,9 @@ use Appocular\Assessor\Checkpoint;
 
 class UpdateDiff extends Job
 {
-    public $image_kid;
-    public $baseline_kid;
-    public $diff_kid;
+    public $image_url;
+    public $baseline_url;
+    public $diff_url;
     public $different;
 
     /**
@@ -16,11 +16,11 @@ class UpdateDiff extends Job
      */
     public $snapshot;
 
-    public function __construct(string $image_kid, string $baseline_kid, string $diff_kid, bool $different)
+    public function __construct(string $image_url, string $baseline_url, string $diff_url, bool $different)
     {
-        $this->image_kid = $image_kid;
-        $this->baseline_kid = $baseline_kid;
-        $this->diff_kid = $diff_kid;
+        $this->image_url = $image_url;
+        $this->baseline_url = $baseline_url;
+        $this->diff_url = $diff_url;
         $this->different = $different;
     }
 
@@ -31,6 +31,6 @@ class UpdateDiff extends Job
      */
     public function handle()
     {
-        Checkpoint::updateDiffs($this->image_kid, $this->baseline_kid, $this->diff_kid, $this->different);
+        Checkpoint::updateDiffs($this->image_url, $this->baseline_url, $this->diff_url, $this->different);
     }
 }
