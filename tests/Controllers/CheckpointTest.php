@@ -24,7 +24,7 @@ class CheckpointTest extends ControllerTestBase
         $this->get('checkpoint/' . $checkpoints[0]->id);
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'id' => $checkpoints[0]->id,
+            'self' => route('checkpoint.show', ['id' => $checkpoints[0]->id]),
             'name' => $checkpoints[0]->name,
             'image_url' => $checkpoints[0]->image_url,
             'baseline_url' => $checkpoints[0]->baseline_url,
@@ -36,7 +36,7 @@ class CheckpointTest extends ControllerTestBase
         $this->get('checkpoint/' . $checkpoints[1]->id);
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'id' => $checkpoints[1]->id,
+            'self' => route('checkpoint.show', ['id' => $checkpoints[1]->id]),
             'name' => $checkpoints[1]->name,
             'image_url' => $checkpoints[1]->image_url,
             'baseline_url' => $checkpoints[1]->baseline_url,

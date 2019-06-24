@@ -20,7 +20,7 @@ class SnapshotTest extends ControllerTestBase
         $this->get('snapshot/' . $snapshot->id);
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'id' => $snapshot->id,
+            'self' => route('snapshot.show', ['id' => $snapshot->id]),
             'checkpoints' => [],
             'status' => 'unknown',
             'run_status' => 'running',
@@ -32,7 +32,7 @@ class SnapshotTest extends ControllerTestBase
         ];
         $checkpointsJson = array_map(function ($checkpoint) {
             return [
-                'id' => $checkpoint->id,
+                'self' => route('checkpoint.show', ['id' => $checkpoint->id]),
                 'name' => $checkpoint->name,
                 'image_url' => $checkpoint->image_url,
                 'baseline_url' => $checkpoint->baseline_url,
@@ -45,7 +45,7 @@ class SnapshotTest extends ControllerTestBase
         $this->get('snapshot/' . $snapshot->id);
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'id' => $snapshot->id,
+            'self' => route('snapshot.show', ['id' => $snapshot->id]),
             'checkpoints' => $checkpointsJson,
             'status' => 'unknown',
             'run_status' => 'running',

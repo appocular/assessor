@@ -17,7 +17,7 @@ class SnapshotResource extends Resource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
+            'self' => route('snapshot.show', ['id' => $this->id]),
             'status' => $this->status,
             'run_status' => $this->run_status,
             'checkpoints' => CheckpointResource::collection($this->checkpoints),

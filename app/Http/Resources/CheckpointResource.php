@@ -16,7 +16,7 @@ class CheckpointResource extends Resource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
+            'self' => route('checkpoint.show', ['id' => $this->id]),
             'name' => $this->name,
             'image_url' => $this->image_url,
             'baseline_url' => $this->baseline_url,

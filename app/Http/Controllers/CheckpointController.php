@@ -14,6 +14,7 @@ class CheckpointController extends BaseController
     public function show($id)
     {
         $checkpoint = Checkpoint::findOrFail($id);
+
         return new CheckpointResource($checkpoint);
     }
 }
