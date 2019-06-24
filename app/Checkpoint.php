@@ -16,7 +16,7 @@ class Checkpoint extends Model
     const DIFF_STATUS_DIFFERENT = 'different';
 
     protected $fillable = ['id', 'name', 'snapshot_id', 'image_url', 'baseline_url', 'diff_url'];
-    protected $visible = ['id', 'name', 'image_url', 'baseline_url', 'diff_url', 'status', 'diff_status'];
+
     public $incrementing = false;
     protected $keyType = 'string';
 

@@ -22,7 +22,7 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 });
 
 $router->group([], function () use ($router) {
-    $router->get('snapshot/{id}', 'SnapshotController@index');
-    $router->get('checkpoint/{checkpoint_id}', 'CheckpointController@get');
+    $router->get('snapshot/{id}', 'SnapshotController@show');
+    $router->get('checkpoint/{checkpoint_id}', ['as' => 'checkpoint.show', 'uses' => 'CheckpointController@show']);
     $router->post('diff', 'DiffController@submit');
 });

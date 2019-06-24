@@ -2,16 +2,17 @@
 
 namespace Appocular\Assessor\Http\Controllers;
 
+use Appocular\Assessor\Http\Resources\SnapshotResource;
+use Appocular\Assessor\Snapshot;
 use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Appocular\Assessor\Snapshot;
 
 class SnapshotController extends BaseController
 {
-    public function index($id)
+    public function show($id)
     {
         $snapshot = Snapshot::with('checkpoints')->findOrFail($id);
 
-        return (new Response($snapshot->toArray()));
+        return new SnapshotResource($snapshot);
     }
 }
