@@ -98,27 +98,25 @@ class BatchTest extends ControllerTestBase
 
     public function testAddingCheckpoint()
     {
-        //$keeper = $this->prophesize(Keeper::class);
         $this->keeperProphecy->store(Argument::any())->willReturn('XXX');
-        //$this->app->instance(Keeper::class, $keeper->reveal());
         $id = str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
-        $image = file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png');
+        $image = base64_encode(file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
 
-        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => base64_encode($image)]);
+        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
+        $this->assertResponseStatus(201);
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
             'image_url' => 'XXX',
         ]);
-        $this->assertResponseStatus(200);
 
         // Submitting an image with the same name should replace the data of image.
         $this->keeperProphecy->store(Argument::any())->willReturn('YYY');
-        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => base64_encode($image)]);
-        $this->assertResponseStatus(200);
+        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
+        $this->assertResponseStatus(201);
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
@@ -132,8 +130,8 @@ class BatchTest extends ControllerTestBase
         ]);
 
         // Posting a second image should work.
-        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image2', 'image' => base64_encode($image)]);
-        $this->assertResponseStatus(200);
+        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image2', 'image' => $image]);
+        $this->assertResponseStatus(201);
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image2',
@@ -154,8 +152,8 @@ class BatchTest extends ControllerTestBase
         $id2 = str_repeat('2', 40);
         $batch_id = $this->startBatch($id2);
 
-        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => base64_encode($image)]);
-        $this->assertResponseStatus(200);
+        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
+        $this->assertResponseStatus(201);
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id2,
             'name' => 'test image',
@@ -182,10 +180,10 @@ class BatchTest extends ControllerTestBase
         }
         $this->json('POST', '/batch', $data);
 
-        $this->assertResponseStatus(200);
-        $this->seeJsonStructure(['id']);
-
-        $json = json_decode($this->response->getContent());
-        return $json->id;
+        $this->assertResponseStatus(201);
+        $this->assertTrue($this->response->headers->has('Location'));
+        $location = $this->response->headers->get('Location');
+        $parts = explode('/', $location);
+        return array_pop($parts);
     }
 }

@@ -53,11 +53,11 @@ be a "root" snapshot without any baseline.
                 "history": "271ac93c44ac198d92e706c6d6f1d84aefcfa337\n7bee8f3b184e1e141ff76efe369c3b8bfc50e64c"
             }
 
-+ Response 200 (application/json)
++ Response 201
 
-        {
-            "id": "58444f87-0525-429d-ba3c-d7b06cab748a"
-        }
+    + Headers
+
+            Location: http://localhost:8080/batch/58444f87-0525-429d-ba3c-d7b06cab748a
 
 + Request Validation error. (application/json)
 
@@ -138,7 +138,11 @@ of the current batch run.
                 "image": "<base64 PNG data>"
             }
 
-+ Response 200
++ Response 201
+
+    + Headers
+
+            Location: http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e
 
 + Request Missing name (application/json)
 

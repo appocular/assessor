@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use Laravel\Lumen\Routing\UrlGenerator;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
@@ -26,7 +27,7 @@ class BatchController extends BaseController
         $this->keeper = $keeper;
     }
 
-    public function create(Request $request)
+    public function create(Request $request, UrlGenerator $urlGenerator)
     {
         $this->validate($request, [
             'id' => 'required|string|min:1|max:255',
@@ -44,9 +45,10 @@ class BatchController extends BaseController
         $batch->snapshot()->associate($snapshot);
         $batch->save();
 
+
         Log::info(sprintf('Starting batch %s for snapshot %s', $batch->id, $snapshot->id));
 
-        return (new Response(['id' => $batch->id]));
+        return (new Response('', 201))->header('Location', $urlGenerator->to('/batch', $batch->id));
     }
 
     public function delete($batchId)
@@ -56,7 +58,7 @@ class BatchController extends BaseController
         $batch->delete();
     }
 
-    public function addCheckpoint(Request $request, $batchId)
+    public function addCheckpoint(Request $request, UrlGenerator $urlGenerator, $batchId)
     {
         $batch = Batch::findOrFail($batchId);
         $snapshot = $batch->snapshot;
@@ -88,6 +90,9 @@ class BatchController extends BaseController
         ]);
         $checkpoint->image_url = $image_url;
         $checkpoint->save();
+
         Log::info(sprintf('Added checkpoint "%s" in batch %s', $request->input('name'), $batch->id));
+
+        return (new Response('', 201))->header('Location', $urlGenerator->route('checkpoint.show', ['id' => $checkpoint->id]));
     }
 }
