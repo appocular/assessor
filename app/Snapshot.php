@@ -4,6 +4,7 @@ namespace Appocular\Assessor;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\FindCheckpointBaseline;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
@@ -93,7 +94,7 @@ class Snapshot extends Model
     /**
      * Is snapshot done running?
      */
-    public function isDone()
+    public function isDone() : bool
     {
         return $this->run_status == self::RUN_STATUS_DONE;
     }
@@ -104,7 +105,7 @@ class Snapshot extends Model
      * Queues FindCheckpointBaseline jobs to find the baseline of the
      * individual checkpoints.
      */
-    public function triggerCheckpointBaselining()
+    public function triggerCheckpointBaselining() : void
     {
         if ($baseline = $this->getBaseline()) {
             Log::info(sprintf('Collectiong Checkpoints for baselines finding for snapshot %s', $this->id));
@@ -145,7 +146,7 @@ class Snapshot extends Model
      *
      * Updates the status depending on the status of it's checkpoints.
      */
-    public function updateStatus()
+    public function updateStatus() : void
     {
         $this->refresh();
         $unknownCount = $this->checkpoints->where('status', Checkpoint::STATUS_UNKNOWN)->count();
@@ -164,7 +165,7 @@ class Snapshot extends Model
     /**
      * Get descendant snapshots.
      */
-    public function getDescendants()
+    public function getDescendants() : Collection
     {
         return self::where(['baseline' => $this->id])->get();
     }

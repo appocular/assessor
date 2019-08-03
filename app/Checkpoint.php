@@ -56,7 +56,7 @@ class Checkpoint extends Model
     /**
      * Reset diff for checkpoint.
      */
-    public function resetDiff()
+    public function resetDiff() : void
     {
         $this->diff_url = null;
         $this->diff_status = self::DIFF_STATUS_UNKNOWN;
@@ -66,7 +66,7 @@ class Checkpoint extends Model
     /**
      * Update status from diff_status.
      */
-    public function updateStatus()
+    public function updateStatus() : void
     {
         if ($this->diff_status != Checkpoint::DIFF_STATUS_UNKNOWN) {
             $this->status = $this->diff_status == self::DIFF_STATUS_IDENTICAL ?
@@ -86,7 +86,7 @@ class Checkpoint extends Model
      * @param bool $different
      *   Whether the image and baseline differ.
      */
-    public static function updateDiffs(string $image_url, string $baseline_url, string $diff_url, bool $different)
+    public static function updateDiffs(string $image_url, string $baseline_url, string $diff_url, bool $different) : void
     {
         // Get all the checkpoints for this image and baseline combination.
         // Weed out those with the same diff (we assume they've already been
@@ -111,7 +111,7 @@ class Checkpoint extends Model
     /**
      * Does checkpoint have a diff.
      */
-    public function hasDiff()
+    public function hasDiff() : bool
     {
         return $this->diff_status !== self::DIFF_STATUS_UNKNOWN;
     }
