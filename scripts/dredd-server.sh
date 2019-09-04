@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export APP_ENV=local
+export APP_ENV=testing
 export DB_CONNECTION=sqlite
 export DB_DATABASE=/tmp/assessor-dredd.sqlite
 export CACHE_DRIVER=file
