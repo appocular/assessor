@@ -4,7 +4,7 @@ test: test-unit test-api
 
 .PHONEY: test-unit
 test-unit:
-	./vendor/bin/phpunit --coverage-php=coverage/unit.cov
+	phpdbg -qrr ./vendor/bin/phpunit --coverage-php=coverage/unit.cov
 
 .PHONEY: test-api
 test-api:
