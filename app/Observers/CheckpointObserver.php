@@ -21,7 +21,7 @@ class CheckpointObserver
 
         // Update status when diff_status is set.
         if ($checkpoint->isDirty('diff_status')) {
-            $checkpoint->updateStatus();
+            $checkpoint->updateStatusFromDiff();
         }
     }
 

@@ -47,17 +47,18 @@ class CheckpointModelTest extends \TestCase
     public function statusProvider()
     {
         return [
-            // First the happy path, updating checkpoints without a diff.
+            // Updating with a difference shouldn't change status.
             [
                 'unknown',
                 Checkpoint::STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_UNKNOWN,
                 null,
                 true,
-                Checkpoint::STATUS_REJECTED,
+                Checkpoint::STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_DIFFERENT,
                 'new_diff',
             ],
+            // Updating with an identical diff should auto-approve.
             [
                 'unknown',
                 Checkpoint::STATUS_UNKNOWN,

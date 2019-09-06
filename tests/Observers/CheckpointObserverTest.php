@@ -116,7 +116,7 @@ class CheckpointObserverTest extends \TestCase
     }
 
     /**
-     * Test that updating diff results in an state change.
+     * Test that updating diff maybe results in an state change.
      *
      * @dataProvider diffStatusChecks
      */
@@ -159,12 +159,12 @@ class CheckpointObserverTest extends \TestCase
                 Checkpoint::STATUS_APPROVED,
                 Checkpoint::DIFF_STATUS_IDENTICAL,
             ],
-            // Reject different diffs.
+            // But don't do anything for differences, it's up to the user..
             [
                 Checkpoint::STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_DIFFERENT,
-                Checkpoint::STATUS_REJECTED,
+                Checkpoint::STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_DIFFERENT,
             ],
         ];

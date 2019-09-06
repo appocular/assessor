@@ -64,13 +64,13 @@ class Checkpoint extends Model
     }
 
     /**
-     * Update status from diff_status.
+     * Maybe update status from diff_status.
      */
-    public function updateStatus() : void
+    public function updateStatusFromDiff() : void
     {
-        if ($this->diff_status != Checkpoint::DIFF_STATUS_UNKNOWN) {
-            $this->status = $this->diff_status == self::DIFF_STATUS_IDENTICAL ?
-                self::STATUS_APPROVED : self::STATUS_REJECTED;
+        // If the diff is identical, automatically approve this checkpoint.
+        if ($this->diff_status == self::DIFF_STATUS_IDENTICAL) {
+            $this->status = self::STATUS_APPROVED;
         }
     }
 
