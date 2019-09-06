@@ -125,4 +125,31 @@ class Checkpoint extends Model
     {
         return !(empty($this->image_url) && $this->status == self::STATUS_APPROVED);
     }
+
+    /**
+     * Approve checkpoint.
+     */
+    public function approve()
+    {
+        $this->status = self::STATUS_APPROVED;
+        $this->save();
+    }
+
+    /**
+     * Reject checkpoint.
+     */
+    public function reject()
+    {
+        $this->status = self::STATUS_REJECTED;
+        $this->save();
+    }
+
+    /**
+     * Ignore checkpoint.
+     */
+    public function ignore()
+    {
+        $this->status = self::STATUS_IGNORED;
+        $this->save();
+    }
 }

@@ -17,4 +17,28 @@ class CheckpointController extends BaseController
 
         return new CheckpointResource($checkpoint);
     }
+
+    public function approve($id)
+    {
+        $checkpoint = Checkpoint::findOrFail($id);
+
+        $checkpoint->approve();
+        return;
+    }
+
+    public function reject($id)
+    {
+        $checkpoint = Checkpoint::findOrFail($id);
+
+        $checkpoint->reject();
+        return;
+    }
+
+    public function ignore($id)
+    {
+        $checkpoint = Checkpoint::findOrFail($id);
+
+        $checkpoint->ignore();
+        return;
+    }
 }

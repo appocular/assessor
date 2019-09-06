@@ -81,4 +81,43 @@ class CheckpointModelTest extends \TestCase
             ],
         ];
     }
+
+    public function testApproving()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoint = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'image',
+            'status' => Checkpoint::STATUS_UNKNOWN,
+        ]);
+
+        $checkpoint->approve();
+        $this->seeInDatabase('checkpoints', ['id' => $checkpoint->id, 'status' => Checkpoint::STATUS_APPROVED]);
+    }
+
+    public function testRejecting()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoint = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'image',
+            'status' => Checkpoint::STATUS_UNKNOWN,
+        ]);
+
+        $checkpoint->reject();
+        $this->seeInDatabase('checkpoints', ['id' => $checkpoint->id, 'status' => Checkpoint::STATUS_REJECTED]);
+    }
+
+    public function testIgnoring()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoint = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'image',
+            'status' => Checkpoint::STATUS_UNKNOWN,
+        ]);
+
+        $checkpoint->ignore();
+        $this->seeInDatabase('checkpoints', ['id' => $checkpoint->id, 'status' => Checkpoint::STATUS_IGNORED]);
+    }
 }

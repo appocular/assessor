@@ -248,6 +248,60 @@ Get information about a checkpoint.
 
 + Response 404
 
+### Approve checkpoint [PUT /checkpoint/{checkpoint_id}/approve]
+
+Approve the checkpoint. This accepts the changes and marks it as
+baseline for future tests.
+
++ Parameters
+
+    + checkpoint_id: `5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e` - Id of checkpoint.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer MySecretToken
+
++ Response 200
+
+### Reject checkpoint [PUT /checkpoint/{checkpoint_id}/reject]
+
+Reject the changes to this checkpoint and use the existing baseline in
+future tests. This marks this snapshot as failed.
+
++ Parameters
+
+    + checkpoint_id: `5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e` - Id of checkpoint.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer MySecretToken
+
++ Response 200
+
+### Ignore checkpoint [PUT /checkpoint/{checkpoint_id}/ignore]
+
+Ignore the changes to this checkpoint and use the existing baseline in
+future tests. Ignored checkpoints does not fail the Snapshot, but are
+expected to revert to the baseline in the next test run. It can be
+used to ignore spurious failures due to external factors, without
+failing the snapshot. Use with care.
+
++ Parameters
+
+    + checkpoint_id: `5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e` - Id of checkpoint.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer MySecretToken
+
++ Response 200
+
 ## Diff resource [/diff]
 
 Endpoint for reporting differences. For internal use.
@@ -283,3 +337,9 @@ Endpoint for reporting differences. For internal use.
 - `diff_url` (string, nullable) - URL of diff.
 - `status`: unknown, approved, rejected, ignored (enum) - Checkpoint status.
 - `diff_status`: unknown, identical, different (enum) - Checkpoint diff status.
+- `actions` (CheckpointActions) - Actions available for this checkpoint.
+
+## CheckpointActions (object, fixed-type)
+- `approve`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e/approve* (string) Approve URL.
+- `reject`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e/reject* (string) Reject URL.
+- `ignore`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e/ignore* (string) Ignore URL.

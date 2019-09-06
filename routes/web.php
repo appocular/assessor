@@ -24,5 +24,8 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 $router->group([], function () use ($router) {
     $router->get('snapshot/{id}', ['as' => 'snapshot.show', 'uses' => 'SnapshotController@show']);
     $router->get('checkpoint/{id}', ['as' => 'checkpoint.show', 'uses' => 'CheckpointController@show']);
+    $router->put('checkpoint/{id}/approve', ['as' => 'checkpoint.approve', 'uses' => 'CheckpointController@approve']);
+    $router->put('checkpoint/{id}/reject', ['as' => 'checkpoint.reject', 'uses' => 'CheckpointController@reject']);
+    $router->put('checkpoint/{id}/ignore', ['as' => 'checkpoint.ignore', 'uses' => 'CheckpointController@ignore']);
     $router->post('diff', 'DiffController@submit');
 });

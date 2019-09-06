@@ -39,6 +39,11 @@ class SnapshotTest extends ControllerTestBase
                 'diff_url' => $checkpoint->diff_url,
                 'status' => 'unknown',
                 'diff_status' => 'unknown',
+                'actions' => [
+                    'approve' => route('checkpoint.approve', ['id' => $checkpoint->id]),
+                    'reject' => route('checkpoint.reject', ['id' => $checkpoint->id]),
+                    'ignore' => route('checkpoint.ignore', ['id' => $checkpoint->id]),
+                ],
             ];
         }, $checkpoints);
 

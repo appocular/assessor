@@ -23,6 +23,11 @@ class CheckpointResource extends Resource
             'diff_url' => $this->diff_url,
             'status' => $this->status,
             'diff_status' => $this->diff_status,
+            'actions' => [
+                'approve' => route('checkpoint.approve', ['id' => $this->id]),
+                'reject' => route('checkpoint.reject', ['id' => $this->id]),
+                'ignore' => route('checkpoint.ignore', ['id' => $this->id]),
+            ],
         ];
     }
 }

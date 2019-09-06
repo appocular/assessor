@@ -31,6 +31,11 @@ class CheckpointTest extends ControllerTestBase
             'diff_url' => $checkpoints[0]->diff_url,
             'status' => 'unknown',
             'diff_status' => 'unknown',
+            'actions' => [
+                'approve' => route('checkpoint.approve', ['id' => $checkpoints[0]->id]),
+                'reject' => route('checkpoint.reject', ['id' => $checkpoints[0]->id]),
+                'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[0]->id]),
+            ],
         ]);
 
         $this->get('checkpoint/' . $checkpoints[1]->id);
@@ -43,9 +48,72 @@ class CheckpointTest extends ControllerTestBase
             'diff_url' => $checkpoints[1]->diff_url,
             'status' => 'unknown',
             'diff_status' => 'unknown',
+            'actions' => [
+                'approve' => route('checkpoint.approve', ['id' => $checkpoints[1]->id]),
+                'reject' => route('checkpoint.reject', ['id' => $checkpoints[1]->id]),
+                'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[1]->id]),
+            ],
         ]);
 
         $this->get('checkpoint/random');
         $this->assertResponseStatus(404);
     }
+
+    public function testApprovingCheckpoint()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoints = [
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+        ];
+
+        $this->get('checkpoint/' . $checkpoints[0]->id);
+        // Verify that it's not approved.
+        $this->seeJson(['status' => 'unknown']);
+
+        $this->put('checkpoint/' . $checkpoints[0]->id . '/approve');
+        print_r($this->response->getStatusCode());
+
+        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->seeJson(['status' => 'approved']);
+    }
+
+    public function testRejectingCheckpoint()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoints = [
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+        ];
+
+        $this->get('checkpoint/' . $checkpoints[0]->id);
+        // Verify that it's not rejected.
+        $this->seeJson(['status' => 'unknown']);
+
+        $this->put('checkpoint/' . $checkpoints[0]->id . '/reject');
+        print_r($this->response->getStatusCode());
+
+        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->seeJson(['status' => 'rejected']);
+    }
+
+    public function testIgnoringCheckpoint()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoints = [
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+        ];
+
+        $this->get('checkpoint/' . $checkpoints[0]->id);
+        // Verify that it's not ignored.
+        $this->seeJson(['status' => 'unknown']);
+
+        $this->put('checkpoint/' . $checkpoints[0]->id . '/ignore');
+        print_r($this->response->getStatusCode());
+
+        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->seeJson(['status' => 'ignored']);
+    }
+
 }
