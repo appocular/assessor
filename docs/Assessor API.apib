@@ -11,14 +11,42 @@ into checkpoints the on the snapshot. Multiple batches may be run on
 the same commit, facilitating multiple test suites or parallel
 running.
 
-## Tokens
+## General for the API
 
-In order to access the API a client must supply a valid repository
+Assessor uses URLs as identifiers, that is, the URL of the object is
+also its ID, which is provided in the `self` key of the response
+objects.
+
+While the resources are documented here, one should not construct the
+URLs manually, but rather use the URL provided by previous calls
+(except for the top-level objects). For instance, an UI would fetch a
+snapshot by identifier (which is the external identifier used when
+submitting the snapshot), but use the URLs provided in the snapshot
+response to fetch the checkpoints.
+
+Actions on resources are usually located at `<URL of object>/<action>`,
+and are provided in the `action` key of the response object. Again,
+don't construct them from internal identifiers, but use the URLs
+provided by the API.
+
+The resources that are meant for calling directly is marked with
+(entrypoint).
+
+## Authorization
+
+The different groups of resources uses different tokens for
+authorization.
+
+# Group Snapshot submission
+
+These resources allow for submitting a batch of images to a snapshot.
+
+In order to access this API a client must supply a valid repository
 token in the "Authorization" header.
 
 ## Batch resource [/batch]
 
-### Create batch [POST]
+### Create batch (entrypoint) [POST]
 
 Start a new batch run. Returns the id of the new batch. The id
 supplied is the snapshot id, ether this batch will be associated with
@@ -28,7 +56,8 @@ the snapshot with the given id, or a new snapshot will be created.
 
 The history of the snapshot is supplied as a newline separated list of
 snapshot ids. It is used for the first batch of a snapshot to find the
-parent (baseline) snapshot to compare against.
+parent (baseline) snapshot to compare against and ignored for
+subsequent batches on the same snapshot.
 
 When using Git SHAs as snapshot ids, the easiest way to create the
 history is `git rev-list HEAD`.
@@ -39,6 +68,9 @@ submitted snapshot can use a history of a single entry.
 
 If no parent snapshot was found in the history, the new snapshot will
 be a "root" snapshot without any baseline.
+
+The URL returned in the Location header can be used to construct the
+URL of the delete batch and add image calls.
 
 + Request (application/json)
 
@@ -183,9 +215,14 @@ of the current batch run.
 
             Bad image data
 
+# Group Snapshot resources
+
+These resources returns the state of snapshots and checkpoints, and
+provide methods for changing state.
+
 ## Snapshot resource [/snapshot]
 
-### Get snapshot [GET /snapshot/{id}]
+### Get snapshot (entrypoint) [GET /snapshot/{id}]
 
 Get information about a snapshot, including checkpoints.
 
@@ -302,9 +339,14 @@ failing the snapshot. Use with care.
 
 + Response 200
 
-## Diff resource [/diff]
+# Group Internal resources
 
-Endpoint for reporting differences. For internal use.
+For internal use. Used by the different parts of Assessor to
+communicate.
+
+## Diff resource (entrypoint) [/diff]
+
+Endpoint for reporting differences.
 
 ### Post diff [POST]
 

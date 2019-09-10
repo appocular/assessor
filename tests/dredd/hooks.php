@@ -26,7 +26,7 @@ Hooks::beforeEach(function ($transaction) use (&$stash) {
     }
 });
 
-Hooks::after('Batch resource > Create batch > Example 1', function ($transaction) use (&$stash) {
+Hooks::after('Snapshot submission > Batch resource > Create batch (entrypoint) > Example 1', function ($transaction) use (&$stash) {
     // Dry run support.
     if (!isset($transaction->real)) {
         return;
