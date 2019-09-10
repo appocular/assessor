@@ -142,7 +142,7 @@ class SnapshotObserverTest extends \TestCase
         Queue::fake();
         $snapshot = factory(Snapshot::class)->create([
             'status' => Snapshot::STATUS_UNKNOWN,
-            'run_status' => Snapshot::RUN_STATUS_RUNNING,
+            'run_status' => Snapshot::RUN_STATUS_PENDING,
         ]);
         $descendant = factory(Snapshot::class)->create(['baseline' => $snapshot->id]);
 

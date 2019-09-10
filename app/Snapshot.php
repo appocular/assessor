@@ -26,9 +26,9 @@ class Snapshot extends Model
     const STATUS_FAILED = 'failed';
 
     /**
-     * Snapshot is still running (unknown checkpoints exists).
+     * Snapshot is still pending (unknown checkpoints exists).
      */
-    const RUN_STATUS_RUNNING = 'running';
+    const RUN_STATUS_PENDING = 'pending';
 
     /**
      * Snapshot is done (all checkpoints have status).
@@ -92,7 +92,7 @@ class Snapshot extends Model
     }
 
     /**
-     * Is snapshot done running?
+     * Is snapshot done?
      */
     public function isDone() : bool
     {
@@ -157,7 +157,7 @@ class Snapshot extends Model
         } else {
             $this->status = self::STATUS_PASSED;
         }
-        $this->run_status = $unknownCount > 0 ? self::RUN_STATUS_RUNNING : self::RUN_STATUS_DONE;
+        $this->run_status = $unknownCount > 0 ? self::RUN_STATUS_PENDING : self::RUN_STATUS_DONE;
 
         $this->save();
     }

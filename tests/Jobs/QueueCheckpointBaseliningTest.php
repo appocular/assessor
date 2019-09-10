@@ -42,15 +42,15 @@ class QueueCheckpointBaseliningTest extends \TestCase
     }
 
     /**
-     * Test that the job re-queues itself if the baseline is still running.
+     * Test that the job re-queues itself if the baseline is still pending.
      */
-    public function testDelayingWhenBaselineStillRunning()
+    public function testDelayingWhenBaselineStillPending()
     {
         $jobContract = $this->prophesize(Job::class);
         $jobContract->release(5)->willReturn($jobContract)->shouldBeCalled();
 
         $baseline = new Snapshot();
-        $baseline->run_status = Snapshot::RUN_STATUS_RUNNING;
+        $baseline->run_status = Snapshot::RUN_STATUS_PENDING;
 
         $snapshot = $this->prophesize(Snapshot::class);
         $snapshot->refresh()->willReturn($snapshot);

@@ -23,7 +23,7 @@ class SnapshotTest extends ControllerTestBase
             'self' => route('snapshot.show', ['id' => $snapshot->id]),
             'checkpoints' => [],
             'status' => 'unknown',
-            'run_status' => 'running',
+            'run_status' => 'pending',
         ]);
 
         $checkpoints = [
@@ -53,7 +53,7 @@ class SnapshotTest extends ControllerTestBase
             'self' => route('snapshot.show', ['id' => $snapshot->id]),
             'checkpoints' => $checkpointsJson,
             'status' => 'unknown',
-            'run_status' => 'running',
+            'run_status' => 'pending',
         ]);
     }
 }

@@ -327,8 +327,8 @@ class SnapshotModelTest extends \TestCase
 
         $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
-        // Run status is running as long as there's unknown checkpoints.
-        $this->assertEquals(Snapshot::RUN_STATUS_RUNNING, $snapshot->run_status);
+        // Run status is pending as long as there's unknown checkpoints.
+        $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
 
         $checkpoints[0]->status = Checkpoint::STATUS_APPROVED;
         $checkpoints[0]->save();
@@ -336,7 +336,7 @@ class SnapshotModelTest extends \TestCase
         $snapshot->updateStatus();
         // Should stay at unknown as long as there's unknown checkpoints.
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
-        $this->assertEquals(Snapshot::RUN_STATUS_RUNNING, $snapshot->run_status);
+        $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
 
         $checkpoints[1]->status = Checkpoint::STATUS_IGNORED;
         $checkpoints[1]->save();
@@ -360,6 +360,6 @@ class SnapshotModelTest extends \TestCase
         $snapshot->updateStatus();
         // Rejected trumps unknown.
         $this->assertEquals(Snapshot::STATUS_FAILED, $snapshot->status);
-        $this->assertEquals(Snapshot::RUN_STATUS_RUNNING, $snapshot->run_status);
+        $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
     }
 }
