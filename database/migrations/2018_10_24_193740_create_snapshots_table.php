@@ -16,6 +16,7 @@ class CreateSnapshotsTable extends Migration
     {
         Schema::create('snapshots', function (Blueprint $table) {
             $table->string('id')->primary();
+            $table->string('repo_id');
             $table->string('baseline')->nullable();
             $table->string('status')->default('unknown');
             $table->string('run_status')->default('pending');

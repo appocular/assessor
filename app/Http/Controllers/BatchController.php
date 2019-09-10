@@ -37,9 +37,12 @@ class BatchController extends BaseController
 
         $batch = new Batch();
         $snapshot = Snapshot::firstOrNew(['id' => $request->input('id')]);
-        // Add history if this is a new snapshot.
-        if ($request->has('history') && !$snapshot->exists) {
-            $snapshot->history()->create(['history' => $request->input('history')]);
+        if (!$snapshot->exists) {
+            // Add history if this is a new snapshot.
+            if ($request->has('history')) {
+                $snapshot->history()->create(['history' => $request->input('history')]);
+            }
+            $snapshot->repo()->associate($request->user());
         }
         $snapshot->save();
         $batch->snapshot()->associate($snapshot);
@@ -51,7 +54,7 @@ class BatchController extends BaseController
         return (new Response('', 201))->header('Location', $urlGenerator->to('/batch', $batch->id));
     }
 
-    public function delete($batchId)
+    public function delete($batchId, Request $request)
     {
         $batch = Batch::findOrFail($batchId);
         Log::info(sprintf('Ending batch %s for snapshot %s', $batch->id, $batch->snapshot->id));

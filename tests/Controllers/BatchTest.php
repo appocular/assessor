@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Appocular\Assessor\Repo;
 use Appocular\Clients\Contracts\Differ;
 use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Support\Facades\Queue;
@@ -12,7 +13,29 @@ use Prophecy\Argument;
 class BatchTest extends ControllerTestBase
 {
     use DatabaseMigrations;
-    use WithoutMiddleware;
+
+    public function setUp()
+    {
+        parent::setUp();
+        // Set up a repo.
+        $repo = new Repo(['uri' => 'http://example.org/']);
+        $repo->api_token = 'RepoToken';
+        $repo->save();
+        $this->repoId = $repo->uri;
+    }
+
+    /**
+     * Return authorization headers for request.
+     *
+     * Note that the Illuminate\Auth\TokenGuard is only constructed on the
+     * first request in a test, and the Authorization headert thus "sticks
+     * around" for the subsequent requests, rendering passing the header to
+     * them pointless.
+     */
+    public function headers()
+    {
+        return ["Authorization" => 'Bearer RepoToken'];
+    }
 
     /**
      * Test that a batch can be created and deleted.
@@ -35,15 +58,28 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('snapshots', ['id' => $id]);
     }
 
+    /**
+     * Test that the snapshot is associated with the repo that owns the token.
+     */
+    public function testRepoAssociation()
+    {
+        $id = 'banano';
+        $batch_id = $this->startBatch($id);
+
+        // Assert that we can see the batch and snapshot in the database.
+        $this->seeInDatabase('batches', ['id' => $batch_id, 'snapshot_id' => $id]);
+        $this->seeInDatabase('snapshots', ['id' => $id, 'repo_id' => $this->repoId]);
+    }
+
     public function testUnknownBatch()
     {
-        $this->delete('/batch/random');
+        $this->delete('/batch/random', [], $this->headers());
         $this->assertResponseStatus(404);
     }
 
     public function testBatchValidation()
     {
-        $this->json('POST', '/batch', []);
+        $this->json('POST', '/batch', [], $this->headers());
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
             'id' => [0 => 'The id field is required.'],
@@ -62,6 +98,7 @@ class BatchTest extends ControllerTestBase
 
         $this->delete('/batch/' . $batch_id);
         $this->assertResponseStatus(200);
+        $this->missingFromDatabase('batches', ['id' => $batch_id]);
 
         // Assert that the history is still there.
         $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
@@ -178,7 +215,7 @@ class BatchTest extends ControllerTestBase
         if ($history) {
             $data['history'] = $history;
         }
-        $this->json('POST', '/batch', $data);
+        $this->json('POST', '/batch', $data, $this->headers());
 
         $this->assertResponseStatus(201);
         $this->assertTrue($this->response->headers->has('Location'));

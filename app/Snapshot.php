@@ -41,6 +41,14 @@ class Snapshot extends Model
     protected $keyType = 'string';
 
     /**
+     * Get the repo for the snapshot.
+     */
+    public function repo()
+    {
+        return $this->belongsTo('Appocular\Assessor\Repo', 'repo_id', 'uri');
+    }
+
+    /**
      * Get the checkpoints for the snapshot.
      */
     public function checkpoints()

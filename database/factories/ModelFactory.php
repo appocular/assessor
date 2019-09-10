@@ -15,6 +15,7 @@ $factory->define(Appocular\Assessor\Snapshot::class, function (Faker\Generator $
     return [
         'id' => $faker->sha256,
         'status' => 'unknown',
+        'repo_id' => 'none',
     ];
 });
 
