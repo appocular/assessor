@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'api'),
+        'guard' => env('AUTH_GUARD', 'repo'),
     ],
 
     /*
@@ -35,7 +35,7 @@ return [
     */
 
     'guards' => [
-        'api' => [
+        'repo' => [
             'driver' => 'token',
             'provider' => 'repo',
         ],
@@ -59,7 +59,6 @@ return [
     */
 
     'providers' => [
-        //
         'repo' => [
             'driver' => 'eloquent',
             'model'  => Appocular\Assessor\Repo::class,

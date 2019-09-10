@@ -15,7 +15,7 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['middleware' => 'auth'], function () use ($router) {
+$router->group(['middleware' => 'auth:repo'], function () use ($router) {
     $router->post('batch', 'BatchController@create');
     $router->post('batch/{batchId}/checkpoint', 'BatchController@addCheckpoint');
     $router->delete('batch/{batchId}', 'BatchController@delete');
