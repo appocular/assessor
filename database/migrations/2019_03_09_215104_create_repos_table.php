@@ -20,7 +20,6 @@ class CreateReposTable extends Migration
                 ->unique()
                 ->nullable()
                 ->default(null);
-            ;
             $table->timestamps();
         });
     }
