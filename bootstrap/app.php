@@ -96,6 +96,7 @@ $app->routeMiddleware([
 |
 */
 
+$app->register(Appocular\Assessor\Providers\AuthServiceProvider::class);
 $app->register(Appocular\Assessor\Providers\AppServiceProvider::class);
 $app->register(Appocular\Assessor\Providers\EventServiceProvider::class);
 $app->register(Appocular\Clients\KeeperServiceProvider::class);

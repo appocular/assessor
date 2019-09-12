@@ -39,6 +39,9 @@ return [
             'driver' => 'token',
             'provider' => 'repo',
         ],
+        'user' => [
+            'driver' => 'frontend',
+        ],
     ],
 
     /*

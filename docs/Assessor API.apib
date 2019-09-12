@@ -76,7 +76,7 @@ URL of the delete batch and add image calls.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyRepoToken
 
     + Body
 
@@ -95,7 +95,7 @@ URL of the delete batch and add image calls.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyRepoToken
 
     + Body
 
@@ -132,7 +132,7 @@ further batches on the same snapshot can be created.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyRepoToken
 
 + Response 200
 
@@ -140,7 +140,7 @@ further batches on the same snapshot can be created.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyRepoToken
 
     + Parameters
 
@@ -161,7 +161,7 @@ of the current batch run.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyRepoToken
 
     + Body
 
@@ -180,7 +180,7 @@ of the current batch run.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyRepoToken
 
     + Body
 
@@ -198,7 +198,7 @@ of the current batch run.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyRepoToken
 
     + Body
 
@@ -220,6 +220,10 @@ of the current batch run.
 These resources returns the state of snapshots and checkpoints, and
 provide methods for changing state.
 
+In order to access this API a client must supply a valid frontend
+token in the "Authorization" header.
+
+
 ## Snapshot resource [/snapshot]
 
 ### Get snapshot (entrypoint) [GET /snapshot/{id}]
@@ -234,7 +238,7 @@ Get information about a snapshot, including checkpoints.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyFrontendToken
 
 + Response 200 (application/json)
 
@@ -244,7 +248,7 @@ Get information about a snapshot, including checkpoints.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyFrontendToken
 
     + Parameters
 
@@ -267,7 +271,7 @@ Get information about a checkpoint.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyFrontendToken
 
 + Response 200 (application/json)
 
@@ -277,7 +281,7 @@ Get information about a checkpoint.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyFrontendToken
 
     + Parameters
 
@@ -298,7 +302,7 @@ baseline for future tests.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyFrontendToken
 
 + Response 200
 
@@ -315,7 +319,7 @@ future tests. This marks this snapshot as failed.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyFrontendToken
 
 + Response 200
 
@@ -335,7 +339,7 @@ failing the snapshot. Use with care.
 
     + Headers
 
-            Authorization: Bearer MySecretToken
+            Authorization: Bearer MyFrontendToken
 
 + Response 200
 
