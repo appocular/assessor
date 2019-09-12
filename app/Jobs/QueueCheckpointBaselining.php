@@ -26,14 +26,12 @@ class QueueCheckpointBaselining extends Job
     {
         $this->snapshot->refresh();
         $baseline = $this->snapshot->getBaseline();
-        if ($baseline) {
-            if ($baseline->run_status == Snapshot::RUN_STATUS_DONE) {
-                // If baseline is done, trigger checkpoint baselining.
-                $this->snapshot->triggerCheckpointBaselining();
-            } else {
-                // Else try again in 5 seconds.
-                $this->release(5);
-            }
+        if (!$baseline || $baseline->run_status != Snapshot::RUN_STATUS_DONE) {
+            // Cop out if things change too quickly.
+            return;
         }
+
+        // Trigger checkpoint baselining.
+        $this->snapshot->triggerCheckpointBaselining();
     }
 }

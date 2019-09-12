@@ -34,8 +34,8 @@ class SnapshotObserver
             Checkpoint::resetBaselines($snapshot->id);
         }
 
-        // Queue checkpoint baselining if snapshot baseline was changed.
-        if ($snapshot->isDirty('baseline') && $snapshot->getBaseline()) {
+        // Queue checkpoint baselining if snapshot baseline was changed and baseline is done.
+        if ($snapshot->isDirty('baseline') && $snapshot->getBaseline() && $snapshot->getBaseline()->isDone()) {
             dispatch(new QueueCheckpointBaselining($snapshot));
         }
 

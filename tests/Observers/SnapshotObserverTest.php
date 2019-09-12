@@ -98,7 +98,8 @@ class SnapshotObserverTest extends \TestCase
     }
 
     /**
-     * Test that checkpoint baselining job is queued when snapshot baseline changes.
+     * Test that checkpoint baselining job is queued when snapshot baseline
+     * changes and the new baseline is done.
      */
     public function testUpdateTriggersCheckpointBaseliningWhenSnopshotBaselineChanges()
     {
@@ -119,18 +120,31 @@ class SnapshotObserverTest extends \TestCase
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
         $baseline = factory(Snapshot::class)->create();
+        $baseline->run_status = Snapshot::RUN_STATUS_PENDING;
+        $baseline->save();
         $snapshot->setBaseline($baseline);
 
         $observer->updated($snapshot);
-        // Should fire when baseline has been changed to a valid baseline.
-        Queue::assertPushed(QueueCheckpointBaselining::class);
+        // Should not fire when baseline isn't done.
+        Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
         $baseline = factory(Snapshot::class)->create();
+        $baseline->run_status = Snapshot::RUN_STATUS_DONE;
+        $baseline->save();
+        $snapshot->setBaseline($baseline);
+
+        $observer->updated($snapshot);
+        // Should fire when baseline has been changed to a valid done baseline.
+        Queue::assertPushedTimes(QueueCheckpointBaselining::class, 1);
+
+        $baseline = factory(Snapshot::class)->create();
+        $baseline->run_status = Snapshot::RUN_STATUS_DONE;
+        $baseline->save();
         $snapshot->setBaseline($baseline);
 
         $observer->updated($snapshot);
         // Should fire again when baseline has been changed.
-        Queue::assertPushed(QueueCheckpointBaselining::class);
+        Queue::assertPushedTimes(QueueCheckpointBaselining::class, 2);
     }
 
     /**
