@@ -72,7 +72,6 @@ class CheckpointTest extends ControllerTestBase
         $this->seeJson(['status' => 'unknown']);
 
         $this->put('checkpoint/' . $checkpoints[0]->id . '/approve');
-        print_r($this->response->getStatusCode());
 
         $this->get('checkpoint/' . $checkpoints[0]->id);
         $this->seeJson(['status' => 'approved']);
@@ -91,7 +90,6 @@ class CheckpointTest extends ControllerTestBase
         $this->seeJson(['status' => 'unknown']);
 
         $this->put('checkpoint/' . $checkpoints[0]->id . '/reject');
-        print_r($this->response->getStatusCode());
 
         $this->get('checkpoint/' . $checkpoints[0]->id);
         $this->seeJson(['status' => 'rejected']);
@@ -110,10 +108,8 @@ class CheckpointTest extends ControllerTestBase
         $this->seeJson(['status' => 'unknown']);
 
         $this->put('checkpoint/' . $checkpoints[0]->id . '/ignore');
-        print_r($this->response->getStatusCode());
 
         $this->get('checkpoint/' . $checkpoints[0]->id);
         $this->seeJson(['status' => 'ignored']);
     }
-
 }
