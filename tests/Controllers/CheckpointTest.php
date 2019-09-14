@@ -11,7 +11,38 @@ use Prophecy\Argument;
 class CheckpointTest extends ControllerTestBase
 {
     use DatabaseMigrations;
-    use WithoutMiddleware;
+
+    public function setUp()
+    {
+        parent::setUp();
+        // Set up a frontend token.
+        \putenv('FRONTEND_TOKEN=FrontendToken');
+    }
+
+    /**
+     * Return authorization headers for request.
+     *
+     * Note that the Illuminate\Auth\TokenGuard is only constructed on the
+     * first request in a test, and the Authorization headert thus "sticks
+     * around" for the subsequent requests, rendering passing the header to
+     * them pointless.
+     */
+    public function headers()
+    {
+        return ["Authorization" => 'Bearer FrontendToken'];
+    }
+
+    public function testAccessControl()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoints = [
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+        ];
+
+        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->assertResponseStatus(401);
+    }
 
     public function testGettingCheckpoint()
     {
@@ -21,7 +52,7 @@ class CheckpointTest extends ControllerTestBase
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
             'self' => route('checkpoint.show', ['id' => $checkpoints[0]->id]),
@@ -67,7 +98,7 @@ class CheckpointTest extends ControllerTestBase
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         // Verify that it's not approved.
         $this->seeJson(['status' => 'unknown']);
 
@@ -85,7 +116,7 @@ class CheckpointTest extends ControllerTestBase
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         // Verify that it's not rejected.
         $this->seeJson(['status' => 'unknown']);
 
@@ -103,7 +134,7 @@ class CheckpointTest extends ControllerTestBase
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id);
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         // Verify that it's not ignored.
         $this->seeJson(['status' => 'unknown']);
 

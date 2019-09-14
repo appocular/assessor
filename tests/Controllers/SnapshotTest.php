@@ -33,6 +33,14 @@ class SnapshotTest extends ControllerTestBase
         return ["Authorization" => 'Bearer FrontendToken'];
     }
 
+    public function testAccessControl()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+
+        $this->get('snapshot/' . $snapshot->id);
+        $this->assertResponseStatus(401);
+    }
+
     public function testGettingSnapshot()
     {
         $snapshot = factory(Snapshot::class)->create();
