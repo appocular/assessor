@@ -4,7 +4,6 @@ namespace Controllers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Snapshot;
-use Appocular\Assessor\User;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
