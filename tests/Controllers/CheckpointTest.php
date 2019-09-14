@@ -32,6 +32,9 @@ class CheckpointTest extends ControllerTestBase
         return ["Authorization" => 'Bearer FrontendToken'];
     }
 
+    /**
+     * Test that access control works.
+     */
     public function testAccessControl()
     {
         $snapshot = factory(Snapshot::class)->create();
