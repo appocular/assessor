@@ -6,7 +6,7 @@ php:
 install: composer install --prefer-source
 
 before_install:
-  - npm install dredd@5.2.0 --no-optional --global
+  - npm install dredd@11.2.11 --no-optional --global
   # Clone keeper for dredd tests.
   - git clone https://github.com/appocular/keeper.git keeper
   - cd keeper && composer install
