@@ -42,6 +42,9 @@ return [
         'user' => [
             'driver' => 'frontend',
         ],
+        'shared_token' => [
+            'driver' => 'shared_token',
+        ],
     ],
 
     /*

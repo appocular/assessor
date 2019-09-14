@@ -29,6 +29,6 @@ $router->group(['middleware' => 'auth:user'], function () use ($router) {
     $router->put('checkpoint/{id}/ignore', ['as' => 'checkpoint.ignore', 'uses' => 'CheckpointController@ignore']);
 });
 
-$router->group([], function () use ($router) {
+$router->group(['middleware' => 'auth:shared_token'], function () use ($router) {
     $router->post('diff', 'DiffController@submit');
 });

@@ -49,5 +49,32 @@ class AuthServiceProvider extends ServiceProvider
                 };
             }
         });
+
+        $this->app['auth']->viaRequest('shared_token', function ($request) {
+            if ($request->bearerToken() && $request->bearerToken() == env('SHARED_TOKEN')) {
+                return new class implements \Illuminate\Contracts\Auth\Authenticatable {
+                    public function getAuthIdentifierName()
+                    {
+                        return 'name';
+                    }
+                    public function getAuthIdentifier()
+                    {
+                        return 'shared';
+                    }
+                    public function getAuthPassword()
+                    {
+                    }
+                    public function getRememberToken()
+                    {
+                    }
+                    public function setRememberToken($value)
+                    {
+                    }
+                    public function getRememberTokenName()
+                    {
+                    }
+                };
+            }
+        });
     }
 }
