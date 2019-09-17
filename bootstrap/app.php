@@ -78,7 +78,8 @@ $app->singleton(
 */
 
 $app->middleware([
-    Appocular\Assessor\Http\Middleware\CorsMiddleware::class
+    Appocular\Assessor\Http\Middleware\CorsMiddleware::class,
+    Fideloper\Proxy\TrustProxies::class,
 ]);
 
 $app->routeMiddleware([
@@ -102,6 +103,7 @@ $app->register(Appocular\Assessor\Providers\EventServiceProvider::class);
 $app->register(Appocular\Clients\KeeperServiceProvider::class);
 $app->register(Appocular\Clients\DifferServiceProvider::class);
 $app->register(Webpatser\Uuid\UuidServiceProvider::class);
+$app->register(Fideloper\Proxy\TrustedProxyServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
