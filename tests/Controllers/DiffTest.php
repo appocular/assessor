@@ -47,7 +47,6 @@ class DiffTest extends ControllerTestBase
         ];
 
         $this->json('POST', '/diff', $data);
-        print($this->response->getContent());
         $this->assertResponseStatus(401);
 
         Queue::assertNotPushed(UpdateDiff::class);
