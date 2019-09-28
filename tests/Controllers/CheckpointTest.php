@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\SlugGenerator;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
@@ -70,6 +71,7 @@ class CheckpointTest extends ControllerTestBase
                 'reject' => route('checkpoint.reject', ['id' => $checkpoints[0]->id]),
                 'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[0]->id]),
             ],
+            'slug' => SlugGenerator::toSlug($checkpoints[0]->name),
         ]);
 
         $this->get('checkpoint/' . $checkpoints[1]->id);
@@ -87,8 +89,8 @@ class CheckpointTest extends ControllerTestBase
                 'reject' => route('checkpoint.reject', ['id' => $checkpoints[1]->id]),
                 'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[1]->id]),
             ],
+            'slug' => SlugGenerator::toSlug($checkpoints[1]->name),
         ]);
-
         $this->get('checkpoint/random');
         $this->assertResponseStatus(404);
     }

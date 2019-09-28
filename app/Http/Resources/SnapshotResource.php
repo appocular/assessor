@@ -3,6 +3,7 @@
 namespace Appocular\Assessor\Http\Resources;
 
 use Appocular\Assessor\Http\Resources\CheckpointResource;
+use Appocular\Assessor\SlugGenerator;
 use Illuminate\Http\Resources\Json\Resource;
 
 class SnapshotResource extends Resource
@@ -18,6 +19,7 @@ class SnapshotResource extends Resource
     {
         return [
             'self' => route('snapshot.show', ['id' => $this->id]),
+            'id' => $this->id,
             'status' => $this->status,
             'run_status' => $this->run_status,
             'checkpoints' => CheckpointResource::collection($this->checkpoints),

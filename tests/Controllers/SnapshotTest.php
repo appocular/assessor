@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\SlugGenerator;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
@@ -51,6 +52,7 @@ class SnapshotTest extends ControllerTestBase
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
             'self' => route('snapshot.show', ['id' => $snapshot->id]),
+            'id' => $snapshot->id,
             'checkpoints' => [],
             'status' => 'unknown',
             'run_status' => 'pending',
@@ -74,6 +76,7 @@ class SnapshotTest extends ControllerTestBase
                     'reject' => route('checkpoint.reject', ['id' => $checkpoint->id]),
                     'ignore' => route('checkpoint.ignore', ['id' => $checkpoint->id]),
                 ],
+                'slug' => SlugGenerator::toSlug($checkpoint->name),
             ];
         }, $checkpoints);
 
@@ -81,6 +84,7 @@ class SnapshotTest extends ControllerTestBase
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
             'self' => route('snapshot.show', ['id' => $snapshot->id]),
+            'id' => $snapshot->id,
             'checkpoints' => $checkpointsJson,
             'status' => 'unknown',
             'run_status' => 'pending',

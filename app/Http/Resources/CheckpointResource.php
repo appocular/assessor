@@ -2,6 +2,7 @@
 
 namespace Appocular\Assessor\Http\Resources;
 
+use Appocular\Assessor\SlugGenerator;
 use Illuminate\Http\Resources\Json\Resource;
 
 class CheckpointResource extends Resource
@@ -28,6 +29,7 @@ class CheckpointResource extends Resource
                 'reject' => route('checkpoint.reject', ['id' => $this->id]),
                 'ignore' => route('checkpoint.ignore', ['id' => $this->id]),
             ],
+            'slug' => SlugGenerator::toSlug($this->name),
         ];
     }
 }

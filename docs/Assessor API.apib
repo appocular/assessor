@@ -375,19 +375,21 @@ Endpoint for reporting differences.
 
 ## Snapshot (object, fixed-type)
 - `self`: *http://localhost:8080/snapshot/d8f4590320e1343a915b6394170650a8f35d6926* (string) - URL and ID of snapshot.
+- `id`: *d8f4590320e1343a915b6394170650a8f35d6926* (string) - The snapshot identifier. Mostly corresponds to a commit id in the VCS.
 - `checkpoints` (array[Checkpoint]) - Checkpoints of snapshot.
 - `status`: unknown, passed, failed (enum) - Snapshot status.
 - `run_status`: pending, done (enum) - Snapshot running status.
 
 ## Checkpoint (object, fixed-type)
 - `self`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e* (string) - URL and ID of checkpoint.
-- `name`: *Frontpages* (string) - Name of checkpoint.
+- `name`: *Frontpage* (string) - Name of checkpoint.
 - `image_url`: *http://localhost:8081/image/3f9200a6dee485e3fbf67e68b1e9f2bbb6e48387dd1e9c676c2e0bf48feb1a98* (string) - URL of image.
 - `baseline_url` (string, nullable) - URL of baseline.
 - `diff_url` (string, nullable) - URL of diff.
 - `status`: unknown, approved, rejected, ignored (enum) - Checkpoint status.
 - `diff_status`: unknown, identical, different (enum) - Checkpoint diff status.
 - `actions` (CheckpointActions) - Actions available for this checkpoint.
+- `slug`: *frontpage* (string) - A somewhat human-readable identifiier for this checkpoint, usable in URLs. Only guaranteed to be unique within the same checkpoint.
 
 ## CheckpointActions (object, fixed-type)
 - `approve`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e/approve* (string) Approve URL.
