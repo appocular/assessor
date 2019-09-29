@@ -15,7 +15,7 @@ class UpdateDiffTest extends \TestCase
     /**
      * Suppress model events so we can test in isolation.
      */
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         Event::fake();

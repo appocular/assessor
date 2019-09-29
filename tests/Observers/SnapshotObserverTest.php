@@ -18,7 +18,7 @@ class SnapshotObserverTest extends \TestCase
     /**
      * Suppress model events so we can test in isolation.
      */
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         Event::fake();
@@ -144,7 +144,7 @@ class SnapshotObserverTest extends \TestCase
 
         $observer->updated($snapshot);
         // Should fire when baseline has been changed to a valid done baseline.
-        Queue::assertPushedTimes(QueueCheckpointBaselining::class, 1);
+        Queue::assertPushed(QueueCheckpointBaselining::class, 1);
 
         $snapshot->syncOriginal();
         $baseline = factory(Snapshot::class)->create();
@@ -154,7 +154,7 @@ class SnapshotObserverTest extends \TestCase
 
         $observer->updated($snapshot);
         // Should fire again when baseline has been changed.
-        Queue::assertPushedTimes(QueueCheckpointBaselining::class, 2);
+        Queue::assertPushed(QueueCheckpointBaselining::class, 2);
     }
 
     /**

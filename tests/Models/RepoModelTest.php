@@ -18,7 +18,7 @@ class RepoModelTest extends \TestCase
 
         $repo = Repo::find('generation test');
         $this->assertNotEmpty($repo->api_token);
-        $this->assertInternalType('string', $repo->api_token);
+        $this->assertIsString('string', $repo->api_token);
         // Generated tokens are SHAs at the moment.
         $this->assertRegexp('/^[0-9a-f]{64}$/', $repo->api_token);
     }

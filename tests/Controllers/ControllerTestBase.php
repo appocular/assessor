@@ -10,7 +10,7 @@ use Appocular\Clients\Contracts\Keeper;
  */
 class ControllerTestBase extends \TestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->keeperProphecy = $this->prophesize(Keeper::class);

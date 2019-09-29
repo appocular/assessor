@@ -13,7 +13,7 @@ class SnapshotTest extends ControllerTestBase
 {
     use DatabaseMigrations;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         // Set up a frontend token.
