@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class CheckpointObserver
 {
     /**
-     * Handle to the Snapshot "updating" event.
+     * Handle the Snapshot "updating" event.
      */
     public function updating(Checkpoint $checkpoint)
     {
@@ -26,7 +26,7 @@ class CheckpointObserver
     }
 
     /**
-     * Handle to the Checkpoint "updated" event.
+     * Handle the Checkpoint "updated" event.
      */
     public function updated(Checkpoint $checkpoint)
     {

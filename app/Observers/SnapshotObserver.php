@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class SnapshotObserver
 {
     /**
-     * Handle to the Snapshot "created" event.
+     * Handle the Snapshot "created" event.
      */
     public function created(Snapshot $snapshot)
     {
@@ -24,7 +24,7 @@ class SnapshotObserver
     }
 
     /**
-     * Handle to the Snapshot "updated" event.
+     * Handle the Snapshot "updated" event.
      */
     public function updated(Snapshot $snapshot)
     {
