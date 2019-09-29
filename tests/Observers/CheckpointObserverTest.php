@@ -32,7 +32,7 @@ class CheckpointObserverTest extends \TestCase
             'status' => Checkpoint::STATUS_REJECTED,
             'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
-        $checkpoint->save();
+        $checkpoint->syncOriginal();
         $checkpoint->image_url = 'new image';
 
         $observer->updating($checkpoint);
@@ -60,32 +60,23 @@ class CheckpointObserverTest extends \TestCase
             'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
 
-        $observer->updated($checkpoint);
-
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->refresh()->status);
 
+        // To test that updateStatus() is called on the Snapshot, we'll just
+        // mock it.
+        $snapshotMock = $this->prophesize(Snapshot::class);
+        // We'll test two times, so it should be called two times.
+        $snapshotMock->updateStatus()->shouldBeCalledTimes(2);
+        $checkpoint->snapshot = $snapshotMock->reveal();
+
+        $checkpoint->syncOriginal();
         $checkpoint->status = Checkpoint::STATUS_APPROVED;
-        // Normally, the updated method is called after saving the model to
-        // the dotabase, but before changes are synced, so the changes are
-        // still 'dirty'. If we save the checkpoint first, then the observer
-        // wont do anything as it's not dirty after saving. But
-        // Snapshot::updateStatus() requires the checkpoint to have hit the
-        // database in order to pick up the new status. So we work around this
-        // problem by updating the model, not saving it but updating the
-        // database row manually. Then the observer will see the change *and*
-        // the snapshot will see the new status.
-        DB::table('checkpoints')->where('id', $checkpoint->id)->update(['status' => Checkpoint::STATUS_APPROVED]);
-
         $observer->updated($checkpoint);
 
-        $this->assertEquals(Snapshot::STATUS_PASSED, $snapshot->refresh()->status);
-
+        $checkpoint->syncOriginal();
         $checkpoint->status = Checkpoint::STATUS_REJECTED;
-        DB::table('checkpoints')->where('id', $checkpoint->id)->update(['status' => Checkpoint::STATUS_REJECTED]);
 
         $observer->updated($checkpoint);
-
-        $this->assertEquals(Snapshot::STATUS_FAILED, $snapshot->refresh()->status);
     }
 
     /**
@@ -108,10 +99,13 @@ class CheckpointObserverTest extends \TestCase
             'diff_status' => Checkpoint::DIFF_STATUS_UNKNOWN,
         ]);
 
+        $checkpoint->syncOriginal();
         $checkpoint->baseline_url = 'baseline';
         $this->assertFalse($checkpoint->hasDiff());
         Queue::assertNotPushed(SubmitDiff::class);
+
         $observer->updated($checkpoint);
+
         Queue::assertPushed(SubmitDiff::class);
     }
 
@@ -139,7 +133,7 @@ class CheckpointObserverTest extends \TestCase
             'status' => $existingStatus,
             'diff_status' => $existingDiffStatus,
         ]);
-        $checkpoint->save();
+        $checkpoint->syncOriginal();
         $checkpoint->diff_status = $change;
 
         $observer->updating($checkpoint);

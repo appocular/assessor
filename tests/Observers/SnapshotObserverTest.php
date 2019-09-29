@@ -84,6 +84,13 @@ class SnapshotObserverTest extends \TestCase
         // And imageless checkpoints should be left alone.
         $this->assertCount(3, $snapshot->checkpoints()->get());
 
+        // As we're testing the observer outside the normal event cycle, we
+        // have to manually do some things that's normally done by Eloquent.
+        // We use syncOriginal() to tell Eloquent what the original loaded
+        // state was, so that SnapshotObserver can see what changed with
+        // isDirty.
+        $snapshot->syncOriginal();
+
         // Set new baseline.
         $baseline = factory(Snapshot::class)->create();
         $snapshot->baseline = $baseline->id;
@@ -112,13 +119,14 @@ class SnapshotObserverTest extends \TestCase
         // Shouldn't fire QueueCheckpointBaselining if there's no baseline.
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
+        $snapshot->syncOriginal();
         $snapshot->baseline = '';
-        $snapshot->syncChanges();
 
         $observer->updated($snapshot);
         // Shouldn't fire QueueCheckpointBaselining when baseline is empty.
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
+        $snapshot->syncOriginal();
         $baseline = factory(Snapshot::class)->create();
         $baseline->run_status = Snapshot::RUN_STATUS_PENDING;
         $baseline->save();
@@ -128,6 +136,7 @@ class SnapshotObserverTest extends \TestCase
         // Should not fire when baseline isn't done.
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
+        $snapshot->syncOriginal();
         $baseline = factory(Snapshot::class)->create();
         $baseline->run_status = Snapshot::RUN_STATUS_DONE;
         $baseline->save();
@@ -137,6 +146,7 @@ class SnapshotObserverTest extends \TestCase
         // Should fire when baseline has been changed to a valid done baseline.
         Queue::assertPushedTimes(QueueCheckpointBaselining::class, 1);
 
+        $snapshot->syncOriginal();
         $baseline = factory(Snapshot::class)->create();
         $baseline->run_status = Snapshot::RUN_STATUS_DONE;
         $baseline->save();
@@ -167,6 +177,7 @@ class SnapshotObserverTest extends \TestCase
         // Shouldn't fire any baselining job while not done.
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
+        $snapshot->syncOriginal();
         $snapshot->run_status = Snapshot::RUN_STATUS_DONE;
         $observer->updated($snapshot);
 
