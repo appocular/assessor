@@ -19,6 +19,13 @@ class CheckpointObserver
             $checkpoint->resetDiff();
         }
 
+        // Set diff status for new and deleted images immediately.
+        if (!$checkpoint->hasDiff()) {
+            if ($checkpoint->baseline_url == '' || $checkpoint->image_url == '') {
+                $checkpoint->diff_status = Checkpoint::DIFF_STATUS_DIFFERENT;
+            }
+        }
+
         // Update status when diff_status is set.
         if ($checkpoint->isDirty('diff_status')) {
             $checkpoint->updateStatusFromDiff();

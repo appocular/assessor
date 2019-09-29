@@ -80,6 +80,43 @@ class CheckpointObserverTest extends \TestCase
     }
 
     /**
+     * Test that new or deleted checkpoints gets a "different" diff status.
+     */
+    public function testNewOrDeletedCheckpointsGetsDifferentDiffStatus()
+    {
+        Queue::fake();
+
+        $observer = new CheckpointObserver();
+
+        $snapshot = factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
+
+        $checkpoint = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'image_url' => 'image',
+            'baseline_url' => null,
+            'diff_url' => null,
+            'status' => Checkpoint::STATUS_UNKNOWN,
+            'diff_status' => Checkpoint::DIFF_STATUS_UNKNOWN,
+        ]);
+
+        $checkpoint->syncOriginal();
+        $this->assertFalse($checkpoint->hasDiff());
+        $checkpoint->baseline_url = '';
+        $observer->updating($checkpoint);
+        $this->assertTrue($checkpoint->hasDiff());
+        $this->assertEquals(Checkpoint::DIFF_STATUS_DIFFERENT, $checkpoint->diff_status);
+
+        $checkpoint->diff_status = Checkpoint::DIFF_STATUS_UNKNOWN;
+        $checkpoint->image_url = '';
+        $checkpoint->syncOriginal();
+        $this->assertFalse($checkpoint->hasDiff());
+        $checkpoint->baseline_url = 'baseline';
+        $observer->updating($checkpoint);
+        $this->assertTrue($checkpoint->hasDiff());
+        $this->assertEquals(Checkpoint::DIFF_STATUS_DIFFERENT, $checkpoint->diff_status);
+    }
+
+    /**
      * Test that diff requests are submitted when image or baseline changed.
      */
     public function testUpdatedTriggersDiffWhenImageOrBaselineChanges()
