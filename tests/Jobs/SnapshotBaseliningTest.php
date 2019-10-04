@@ -40,4 +40,16 @@ class SnapshotBaseliningTest extends \TestCase
         $this->missingFromDatabase('history', ['snapshot_id' => $snapshot->id]);
     }
 
+    public function testIgnoringItself()
+    {
+        $baseline = factory(Snapshot::class)->create();
+        $snapshot = factory(Snapshot::class)->create();
+
+        $snapshot->history()->create(['history' => $snapshot->id . "\nbanana\n" . $baseline->id . "\napple\n"]);
+
+        $job = new SnapshotBaselining($snapshot);
+        $job->handle();
+
+        $this->seeInDatabase('snapshots', ['id' => $snapshot->id, 'baseline' => $baseline->id]);
+    }
 }

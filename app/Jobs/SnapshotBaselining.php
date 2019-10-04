@@ -35,7 +35,7 @@ class SnapshotBaselining extends Job
         $foundBaseline = null;
 
         foreach (explode("\n", $history->history) as $id) {
-            if ($baseline = Snapshot::find($id)) {
+            if ($id !== $snapshot->id && $baseline = Snapshot::find($id)) {
                 $foundBaseline = $baseline;
                 break;
             }
