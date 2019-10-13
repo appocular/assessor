@@ -35,7 +35,7 @@ class Snapshot extends Model
      */
     const RUN_STATUS_DONE = 'done';
 
-    protected $fillable = ['id'];
+    protected $fillable = ['id', 'repo_id'];
 
     public $incrementing = false;
     protected $keyType = 'string';

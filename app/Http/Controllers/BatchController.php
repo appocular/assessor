@@ -4,6 +4,7 @@ namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Batch;
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\History;
 use Appocular\Assessor\Snapshot;
 use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Database\QueryException;
@@ -12,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Laravel\Lumen\Routing\UrlGenerator;
+use PDOException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
@@ -36,18 +38,33 @@ class BatchController extends BaseController
         ]);
 
         $batch = new Batch();
-        $snapshot = Snapshot::firstOrNew(['id' => $request->input('id')]);
-        if (!$snapshot->exists) {
-            // Add history if this is a new snapshot.
-            if ($request->has('history')) {
-                $snapshot->history()->create(['history' => $request->input('history')]);
+        $snapshot = Snapshot::find($request->input('id'));
+        if (!$snapshot) {
+            // New snapshot, try to create it, and if that throws an error,
+            // try to load it again in case we're in a race condition with
+            // another process.
+            try {
+                $snapshot = Snapshot::create([
+                    'id' => $request->input('id'),
+                    'repo_id' => $request->user()->uri,
+                ]);
+            } catch (PDOException $e) {
+                $snapshot = Snapshot::findOrFail($request->input('id'));
             }
-            $snapshot->repo()->associate($request->user());
         }
-        $snapshot->save();
+        // Add history if the snapshot has no baseline.
+        if ($request->has('history') && !$snapshot->baselineIdentified()) {
+            try {
+                History::create([
+                    'snapshot_id' => $snapshot->id,
+                    'history' => $request->input('history'),
+                ]);
+            } catch (PDOException $e) {
+                // We assume it's because it already exist.
+            }
+        }
         $batch->snapshot()->associate($snapshot);
         $batch->save();
-
 
         Log::info(sprintf('Starting batch %s for snapshot %s', $batch->id, $snapshot->id));
 
