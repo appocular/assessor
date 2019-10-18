@@ -11,19 +11,6 @@ use Illuminate\Support\Facades\Log;
 class SnapshotObserver
 {
     /**
-     * Handle the Snapshot "created" event.
-     */
-    public function created(Snapshot $snapshot)
-    {
-        // Start a baselining job if the snapshot has history.
-        $history = $snapshot->history;
-        if (!$history) {
-            return;
-        }
-        dispatch(new SnapshotBaselining($snapshot));
-    }
-
-    /**
      * Handle the Snapshot "updated" event.
      */
     public function updated(Snapshot $snapshot)

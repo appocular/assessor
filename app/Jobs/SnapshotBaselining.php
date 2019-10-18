@@ -31,6 +31,7 @@ class SnapshotBaselining extends Job
             // Someone beat us to it.
             return;
         }
+        $history->delete();
         Log::info(sprintf('Finding baseline for snapshot %s', $snapshot->id));
         $foundBaseline = null;
 
@@ -53,6 +54,5 @@ class SnapshotBaselining extends Job
         ));
 
         $snapshot->save();
-        $history->delete();
     }
 }

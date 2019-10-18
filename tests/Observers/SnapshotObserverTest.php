@@ -18,45 +18,10 @@ class SnapshotObserverTest extends \TestCase
     /**
      * Suppress model events so we can test in isolation.
      */
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         Event::fake();
-    }
-
-    /**
-     * Test that creating snapshot with history triggers baseline finding job.
-     */
-    public function testCreateTriggerBaselining()
-    {
-        $observer = new SnapshotObserver();
-
-        Queue::fake();
-        $baseline = factory(Snapshot::class)->create();
-        $snapshot = factory(Snapshot::class)->create();
-
-        $snapshot->history()->create(['history' => "banana\n" . $baseline->id . "\napple\n"]);
-
-        $observer->created($snapshot);
-
-        Queue::assertPushed(SnapshotBaselining::class);
-    }
-
-    /**
-     * Test that creating snapshots without history doesn't trigger baseline
-     * finding.
-     */
-    public function testCreateWithoutHistoryDontTriggerBaselining()
-    {
-        $observer = new SnapshotObserver();
-
-        Queue::fake();
-        $baseline = factory(Snapshot::class)->create();
-        $snapshot = factory(Snapshot::class)->create();
-
-        $observer->created($snapshot);
-
-        Queue::assertNotPushed(SnapshotBaselining::class);
     }
 
     /**

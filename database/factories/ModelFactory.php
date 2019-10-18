@@ -30,3 +30,9 @@ $factory->define(Appocular\Assessor\Checkpoint::class, function (Faker\Generator
         'diff_status' => 'unknown',
     ];
 });
+
+$factory->define(Appocular\Assessor\History::class, function (Faker\Generator $faker) {
+    return [
+        'history' => '',
+    ];
+});
