@@ -26,10 +26,14 @@ class SnapshotObserver
             dispatch(new QueueCheckpointBaselining($snapshot));
         }
 
-        // Queue descendant re-baselining if status changed and the run status is done, or when the run status changes to done.
-        if ($snapshot->isDone() &&
-            ($snapshot->isDirty('status') || $snapshot->isDirty('run_status')) &&
-            $descendants = $snapshot->getDescendants()) {
+        // Queue descendant re-baselining if status changed and the run status
+        // is done, or when the run status changes to done.
+        if (
+            $snapshot->isDone() &&
+            ($snapshot->isDirty('status') ||
+             $snapshot->isDirty('run_status')) &&
+            $descendants = $snapshot->getDescendants()
+        ) {
             foreach ($descendants as $descendant) {
                 dispatch(new QueueCheckpointBaselining($descendant));
             }
