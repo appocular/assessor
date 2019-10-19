@@ -3,9 +3,11 @@
 namespace Observers;
 
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Jobs\GitHubStatusUpdate;
 use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
 use Appocular\Assessor\Jobs\SnapshotBaselining;
 use Appocular\Assessor\Observers\SnapshotObserver;
+use Appocular\Assessor\Repo;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -148,5 +150,75 @@ class SnapshotObserverTest extends \TestCase
 
         // Should trigger descendant re-baselining when done.
         Queue::assertPushed(QueueCheckpointBaselining::class);
+    }
+
+    /**
+     * Test that a GitHub status change job i started if the repo is from
+     * GitHub and status/run_status changes.
+     */
+    public function testStatusChangeTriggersGitHubUpdate()
+    {
+        Queue::fake();
+        $observer = new SnapshotObserver();
+        $snapshot = factory(Snapshot::class)->create([
+            'status' => Snapshot::STATUS_UNKNOWN,
+            'run_status' => Snapshot::RUN_STATUS_PENDING,
+        ]);
+
+        $snapshot->wasRecentlyCreated = false;
+        // Make it dirty.
+        $snapshot->status = Snapshot::STATUS_PASSED;
+        $snapshot->run_status = Snapshot::RUN_STATUS_DONE;
+
+        // Shouldn't trigger on non-github repos.
+        $repo = factory(Repo::class)->create();
+        $snapshot->repo()->associate($repo);
+        $observer->saved($snapshot);
+
+        Queue::assertNotPushed(GitHubStatusUpdate::class);
+
+        // Should trigger on ssh URIs.
+        $repo = factory(Repo::class)->create(['uri' => 'git@github.com:appocular/assessor']);
+        $snapshot->repo()->associate($repo);
+
+        $observer->saved($snapshot);
+        Queue::assertPushed(GitHubStatusUpdate::class);
+
+        // Should trigger on https URIs.
+        $repo = factory(Repo::class)->create(['uri' => 'https://github.com/appocular/assessor']);
+        $snapshot->repo()->associate($repo);
+
+        $observer->saved($snapshot);
+        Queue::assertPushed(GitHubStatusUpdate::class, 2);
+
+        // Shouldn't trigger on non-state changes.
+        $snapshot->syncOriginal();
+        $snapshot->baseline = 'test';
+
+        $observer->saved($snapshot);
+        Queue::assertPushed(GitHubStatusUpdate::class, 2);
+
+        // Should trigger when the snapshot is created.
+        $snapshot->syncOriginal();
+        $snapshot->wasRecentlyCreated = true;
+
+        $observer->saved($snapshot);
+        Queue::assertPushed(GitHubStatusUpdate::class, 3);
+
+        // Should trigger on status change.
+        $snapshot->wasRecentlyCreated = false;
+        $snapshot->syncOriginal();
+        $snapshot->status = Snapshot::STATUS_FAILED;
+
+        $observer->saved($snapshot);
+        Queue::assertPushed(GitHubStatusUpdate::class, 4);
+
+        // Should trigger on run status change.
+        $snapshot->syncOriginal();
+        $snapshot->run_status = Snapshot::RUN_STATUS_PENDING;
+
+        $observer->saved($snapshot);
+        Queue::assertPushed(GitHubStatusUpdate::class, 5);
+
     }
 }

@@ -3,6 +3,7 @@
 namespace Appocular\Assessor\Observers;
 
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Jobs\GitHubStatusUpdate;
 use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
 use Appocular\Assessor\Jobs\SnapshotBaselining;
 use Appocular\Assessor\Snapshot;
@@ -36,6 +37,24 @@ class SnapshotObserver
         ) {
             foreach ($descendants as $descendant) {
                 dispatch(new QueueCheckpointBaselining($descendant));
+            }
+        }
+    }
+
+    /**
+     * Handle the Snapshot "saved" event.
+     */
+    public function saved(Snapshot $snapshot)
+    {
+        if (
+            $snapshot->repo &&
+            ($snapshot->wasRecentlyCreated ||
+             $snapshot->isDirty('status') ||
+             $snapshot->isDirty('run_status'))
+        ) {
+            if (GitHubStatusUpdate::isGitHubUri($snapshot->repo->uri)) {
+                Log::info('Dispatching...');
+                dispatch(new GitHubStatusUpdate($snapshot));
             }
         }
     }

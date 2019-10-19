@@ -21,7 +21,8 @@ $factory->define(Appocular\Assessor\Snapshot::class, function (Faker\Generator $
 
 $factory->define(Appocular\Assessor\Checkpoint::class, function (Faker\Generator $faker) {
     return [
-        'id' => $faker->sha256,
+        // ID is most likely a sha1, as used by Git.
+        'id' => $faker->sha1,
         'name' => $faker->text(20),
         'image_url' => $faker->sha256,
         'baseline_url' => $faker->sha256,
@@ -34,5 +35,12 @@ $factory->define(Appocular\Assessor\Checkpoint::class, function (Faker\Generator
 $factory->define(Appocular\Assessor\History::class, function (Faker\Generator $faker) {
     return [
         'history' => '',
+    ];
+});
+
+$factory->define(Appocular\Assessor\Repo::class, function (Faker\Generator $faker) {
+    return [
+        'uri' => $faker->text(20),
+        'api_token' => $faker->sha256,
     ];
 });

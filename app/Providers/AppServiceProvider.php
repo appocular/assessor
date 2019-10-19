@@ -11,6 +11,8 @@ use Appocular\Assessor\Observers\HistoryObserver;
 use Appocular\Assessor\Observers\SnapshotObserver;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,5 +38,9 @@ class AppServiceProvider extends ServiceProvider
         // Don't use a wrapper on resource responses.
         SnapshotResource::withoutWrapping();
         CheckpointResource::withoutWrapping();
+
+        $this->app->singleton(HttpClientInterface::class, function ($app) {
+            return HttpClient::create();
+        });
     }
 }
