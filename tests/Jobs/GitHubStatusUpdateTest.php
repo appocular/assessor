@@ -42,6 +42,26 @@ class GitHubStatusUpdateTest extends \TestCase
     }
 
     /**
+     * @dataProvider uriProvider
+     */
+    public function testUriParsing($uri, $expected)
+    {
+        $this->assertEquals($expected, GitHubStatusUpdate::parseUri($uri));
+    }
+
+    public function uriProvider()
+    {
+        return [
+            ['https://github.com/appocular/assessor', ['appocular', 'assessor']],
+            ['https://github.com/appocular/assessor/', ['appocular', 'assessor']],
+            ['git@github.com:appocular/assessor.git', ['appocular', 'assessor']],
+            // Technically not valid, but we'll let it pass.
+            ['git@github.com:appocular/assessor', ['appocular', 'assessor']],
+            ['https://github.com/banana', []],
+        ];
+    }
+
+    /**
      * Test that pending status is properly sent to GitHub.
      */
     public function testSendPendingUpdateToGithub()

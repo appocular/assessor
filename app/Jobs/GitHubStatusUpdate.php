@@ -17,13 +17,22 @@ class GitHubStatusUpdate extends Job
 {^(git@github.com:|https://github.com/) # Host part, ssh or https.
 (?<org>[^/]+)/ # Organization.
 (?<repo>[^/]+) # Repo.
-(/|.git)?$ # Optional extension or slash.
+/?$ # Optional extension or slash.
 }x
 EOF;
 
     public static function isGitHubUri($uri): bool
     {
         return (preg_match(self::URI_PATTERN, $uri));
+    }
+
+    public static function parseUri(string $uri)
+    {
+        if (preg_match(self::URI_PATTERN, $uri, $matches)) {
+            return [$matches['org'], preg_replace('{.git$}', '', $matches['repo'])];
+        }
+
+        return [];
     }
 
     /**
@@ -44,7 +53,8 @@ EOF;
     public function handle(HttpClientInterface $client = null)
     {
         $client = $client ?? HttpClient::create();
-        if (!preg_match(self::URI_PATTERN, $this->snapshot->repo->uri, $matches)) {
+        list($org, $repo) = self::parseUri($this->snapshot->repo->uri);
+        if (empty($org)) {
             throw new RuntimeError('Not a GitHub repo, cannot update commit status');
         }
 
@@ -75,8 +85,8 @@ EOF;
             $description = 'In progress. Please wait.';
         }
 
-        $uri = 'https://api.github.com/repos/' . $matches['org'] . '/' .
-            $matches['repo'] . '/statuses/' . $this->snapshot->id;
+        $uri = 'https://api.github.com/repos/' . $org . '/' .
+            $repo . '/statuses/' . $this->snapshot->id;
         try {
             Log::info('Sending status update for ' . $this->snapshot->repo->uri);
             $res = $client->request(
