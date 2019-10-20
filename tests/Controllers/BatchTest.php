@@ -14,7 +14,7 @@ class BatchTest extends ControllerTestBase
 {
     use DatabaseMigrations;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         // Set up a repo.
