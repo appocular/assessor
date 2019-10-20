@@ -104,12 +104,17 @@ class BatchController extends BaseController
         }
         $image_url = $this->keeper->store($imageData);
 
-        $checkpoint = $snapshot->checkpoints()->firstOrNew([
-            'id' => hash('sha256', $snapshot->id . $request->input('name')),
-            'name' => $request->input('name'),
-        ]);
-        $checkpoint->image_url = $image_url;
-        $checkpoint->save();
+        try {
+            $checkpoint = $snapshot->checkpoints()->create([
+                'id' => hash('sha256', $snapshot->id . $request->input('name')),
+                'name' => $request->input('name'),
+                'image_url' => $image_url,
+            ]);
+        } catch (PDOException $e) {
+            $checkpoint = $snapshot->checkpoints()->find(hash('sha256', $snapshot->id . $request->input('name')));
+            $checkpoint->image_url = $image_url;
+            $checkpoint->save();
+        }
 
         Log::info(sprintf('Added checkpoint "%s" in batch %s', $request->input('name'), $batch->id));
 
