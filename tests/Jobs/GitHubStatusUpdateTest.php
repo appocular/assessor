@@ -82,7 +82,7 @@ class GitHubStatusUpdateTest extends \TestCase
                     'context' => 'Appocular visual regression test',
                     'state' => 'pending',
                     'description' => 'In progress. Please wait.',
-                    'target_url' => route('snapshot.show', ['id' => $this->snapshot->id]),
+                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
                 ]
             ]
         )
@@ -117,7 +117,7 @@ class GitHubStatusUpdateTest extends \TestCase
                     'context' => 'Appocular visual regression test',
                     'state' => 'success',
                     'description' => 'Passed',
-                    'target_url' => route('snapshot.show', ['id' => $this->snapshot->id]),
+                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
                 ]
             ]
         )
@@ -152,7 +152,7 @@ class GitHubStatusUpdateTest extends \TestCase
                     'context' => 'Appocular visual regression test',
                     'state' => 'failure',
                     'description' => 'Failed',
-                    'target_url' => route('snapshot.show', ['id' => $this->snapshot->id]),
+                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
                 ]
             ]
         )
@@ -192,7 +192,7 @@ class GitHubStatusUpdateTest extends \TestCase
                     'context' => 'Appocular visual regression test',
                     'state' => 'failure',
                     'description' => 'Failed',
-                    'target_url' => route('snapshot.show', ['id' => $this->snapshot->id]),
+                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
                 ]
             ]
         )
@@ -239,7 +239,7 @@ class GitHubStatusUpdateTest extends \TestCase
                     'context' => 'Appocular visual regression test',
                     'state' => 'failure',
                     'description' => 'Failed',
-                    'target_url' => route('snapshot.show', ['id' => $this->snapshot->id]),
+                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
                 ]
             ]
         )

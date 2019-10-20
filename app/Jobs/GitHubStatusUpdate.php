@@ -98,7 +98,8 @@ EOF;
                         'context' => 'Appocular visual regression test',
                         'state' => $state,
                         'description' => $description,
-                        'target_url' => route('snapshot.show', ['id' => $this->snapshot->id])
+                        'target_url' => rtrim(env('STOPGAP_BASE_URI', 'https://appocular.io/'), '/') .
+                        '/' . $this->snapshot->id
                     ]
                 ]
             );
