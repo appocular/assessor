@@ -17,7 +17,7 @@ class GitHubStatusUpdateTest extends \TestCase
         parent::setUp();
         // Common setup.
         putenv('GITHUB_USER=guser');
-        putenv('GITHUB_PASSWORD=gpass');
+        putenv('GITHUB_PASSWORD=gpassword');
         $this->snapshot = factory(Snapshot::class)->make([
             'status' => Snapshot::STATUS_UNKNOWN,
             'run_status' => Snapshot::RUN_STATUS_PENDING,
@@ -57,7 +57,7 @@ class GitHubStatusUpdateTest extends \TestCase
             'POST',
             'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id,
             [
-                'auth_basic' => ['guser', 'gpass'],
+                'auth_basic' => ['guser', 'gpassword'],
                 'json' => [
                     'context' => 'Appocular visual regression test',
                     'state' => 'pending',
@@ -92,7 +92,7 @@ class GitHubStatusUpdateTest extends \TestCase
             'POST',
             'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id,
             [
-                'auth_basic' => ['guser', 'gpass'],
+                'auth_basic' => ['guser', 'gpassword'],
                 'json' => [
                     'context' => 'Appocular visual regression test',
                     'state' => 'success',
@@ -127,7 +127,7 @@ class GitHubStatusUpdateTest extends \TestCase
             'POST',
             'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id,
             [
-                'auth_basic' => ['guser', 'gpass'],
+                'auth_basic' => ['guser', 'gpassword'],
                 'json' => [
                     'context' => 'Appocular visual regression test',
                     'state' => 'failure',
@@ -167,7 +167,7 @@ class GitHubStatusUpdateTest extends \TestCase
             'POST',
             'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id,
             [
-                'auth_basic' => ['guser', 'gpass'],
+                'auth_basic' => ['guser', 'gpassword'],
                 'json' => [
                     'context' => 'Appocular visual regression test',
                     'state' => 'failure',
@@ -188,12 +188,18 @@ class GitHubStatusUpdateTest extends \TestCase
      */
     public function testLoggingBadResponses()
     {
+        $url = 'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id;
         Log::shouldReceive('info')
             ->once();
 
         Log::shouldReceive('error')
             ->once()
-            ->with('Bad response code from GitHub: 202')
+            ->with(sprintf(
+                'Unexpected 202 response code from GitHub on "%s", user "%s", pass "%s"',
+                $url,
+                'guser',
+                '*********'
+            ))
             ->andReturn();
 
         $this->snapshot->run_status = Snapshot::RUN_STATUS_DONE;
@@ -206,9 +212,9 @@ class GitHubStatusUpdateTest extends \TestCase
         $client = $this->prophesize(HttpClientInterface::class);
         $client->request(
             'POST',
-            'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id,
+            $url,
             [
-                'auth_basic' => ['guser', 'gpass'],
+                'auth_basic' => ['guser', 'gpassword'],
                 'json' => [
                     'context' => 'Appocular visual regression test',
                     'state' => 'failure',

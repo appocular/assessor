@@ -75,12 +75,13 @@ EOF;
             $description = 'In progress. Please wait.';
         }
 
+        $uri = 'https://api.github.com/repos/' . $matches['org'] . '/' .
+            $matches['repo'] . '/statuses/' . $this->snapshot->id;
         try {
             Log::info('Sending status update for ' . $this->snapshot->repo->uri);
             $res = $client->request(
                 'POST',
-                'https://api.github.com/repos/' . $matches['org'] . '/' .
-                $matches['repo'] . '/statuses/' . $this->snapshot->id,
+                $uri,
                 [
                     'auth_basic' => [env('GITHUB_USER', ''), env('GITHUB_PASSWORD', '')],
                     'json' => [
@@ -93,7 +94,13 @@ EOF;
             );
 
             if ($res->getStatusCode() != 201) {
-                Log::error('Bad response code from GitHub: ' . $res->getStatusCode());
+                Log::error(sprintf(
+                    'Unexpected %d response code from GitHub on "%s", user "%s", pass "%s"',
+                    $res->getStatusCode(),
+                    $uri,
+                    env('GITHUB_USER', ''),
+                    preg_replace('{.}', '*', env('GITHUB_PASSWORD', ''))
+                ));
             }
         } catch (Throwable $e) {
             Log::error('Error updating GitHub commit status: ' . $e->getMessage());
