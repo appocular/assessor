@@ -34,7 +34,7 @@ class FindCheckpointBaseline extends Job
         }
 
         Log::info(sprintf(
-            'Finding Checkpoint baselines for %s (snapshot $s)',
+            'Finding Checkpoint baselines for %s (snapshot %s)',
             $checkpoint->id,
             $checkpoint->snapshot->id
         ));
