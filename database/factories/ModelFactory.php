@@ -11,6 +11,12 @@
 |
 */
 
+$factory->define(Appocular\Assessor\Batch::class, function (Faker\Generator $faker) {
+    return [
+        'snapshot_id' => $faker->sha256,
+    ];
+});
+
 $factory->define(Appocular\Assessor\Snapshot::class, function (Faker\Generator $faker) {
     return [
         'id' => $faker->sha256,

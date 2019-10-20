@@ -49,6 +49,14 @@ class Snapshot extends Model
     }
 
     /**
+     * Get the current batches for the snapshot.
+     */
+    public function batches()
+    {
+        return $this->hasMany('Appocular\Assessor\Batch');
+    }
+
+    /**
      * Get the checkpoints for the snapshot.
      */
     public function checkpoints()
@@ -165,7 +173,12 @@ class Snapshot extends Model
         } else {
             $this->status = self::STATUS_PASSED;
         }
-        $this->run_status = $unknownCount > 0 ? self::RUN_STATUS_PENDING : self::RUN_STATUS_DONE;
+
+        if ($unknownCount > 0) {
+            $this->run_status = self::RUN_STATUS_PENDING;
+        } else {
+            $this->run_status = $this->batches()->count() > 0 ? self::RUN_STATUS_PENDING : self::RUN_STATUS_DONE;
+        }
 
         $this->save();
     }
