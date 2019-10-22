@@ -21,17 +21,17 @@ class Snapshot extends Model
     const STATUS_PASSED = 'passed';
 
     /**
-     * Snapshot failed. Unapproved failed checkpoints exists.
+     * Snapshot failed. Rejected checkpoints exists.
      */
     const STATUS_FAILED = 'failed';
 
     /**
-     * Snapshot is still pending (unknown checkpoints exists).
+     * Snapshot is still pending (unknown checkpoints exists or batch still running).
      */
     const RUN_STATUS_PENDING = 'pending';
 
     /**
-     * Snapshot is done (all checkpoints have status).
+     * Snapshot is done (all checkpoints have status and no active batches).
      */
     const RUN_STATUS_DONE = 'done';
 
