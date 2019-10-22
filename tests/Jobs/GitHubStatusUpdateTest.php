@@ -8,6 +8,7 @@ use Appocular\Assessor\Snapshot;
 use Illuminate\Support\Facades\Log;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Prophecy\Argument;
 
 class GitHubStatusUpdateTest extends \TestCase
 {
@@ -101,9 +102,18 @@ class GitHubStatusUpdateTest extends \TestCase
     public function statusProvider()
     {
         return [
+            // Undetermined checkpoints (either with differences not
+            // human-processed yet, or no diff) and running status should
+            // provide running message.
             [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_PENDING, 'pending', 'In progress. Please wait.'],
-            [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_DONE, 'success', 'Passed'],
-            [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_DONE, 'failure', 'Failed'],
+            // All checkpoints passed, approved or ignored, but batch still running. Still pending.
+            [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_PENDING, 'pending', 'In progress. Please wait.'],
+            // Failed checkpoint exists, this is overall failure, even if we're still running.
+            [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_PENDING, 'failure', 'Failed!'],
+            // Run done, but unprocessed checkpoints, signal human processing is needed.
+            [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_DONE, 'failure', 'Differences detected, please review.'],
+            [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_DONE, 'success', 'Passed!'],
+            [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_DONE, 'failure', 'Failed!'],
         ];
     }
 
@@ -127,19 +137,7 @@ class GitHubStatusUpdateTest extends \TestCase
         $response->getStatusCode()
             ->willReturn(201);
         $client = $this->prophesize(HttpClientInterface::class);
-        $client->request(
-            'POST',
-            'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id,
-            [
-                'auth_basic' => ['guser', 'gpassword'],
-                'json' => [
-                    'context' => 'Appocular visual regression test',
-                    'state' => 'failure',
-                    'description' => 'Failed',
-                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
-                ]
-            ]
-        )
+        $client->request(Argument::any(), Argument::any(), Argument::any())
             ->willThrow(new \Exception('random error'))
             ->shouldBeCalled();
 
@@ -174,19 +172,7 @@ class GitHubStatusUpdateTest extends \TestCase
             ->willReturn(202)
             ->shouldBeCalled();
         $client = $this->prophesize(HttpClientInterface::class);
-        $client->request(
-            'POST',
-            $url,
-            [
-                'auth_basic' => ['guser', 'gpassword'],
-                'json' => [
-                    'context' => 'Appocular visual regression test',
-                    'state' => 'failure',
-                    'description' => 'Failed',
-                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
-                ]
-            ]
-        )
+        $client->request(Argument::any(), Argument::any(), Argument::any())
             ->willReturn($response)
             ->shouldBeCalled();
 
