@@ -62,12 +62,17 @@ class GitHubStatusUpdateTest extends \TestCase
     }
 
     /**
-     * Test that pending status is properly sent to GitHub.
+     * Test that statuses is properly sent to GitHub.
+     *
+     * @dataProvider statusProvider
      */
-    public function testSendPendingUpdateToGithub()
+    public function testStatusUpdateToGithub($status, $run_status, $state, $description)
     {
         Log::shouldReceive('info')
             ->once();
+
+        $this->snapshot->status = $status;
+        $this->snapshot->run_status = $run_status;
 
         $response = $this->prophesize(ResponseInterface::class);
         $response->getStatusCode()
@@ -80,8 +85,8 @@ class GitHubStatusUpdateTest extends \TestCase
                 'auth_basic' => ['guser', 'gpassword'],
                 'json' => [
                     'context' => 'Appocular visual regression test',
-                    'state' => 'pending',
-                    'description' => 'In progress. Please wait.',
+                    'state' => $state,
+                    'description' => $description,
                     'target_url' => 'https://appocular.io/' . $this->snapshot->id,
                 ]
             ]
@@ -93,74 +98,13 @@ class GitHubStatusUpdateTest extends \TestCase
         $job->handle($client->reveal());
     }
 
-    /**
-     * Test that passed status is properly sent to GitHub.
-     */
-    public function testSendPassedUpdateToGithub()
+    public function statusProvider()
     {
-        Log::shouldReceive('info')
-            ->once();
-
-        $this->snapshot->run_status = Snapshot::RUN_STATUS_DONE;
-        $this->snapshot->status = Snapshot::STATUS_PASSED;
-
-        $response = $this->prophesize(ResponseInterface::class);
-        $response->getStatusCode()
-            ->willReturn(201);
-        $client = $this->prophesize(HttpClientInterface::class);
-        $client->request(
-            'POST',
-            'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id,
-            [
-                'auth_basic' => ['guser', 'gpassword'],
-                'json' => [
-                    'context' => 'Appocular visual regression test',
-                    'state' => 'success',
-                    'description' => 'Passed',
-                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
-                ]
-            ]
-        )
-            ->willReturn($response)
-            ->shouldBeCalled();
-
-        $job = new GitHubStatusUpdate($this->snapshot);
-        $job->handle($client->reveal());
-    }
-
-    /**
-     * Test that failed status is properly sent to GitHub.
-     */
-    public function testSendFailedUpdateToGithub()
-    {
-        Log::shouldReceive('info')
-            ->once();
-
-        $this->snapshot->run_status = Snapshot::RUN_STATUS_DONE;
-        $this->snapshot->status = Snapshot::STATUS_FAILED;
-
-        $response = $this->prophesize(ResponseInterface::class);
-        $response->getStatusCode()
-            ->willReturn(201);
-        $client = $this->prophesize(HttpClientInterface::class);
-        $client->request(
-            'POST',
-            'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id,
-            [
-                'auth_basic' => ['guser', 'gpassword'],
-                'json' => [
-                    'context' => 'Appocular visual regression test',
-                    'state' => 'failure',
-                    'description' => 'Failed',
-                    'target_url' => 'https://appocular.io/' . $this->snapshot->id,
-                ]
-            ]
-        )
-            ->willReturn($response)
-            ->shouldBeCalled();
-
-        $job = new GitHubStatusUpdate($this->snapshot);
-        $job->handle($client->reveal());
+        return [
+            [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_PENDING, 'pending', 'In progress. Please wait.'],
+            [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_DONE, 'success', 'Passed'],
+            [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_DONE, 'failure', 'Failed'],
+        ];
     }
 
     /**

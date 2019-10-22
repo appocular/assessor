@@ -116,6 +116,5 @@ EOF;
         } catch (Throwable $e) {
             Log::error('Error updating GitHub commit status: ' . $e->getMessage());
         }
-        //Log::info('...');
     }
 }
