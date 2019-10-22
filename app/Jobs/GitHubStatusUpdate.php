@@ -71,7 +71,12 @@ EOF;
                 $description = 'Failed!';
                 break;
 
-            case [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_DONE]:
+            case [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_WAITING]:
+                $state = 'failure';
+                $description = 'Failed! More differences detected, please review.';
+                break;
+
+            case [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_WAITING]:
                 $state = 'failure';
                 $description = 'Differences detected, please review.';
                 break;
@@ -84,7 +89,7 @@ EOF;
             default:
                 // Shouldn't happen.
                 $state = 'error';
-                $description = 'snapshot in unknown state? Please seek help.';
+                $description = 'Snapshot in unknown/impossible state? Please seek help.';
         }
 
         $uri = 'https://api.github.com/repos/' . $org . '/' .

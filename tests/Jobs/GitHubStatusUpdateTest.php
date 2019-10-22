@@ -104,16 +104,28 @@ class GitHubStatusUpdateTest extends \TestCase
         return [
             // Undetermined checkpoints (either with differences not
             // human-processed yet, or no diff) and running status should
-            // provide running message.
+            // provide running message. This state is only possible on a newly
+            // created Snapshot.
             [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_PENDING, 'pending', 'In progress. Please wait.'],
             // All checkpoints passed, approved or ignored, but batch still running. Still pending.
             [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_PENDING, 'pending', 'In progress. Please wait.'],
             // Failed checkpoint exists, this is overall failure, even if we're still running.
             [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_PENDING, 'failure', 'Failed!'],
-            // Run done, but unprocessed checkpoints, signal human processing is needed.
-            [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_DONE, 'failure', 'Differences detected, please review.'],
+            // Shouldn't happen.
+            [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_DONE, 'error',
+             'Snapshot in unknown/impossible state? Please seek help.'],
+            // All checkpoints passed/approved/ignored and no more batches.
             [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_DONE, 'success', 'Passed!'],
+            // Rejected checkpoint and no running batches.
             [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_DONE, 'failure', 'Failed!'],
+            // Run done, but unprocessed checkpoints, signal human processing is needed.
+            [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_WAITING, 'failure', 'Differences detected, please review.'],
+            // Shouldn't happen.
+            [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_WAITING, 'error',
+             'Snapshot in unknown/impossible state? Please seek help.'],
+            // Rejected checkpoint, but more differences exists.
+            [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_WAITING, 'failure',
+             'Failed! More differences detected, please review.'],
         ];
     }
 

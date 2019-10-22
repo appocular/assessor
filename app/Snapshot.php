@@ -26,12 +26,17 @@ class Snapshot extends Model
     const STATUS_FAILED = 'failed';
 
     /**
-     * Snapshot is still pending (unknown checkpoints exists or batch still running).
+     * Snapshot is still pending (batch still running).
      */
     const RUN_STATUS_PENDING = 'pending';
 
     /**
-     * Snapshot is done (all checkpoints have status and no active batches).
+     * Snapshot is waiting for user action (unknown checkpoints exists).
+     */
+    const RUN_STATUS_WAITING = 'waiting';
+
+    /**
+     * Snapshot is done (all checkpoints have non-unknown status and no active batches).
      */
     const RUN_STATUS_DONE = 'done';
 
@@ -175,7 +180,7 @@ class Snapshot extends Model
         }
 
         if ($unknownCount > 0) {
-            $this->run_status = self::RUN_STATUS_PENDING;
+            $this->run_status = self::RUN_STATUS_WAITING;
         } else {
             $this->run_status = $this->batches()->count() > 0 ? self::RUN_STATUS_PENDING : self::RUN_STATUS_DONE;
         }
