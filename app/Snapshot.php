@@ -66,7 +66,7 @@ class Snapshot extends Model
      */
     public function checkpoints()
     {
-        return $this->hasMany('Appocular\Assessor\Checkpoint');
+        return $this->hasMany('Appocular\Assessor\Checkpoint')->orderBy('name');
     }
 
     /**
