@@ -72,6 +72,7 @@ class CheckpointTest extends ControllerTestBase
                 'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[0]->id]),
             ],
             'slug' => SlugGenerator::toSlug($checkpoints[0]->name),
+            'meta' => null,
         ]);
 
         $this->get('checkpoint/' . $checkpoints[1]->id);
@@ -90,9 +91,39 @@ class CheckpointTest extends ControllerTestBase
                 'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[1]->id]),
             ],
             'slug' => SlugGenerator::toSlug($checkpoints[1]->name),
+            'meta' => null,
         ]);
         $this->get('checkpoint/random');
         $this->assertResponseStatus(404);
+    }
+
+    public function testCheckpointMeta()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        $checkpoints = [
+            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make([
+                'meta' => ['test' => 'banana', 'test2' => 'something']
+            ])),
+        ];
+
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
+        $this->assertResponseStatus(200);
+        $this->seeJsonEquals([
+            'self' => route('checkpoint.show', ['id' => $checkpoints[0]->id]),
+            'name' => $checkpoints[0]->name,
+            'image_url' => $checkpoints[0]->image_url,
+            'baseline_url' => $checkpoints[0]->baseline_url,
+            'diff_url' => $checkpoints[0]->diff_url,
+            'status' => 'unknown',
+            'diff_status' => 'unknown',
+            'actions' => [
+                'approve' => route('checkpoint.approve', ['id' => $checkpoints[0]->id]),
+                'reject' => route('checkpoint.reject', ['id' => $checkpoints[0]->id]),
+                'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[0]->id]),
+            ],
+            'slug' => SlugGenerator::toSlug($checkpoints[0]->name, ['test' => 'banana', 'test2' => 'something']),
+            'meta' => ['test' => 'banana', 'test2' => 'something'],
+        ]);
     }
 
     public function testApprovingCheckpoint()

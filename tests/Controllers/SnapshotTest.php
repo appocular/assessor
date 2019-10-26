@@ -77,6 +77,7 @@ class SnapshotTest extends ControllerTestBase
                     'ignore' => route('checkpoint.ignore', ['id' => $checkpoint->id]),
                 ],
                 'slug' => SlugGenerator::toSlug($checkpoint->name),
+                'meta' => null,
             ];
         }, $checkpoints);
 

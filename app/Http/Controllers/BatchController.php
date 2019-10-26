@@ -86,8 +86,14 @@ class BatchController extends BaseController
         $this->validate($request, [
             'name' => 'required|string|min:1|max:255',
             'image' => 'required|string',
-            // 'metadata' => 'array',
+            'meta' => 'array',
+            'meta.*' => 'string'
         ]);
+
+        $meta = null;
+        if ($meta = $request->input('meta')) {
+            $meta = Checkpoint::cleanMeta($meta);
+        }
 
         $imageData = base64_decode($request->input('image'), true);
 
@@ -104,14 +110,16 @@ class BatchController extends BaseController
         }
         $image_url = $this->keeper->store($imageData);
 
+        $id = hash('sha256', $snapshot->id . $request->input('name') . ($meta ? json_encode($meta) : ''));
         try {
             $checkpoint = $snapshot->checkpoints()->create([
-                'id' => hash('sha256', $snapshot->id . $request->input('name')),
+                'id' => $id,
                 'name' => $request->input('name'),
                 'image_url' => $image_url,
+                'meta' => $meta,
             ]);
         } catch (PDOException $e) {
-            $checkpoint = $snapshot->checkpoints()->find(hash('sha256', $snapshot->id . $request->input('name')));
+            $checkpoint = $snapshot->checkpoints()->find($id);
             $checkpoint->image_url = $image_url;
             $checkpoint->save();
         }

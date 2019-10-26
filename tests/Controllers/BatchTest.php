@@ -205,6 +205,111 @@ class BatchTest extends ControllerTestBase
         ]);
     }
 
+    public function testAddingCheckpointWithMetadata()
+    {
+        $this->keeperProphecy->store(Argument::any())->willReturn('XXX');
+        $id = str_repeat('1', 40);
+        $batch_id = $this->startBatch($id);
+
+        // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
+        $image = base64_encode(file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
+
+        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
+        $this->assertResponseStatus(201);
+
+        $this->json(
+            'POST',
+            '/batch/' . $batch_id . '/checkpoint',
+            ['name' => 'test image', 'image' => $image, 'meta' => ['test' => 'value']]
+        );
+        $this->assertResponseStatus(201);
+
+        $this->json(
+            'POST',
+            '/batch/' . $batch_id . '/checkpoint',
+            ['name' => 'test image', 'image' => $image, 'meta' => ['test' => 'value', 'key2' => 'more data']]
+        );
+        $this->assertResponseStatus(201);
+
+        // This one should overwrite the previous as the name and meta is the same.
+        $this->json(
+            'POST',
+            '/batch/' . $batch_id . '/checkpoint',
+            ['name' => 'test image', 'image' => $image, 'meta' => ['key2' => 'more data', 'test' => 'value']]
+        );
+        $this->assertResponseStatus(201);
+
+        // Check that there's exactly 3 checkpoints in the database.
+        $this->assertEquals(3, $this->app->make('db')->table('checkpoints')->count());
+
+        // Now check that all checkpoints is in the database.
+        $this->seeInDatabase('checkpoints', [
+            'snapshot_id' => $id,
+            'name' => 'test image',
+            'image_url' => 'XXX',
+            'meta' => null,
+        ]);
+        $this->seeInDatabase('checkpoints', [
+            'snapshot_id' => $id,
+            'name' => 'test image',
+            'image_url' => 'XXX',
+            'meta' => \json_encode(['test' => 'value']),
+        ]);
+        $this->seeInDatabase('checkpoints', [
+            'snapshot_id' => $id,
+            'name' => 'test image',
+            'image_url' => 'XXX',
+            'meta' => \json_encode(['key2' => 'more data', 'test' => 'value']),
+        ]);
+    }
+
+    public function testMetadataValidation()
+    {
+        $this->keeperProphecy->store(Argument::any())->willReturn('XXX');
+        $id = str_repeat('7', 40);
+        $batch_id = $this->startBatch($id);
+
+        // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
+        $image = base64_encode(file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
+
+        $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => '1', 'image' => $image]);
+        $this->assertResponseStatus(201);
+
+        $this->json(
+            'POST',
+            '/batch/' . $batch_id . '/checkpoint',
+            ['name' => '2', 'image' => $image, 'meta' => ['test' => 'test']]
+        );
+        $this->assertResponseStatus(201);
+
+        $this->json(
+            'POST',
+            '/batch/' . $batch_id . '/checkpoint',
+            ['name' => '3', 'image' => $image, 'meta' => ['test' => 'test', 'test more' => 'value']]
+        );
+        $this->assertResponseStatus(201);
+
+        $this->json(
+            'POST',
+            '/batch/' . $batch_id . '/checkpoint',
+            ['name' => '4', 'image' => $image, 'meta' => ['test' => 'test', 'test more' => ['value']]]
+        );
+        $this->assertResponseStatus(422);
+        $this->json(
+            'POST',
+            '/batch/' . $batch_id . '/checkpoint',
+            ['name' => '4', 'image' => $image, 'meta' => ['test' => []]]
+        );
+        $this->assertResponseStatus(422);
+
+        $this->json(
+            'POST',
+            '/batch/' . $batch_id . '/checkpoint',
+            ['name' => '4', 'image' => $image, 'meta' => ['test' => null]]
+        );
+        $this->assertResponseStatus(422);
+    }
+
     /**
      * Start a batch and return the id.
      */

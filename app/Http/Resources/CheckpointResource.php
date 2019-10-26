@@ -29,7 +29,8 @@ class CheckpointResource extends Resource
                 'reject' => route('checkpoint.reject', ['id' => $this->id]),
                 'ignore' => route('checkpoint.ignore', ['id' => $this->id]),
             ],
-            'slug' => SlugGenerator::toSlug($this->name),
+            'slug' => SlugGenerator::toSlug($this->name, $this->meta),
+            'meta' => $this->meta,
         ];
     }
 }

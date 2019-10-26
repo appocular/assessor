@@ -15,10 +15,16 @@ class Checkpoint extends Model
     const DIFF_STATUS_IDENTICAL = 'identical';
     const DIFF_STATUS_DIFFERENT = 'different';
 
-    protected $fillable = ['id', 'name', 'snapshot_id', 'image_url', 'baseline_url', 'diff_url'];
+    protected $fillable = ['id', 'name', 'snapshot_id', 'image_url', 'baseline_url', 'diff_url', 'meta'];
 
     public $incrementing = false;
     protected $keyType = 'string';
+
+    protected $casts = [
+        // Store meta as JSON in the database.
+        'meta' => 'array',
+    ];
+
 
     /**
      * Get the snapshot for the checkpoint.
@@ -51,6 +57,12 @@ class Checkpoint extends Model
                 'status' => self::STATUS_UNKNOWN,
                 'diff_status' => self::DIFF_STATUS_UNKNOWN,
             ]);
+    }
+
+    public static function cleanMeta(array $meta)
+    {
+        ksort($meta);
+        return $meta;
     }
 
     /**

@@ -10,7 +10,8 @@
         "webpatser/laravel-uuid": "^3.0",
         "appocular/clients-laravel": "dev-master",
         "fideloper/proxy": "^4.2",
-        "symfony/http-client": "^4.3"
+        "symfony/http-client": "^4.3",
+        "doctrine/dbal": "^2.9"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.4",

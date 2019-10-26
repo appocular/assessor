@@ -18,4 +18,9 @@ class SlugGeneratorTest extends TestCase
         // Should handle UTF-8 characters too.
         $this->assertEquals('a-checkpoint--203d', SlugGenerator::toSlug('A checkpoint‽'));
     }
+
+    public function testGenerationWithMeta()
+    {
+        $this->assertEquals('frontpage,a:b,c:d', SlugGenerator::toSlug('Frontpage', ['c' => 'd', 'a' => 'b']));
+    }
 }

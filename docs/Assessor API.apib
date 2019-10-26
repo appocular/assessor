@@ -153,6 +153,18 @@ further batches on the same snapshot can be created.
 Add checkpoint image. Stores image and associates it with the snapshot
 of the current batch run.
 
+Meta information can be attached to the checkpoint, in the form of
+name/value pairs. Checkpoints may be submitted multiple times with the
+same name but different metadata, and are considered different
+"groups". For instance a checkpoint named "Frontpage" can be submitted
+with the metadata "Browser size: 1024×768" and another named
+"Frontpage" can be submitted with the metadata "Browser size:
+360×640", in order to check the same page at different browser sizes.
+
+Assesor doesn't apply any logic to metadata other than storing it as
+key-values, but client (both submitting and frontend) might attach
+specific significance to certain keys/values.
+
 + Parameters
 
     + id: `58444f87-0525-429d-ba3c-d7b06cab748a` - Batch id.
@@ -163,18 +175,13 @@ of the current batch run.
 
             Authorization: Bearer MyRepoToken
 
-    + Body
-
-            {
-                "name": "Frontpage",
-                "image": "<base64 PNG data>"
-            }
+    + Attributes (Checkpoint submission)
 
 + Response 201
 
     + Headers
 
-            Location: http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e
+            Location: http://localhost:8080/checkpoint/eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707
 
 + Request Missing name (application/json)
 
@@ -265,7 +272,7 @@ Get information about a checkpoint.
 
 + Parameters
 
-    + checkpoint_id: `5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e` - Id of checkpoint.
+    + checkpoint_id: `eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707` - Id of checkpoint.
 
 + Request (application/json)
 
@@ -296,7 +303,7 @@ baseline for future tests.
 
 + Parameters
 
-    + checkpoint_id: `5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e` - Id of checkpoint.
+    + checkpoint_id: `eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707` - Id of checkpoint.
 
 + Request (application/json)
 
@@ -313,7 +320,7 @@ future tests. This marks this snapshot as failed.
 
 + Parameters
 
-    + checkpoint_id: `5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e` - Id of checkpoint.
+    + checkpoint_id: `eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707` - Id of checkpoint.
 
 + Request (application/json)
 
@@ -333,7 +340,7 @@ failing the snapshot. Use with care.
 
 + Parameters
 
-    + checkpoint_id: `5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e` - Id of checkpoint.
+    + checkpoint_id: `eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707` - Id of checkpoint.
 
 + Request (application/json)
 
@@ -373,6 +380,12 @@ Endpoint for reporting differences.
 
 # Data Structures
 
+## Checkpoint submission (object, fixed-type)
+- `name`: *Frontpage* (string, required) - Name of checkpoint.
+- `meta` (object, fixed-type) - Matadata of checkpoint.
+  - *Browser size (string, required)*: *1024×768* (string, required) - Name and value of metadata point.
+- `image`: *<base64 PNG data>* (string, required) - Base64 encoded PNG data.
+
 ## Snapshot (object, fixed-type)
 - `self`: *http://localhost:8080/snapshot/d8f4590320e1343a915b6394170650a8f35d6926* (string) - URL and ID of snapshot.
 - `id`: *d8f4590320e1343a915b6394170650a8f35d6926* (string) - The snapshot identifier. Mostly corresponds to a commit id in the VCS.
@@ -381,7 +394,7 @@ Endpoint for reporting differences.
 - `run_status`: pending, done (enum) - Snapshot running status.
 
 ## Checkpoint (object, fixed-type)
-- `self`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e* (string) - URL and ID of checkpoint.
+- `self`: *http://localhost:8080/checkpoint/eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707* (string) - URL and ID of checkpoint.
 - `name`: *Frontpage* (string) - Name of checkpoint.
 - `image_url`: *http://localhost:8081/image/3f9200a6dee485e3fbf67e68b1e9f2bbb6e48387dd1e9c676c2e0bf48feb1a98* (string) - URL of image.
 - `baseline_url` (string, nullable) - URL of baseline.
@@ -390,8 +403,10 @@ Endpoint for reporting differences.
 - `diff_status`: unknown, identical, different (enum) - Checkpoint diff status.
 - `actions` (CheckpointActions) - Actions available for this checkpoint.
 - `slug`: *frontpage* (string) - A somewhat human-readable identifiier for this checkpoint, usable in URLs. Only guaranteed to be unique within the same checkpoint.
+- `meta` (object, fixed-type) - Matadata of checkpoint.
+  - *Browser size (string, required)*: *1024×768* (string, required) - Name and value of metadata point.
 
 ## CheckpointActions (object, fixed-type)
-- `approve`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e/approve* (string) Approve URL.
-- `reject`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e/reject* (string) Reject URL.
-- `ignore`: *http://localhost:8080/checkpoint/5a4aa4425873d6a29a81375d686219e03a92c8860712b2343cbcbb5455ec360e/ignore* (string) Ignore URL.
+- `approve`: *http://localhost:8080/checkpoint/eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707/approve* (string) Approve URL.
+- `reject`: *http://localhost:8080/checkpoint/eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707/reject* (string) Reject URL.
+- `ignore`: *http://localhost:8080/checkpoint/eba8c38ac8b84a8ca131d14349faf8d08dda8b4a1444c6b35c01b656b9d4c707/ignore* (string) Ignore URL.

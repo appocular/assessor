@@ -60,6 +60,7 @@ class UpdateDiffTest extends \TestCase
                 'baseline_url' => $checkpoints[0]->baseline_url,
                 'diff_url' => 'original diff',
                 'status' => $status,
+                'meta' => null,
             ]));
         }
 
