@@ -53,7 +53,6 @@ class SnapshotObserver
              $snapshot->isDirty('run_status'))
         ) {
             if (GitHubStatusUpdate::isGitHubUri($snapshot->repo->uri)) {
-                Log::info('Dispatching...');
                 dispatch(new GitHubStatusUpdate($snapshot));
             }
         }
