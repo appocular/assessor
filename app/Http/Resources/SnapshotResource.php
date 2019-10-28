@@ -17,12 +17,14 @@ class SnapshotResource extends Resource
      */
     public function toArray($request)
     {
+        $baseline = $this->getBaseline();
         return [
             'self' => route('snapshot.show', ['id' => $this->id]),
             'id' => $this->id,
             'status' => $this->status,
             'run_status' => $this->run_status,
             'checkpoints' => CheckpointResource::collection($this->checkpoints),
+            'baseline_url' => $baseline ? route('snapshot.show', ['id' => $baseline->id]) : null,
         ];
     }
 }

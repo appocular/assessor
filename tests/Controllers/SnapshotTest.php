@@ -46,7 +46,10 @@ class SnapshotTest extends ControllerTestBase
 
     public function testGettingSnapshot()
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $baseline = factory(Snapshot::class)->create();
+        $snapshot = factory(Snapshot::class)->create([
+            'baseline' => $baseline->id,
+        ]);
 
         $this->get('snapshot/' . $snapshot->id, $this->headers());
         $this->assertResponseStatus(200);
@@ -56,6 +59,7 @@ class SnapshotTest extends ControllerTestBase
             'checkpoints' => [],
             'status' => 'unknown',
             'run_status' => 'pending',
+            'baseline_url' => route('snapshot.show', ['id' => $baseline->id]),
         ]);
 
         $checkpoints = [
@@ -89,6 +93,7 @@ class SnapshotTest extends ControllerTestBase
             'checkpoints' => $checkpointsJson,
             'status' => 'unknown',
             'run_status' => 'pending',
+            'baseline_url' => route('snapshot.show', ['id' => $baseline->id]),
         ]);
     }
 }
