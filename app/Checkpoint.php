@@ -65,6 +65,19 @@ class Checkpoint extends Model
         return $meta;
     }
 
+    public static function getId(string $snapshotId, $name, ?array $meta = null): string
+    {
+        return hash('sha256', $snapshotId . $name . ($meta ? json_encode($meta) : ''));
+    }
+
+    public function cloneTo(Snapshot $snapshot): Checkpoint
+    {
+        $checkpoint = $this->replicate();
+        $checkpoint->id = self::getId($snapshot->id, $checkpoint->name, $checkpoint->meta);
+        $checkpoint->snapshot()->associate($snapshot);
+        return $checkpoint;
+    }
+
     /**
      * Reset diff for checkpoint.
      */

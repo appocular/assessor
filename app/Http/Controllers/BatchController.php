@@ -110,7 +110,7 @@ class BatchController extends BaseController
         }
         $image_url = $this->keeper->store($imageData);
 
-        $id = hash('sha256', $snapshot->id . $request->input('name') . ($meta ? json_encode($meta) : ''));
+        $id = Checkpoint::getId($snapshot->id, $request->input('name'), $meta);
         try {
             $checkpoint = $snapshot->checkpoints()->create([
                 'id' => $id,

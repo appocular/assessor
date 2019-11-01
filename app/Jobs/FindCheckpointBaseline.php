@@ -42,7 +42,10 @@ class FindCheckpointBaseline extends Job
         $baseline = $checkpoint->snapshot->getBaseline();
         // Bail out if baseline has disappeared in the meantime.
         while ($baseline) {
-            $baseCheckpoint = $baseline->checkpoints()->where(['name' => $checkpoint->name])->first();
+            $baseCheckpoint = $baseline->checkpoints()->where([
+                'name' => $checkpoint->name,
+                'meta' => $checkpoint->meta
+            ])->first();
             // No parent baseline, break out.
             if (!$baseCheckpoint) {
                 break;

@@ -146,12 +146,8 @@ class Snapshot extends Model
             // the baseline so they exist in this snapshot.
             foreach ($baselineCheckpoints as $baseCheckpoint) {
                 try {
-                    $checkpoint = new Checkpoint([
-                        'id' => hash('sha256', $this->id . $baseCheckpoint->name),
-                        'snapshot_id' => $this->id,
-                        'name' => $baseCheckpoint->name,
-                        'image_url' => '',
-                    ]);
+                    $checkpoint = $baseCheckpoint->cloneTo($this);
+                    $checkpoint->image_url = '';
                     $checkpoint->save();
                     dispatch(new FindCheckpointBaseline($checkpoint));
                 } catch (Throwable $e) {
