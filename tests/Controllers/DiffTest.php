@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 
-class DiffTest extends ControllerTestBase
+class DiffTest extends \TestCase
 {
     use DatabaseMigrations;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         // Set up shared token.

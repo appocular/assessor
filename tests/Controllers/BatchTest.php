@@ -2,15 +2,14 @@
 
 namespace Controllers;
 
+use Appocular\Assessor\Jobs\SubmitImage;
 use Appocular\Assessor\Repo;
-use Appocular\Clients\Contracts\Differ;
-use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
 
-class BatchTest extends ControllerTestBase
+class BatchTest extends \TestCase
 {
     use DatabaseMigrations;
 
@@ -135,11 +134,15 @@ class BatchTest extends ControllerTestBase
 
     public function testAddingCheckpoint()
     {
-        $this->keeperProphecy->store(Argument::any())->willReturn('XXX');
+        Queue::fake();
+
         $id = str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
-        // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
+        // Test image taken from
+        // http://www.schaik.com/pngsuite/pngsuite_bas_png.html As
+        // BatchController checks for a PNG header, we need something that
+        // looks like an image, and an actual image is the superior likeness.
         $image = base64_encode(file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
@@ -147,24 +150,15 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_url' => 'XXX',
+            'image_url' => null,
         ]);
+        Queue::assertPushed(SubmitImage::class);
 
-        // Submitting an image with the same name should replace the data of image.
-        $this->keeperProphecy->store(Argument::any())->willReturn('YYY');
+        // Submitting a checkpoint with the same name should just trigger
+        // another SubmitImage job which will overwrite the former.
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
         $this->assertResponseStatus(201);
-        $this->seeInDatabase('checkpoints', [
-            'snapshot_id' => $id,
-            'name' => 'test image',
-            'image_url' => 'YYY',
-        ]);
-        // Check that the old data is missing.
-        $this->missingFromDatabase('checkpoints', [
-            'snapshot_id' => $id,
-            'name' => 'test image2',
-            'image_url' => 'XXX',
-        ]);
+        Queue::assertPushed(SubmitImage::class, 2);
 
         // Posting a second image should work.
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image2', 'image' => $image]);
@@ -172,14 +166,15 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image2',
-            'image_url' => 'YYY',
+            'image_url' => null,
         ]);
+        Queue::assertPushed(SubmitImage::class, 3);
 
         // The first image should still be there.
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_url' => 'YYY',
+            'image_url' => null,
         ]);
 
         $this->delete('/batch/' . $batch_id);
@@ -194,20 +189,22 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id2,
             'name' => 'test image',
-            'image_url' => 'YYY',
+            'image_url' => null,
         ]);
+        Queue::assertPushed(SubmitImage::class, 4);
 
         // The image from the other run should still be there.
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_url' => 'YYY',
+            'image_url' => null,
         ]);
     }
 
     public function testAddingCheckpointWithMetadata()
     {
-        $this->keeperProphecy->store(Argument::any())->willReturn('XXX');
+        Queue::fake();
+
         $id = str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
@@ -246,26 +243,24 @@ class BatchTest extends ControllerTestBase
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_url' => 'XXX',
             'meta' => null,
         ]);
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_url' => 'XXX',
             'meta' => \json_encode(['test' => 'value']),
         ]);
         $this->seeInDatabase('checkpoints', [
             'snapshot_id' => $id,
             'name' => 'test image',
-            'image_url' => 'XXX',
             'meta' => \json_encode(['key2' => 'more data', 'test' => 'value']),
         ]);
     }
 
     public function testMetadataValidation()
     {
-        $this->keeperProphecy->store(Argument::any())->willReturn('XXX');
+        Queue::fake();
+
         $id = str_repeat('7', 40);
         $batch_id = $this->startBatch($id);
 

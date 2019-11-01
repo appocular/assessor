@@ -166,10 +166,12 @@ class Snapshot extends Model
     public function updateStatus() : void
     {
         $this->refresh();
+        $pendingCount = $this->checkpoints->where('status', Checkpoint::STATUS_PENDING)->count();
         $unknownCount = $this->checkpoints->where('status', Checkpoint::STATUS_UNKNOWN)->count();
+        $batchCount = $this->batches()->count();
         if ($this->checkpoints->where('status', Checkpoint::STATUS_REJECTED)->count() > 0) {
             $this->status = self::STATUS_FAILED;
-        } elseif ($unknownCount > 0) {
+        } elseif ($unknownCount > 0 || $pendingCount > 0 || $batchCount > 0) {
             $this->status = self::STATUS_UNKNOWN;
         } else {
             $this->status = self::STATUS_PASSED;
@@ -178,7 +180,9 @@ class Snapshot extends Model
         if ($unknownCount > 0) {
             $this->run_status = self::RUN_STATUS_WAITING;
         } else {
-            $this->run_status = $this->batches()->count() > 0 ? self::RUN_STATUS_PENDING : self::RUN_STATUS_DONE;
+            $this->run_status = ($pendingCount > 0 || $batchCount > 0) ?
+            self::RUN_STATUS_PENDING :
+            self::RUN_STATUS_DONE;
         }
 
         $this->save();

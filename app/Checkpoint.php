@@ -2,10 +2,12 @@
 
 namespace Appocular\Assessor;
 
+use Appocular\Assessor\Snapshot;
 use Illuminate\Database\Eloquent\Model;
 
 class Checkpoint extends Model
 {
+    const STATUS_PENDING = 'pending';
     const STATUS_UNKNOWN = 'unknown';
     const STATUS_APPROVED = 'approved';
     const STATUS_REJECTED = 'rejected';
@@ -156,6 +158,9 @@ class Checkpoint extends Model
      */
     public function approve()
     {
+        if ($this->isPending()) {
+            return;
+        }
         $this->status = self::STATUS_APPROVED;
         $this->save();
     }
@@ -165,6 +170,9 @@ class Checkpoint extends Model
      */
     public function reject()
     {
+        if ($this->isPending()) {
+            return;
+        }
         $this->status = self::STATUS_REJECTED;
         $this->save();
     }
@@ -174,7 +182,15 @@ class Checkpoint extends Model
      */
     public function ignore()
     {
+        if ($this->isPending()) {
+            return;
+        }
         $this->status = self::STATUS_IGNORED;
         $this->save();
+    }
+
+    public function isPending()
+    {
+        return $this->status === self::STATUS_PENDING;
     }
 }

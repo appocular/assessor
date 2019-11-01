@@ -351,10 +351,17 @@ class SnapshotModelTest extends \TestCase
         $batch = factory(Batch::class)->create(['snapshot_id' => $snapshot->id]);
 
         $snapshot->updateStatus();
-        $this->assertEquals(Snapshot::STATUS_PASSED, $snapshot->status);
+        $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
         $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
 
         $batch->delete();
+
+        // Or pending Checkpoints.
+        $checkpoints[1]->status = Checkpoint::STATUS_PENDING;
+        $checkpoints[1]->save();
+
+        $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
+        $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
 
         // Should fail if there's rejected checkpoints.
         $checkpoints[1]->status = Checkpoint::STATUS_REJECTED;

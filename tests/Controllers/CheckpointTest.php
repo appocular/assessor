@@ -9,11 +9,11 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
 
-class CheckpointTest extends ControllerTestBase
+class CheckpointTest extends \TestCase
 {
     use DatabaseMigrations;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         // Set up a frontend token.

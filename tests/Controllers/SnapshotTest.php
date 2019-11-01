@@ -9,11 +9,11 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\WithoutMiddleware;
 use Prophecy\Argument;
 
-class SnapshotTest extends ControllerTestBase
+class SnapshotTest extends \TestCase
 {
     use DatabaseMigrations;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         // Set up a frontend token.

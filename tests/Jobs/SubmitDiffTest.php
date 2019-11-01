@@ -4,7 +4,6 @@ namespace Jobs;
 
 use Appocular\Assessor\Jobs\SubmitDiff;
 use Appocular\Clients\Contracts\Differ;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 

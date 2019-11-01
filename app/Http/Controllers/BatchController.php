@@ -5,8 +5,8 @@ namespace Appocular\Assessor\Http\Controllers;
 use Appocular\Assessor\Batch;
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\History;
+use Appocular\Assessor\Jobs\SubmitImage;
 use Appocular\Assessor\Snapshot;
-use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,16 +19,6 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class BatchController extends BaseController
 {
-    /**
-     * @var Keeper
-     */
-    protected $keeper;
-
-    public function __construct(Keeper $keeper)
-    {
-        $this->keeper = $keeper;
-    }
-
     public function create(Request $request, UrlGenerator $urlGenerator)
     {
         $this->validate($request, [
@@ -108,24 +98,28 @@ class BatchController extends BaseController
                 $batch->id
             ));
         }
-        $image_url = $this->keeper->store($imageData);
 
         $id = Checkpoint::getId($snapshot->id, $request->input('name'), $meta);
         try {
             $checkpoint = $snapshot->checkpoints()->create([
                 'id' => $id,
                 'name' => $request->input('name'),
-                'image_url' => $image_url,
                 'meta' => $meta,
             ]);
         } catch (PDOException $e) {
             $checkpoint = $snapshot->checkpoints()->find($id);
-            $checkpoint->image_url = $image_url;
-            $checkpoint->save();
         }
+
+        // Apparently create doesn't save?
+        $checkpoint->save();
+
+        dispatch(new SubmitImage($checkpoint, $request->input('image')));
 
         Log::info(sprintf('Added checkpoint "%s" in batch %s', $request->input('name'), $batch->id));
 
-        return (new Response('', 201))->header('Location', $urlGenerator->route('checkpoint.show', ['id' => $checkpoint->id]));
+        return (new Response('', 201))->header(
+            'Location',
+            $urlGenerator->route('checkpoint.show', ['id' => $checkpoint->id])
+        );
     }
 }
