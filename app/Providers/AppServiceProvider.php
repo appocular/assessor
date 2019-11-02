@@ -42,5 +42,18 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(HttpClientInterface::class, function ($app) {
             return HttpClient::create();
         });
+
+        if (env('APP_LOG_QUERIES', false)) {
+            // Ensure that the dispatcher has been created.
+            $this->app['events'];
+            $log = $this->app['log'];
+            $this->app['db']->listen(function ($sql) use ($log) {
+                $log->debug("*** SQL ***");
+                $log->debug($sql->sql);
+                $log->debug($sql->bindings);
+                $log->debug($sql->time);
+                $log->debug("**********");
+            });
+        }
     }
 }
