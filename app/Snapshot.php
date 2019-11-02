@@ -133,12 +133,12 @@ class Snapshot extends Model
             $baselineCheckpoints = [];
             foreach ($baseline->checkpoints()->get() as $checkpoint) {
                 if ($checkpoint->shouldPropagate()) {
-                    $baselineCheckpoints[$checkpoint->name] = $checkpoint;
+                    $baselineCheckpoints[$checkpoint->identifier()] = $checkpoint;
                 }
             }
 
             foreach ($this->checkpoints()->get() as $checkpoint) {
-                unset($baselineCheckpoints[$checkpoint->name]);
+                unset($baselineCheckpoints[$checkpoint->identifier()]);
                 dispatch(new FindCheckpointBaseline($checkpoint));
             }
 

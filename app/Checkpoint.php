@@ -72,6 +72,11 @@ class Checkpoint extends Model
         return hash('sha256', $snapshotId . $name . ($meta ? json_encode($meta) : ''));
     }
 
+    public function identifier()
+    {
+        return $this->name . ($this->meta ? json_encode($this->meta) : '');
+    }
+
     public function cloneTo(Snapshot $snapshot): Checkpoint
     {
         $checkpoint = $this->replicate();
