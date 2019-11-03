@@ -123,7 +123,9 @@ class Checkpoint extends Model
     {
         $this->diff_url = null;
         $this->diff_status = self::DIFF_STATUS_UNKNOWN;
-        $this->status = self::STATUS_UNKNOWN;
+        if (in_array($this->status, [self::STATUS_APPROVED, self::STATUS_REJECTED, self::STATUS_IGNORED])) {
+            $this->status = self::STATUS_UNKNOWN;
+        }
     }
 
     /**
