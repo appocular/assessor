@@ -19,7 +19,8 @@ class SubmitImage extends Job
      */
     public $pngData;
 
-    public function __construct(Checkpoint $checkpoint, string $pngData) {
+    public function __construct(Checkpoint $checkpoint, string $pngData)
+    {
         $this->checkpoint = $checkpoint;
         $this->pngData = $pngData;
     }
@@ -48,6 +49,9 @@ class SubmitImage extends Job
                 $this->checkpoint->id,
                 $e->getMessage()
             ));
+
+            // Rethrow so we'll retry later.
+            throw $e;
         }
     }
 }

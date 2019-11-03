@@ -261,4 +261,52 @@ class FindCheckpointBaselineTest extends \TestCase
 
         $this->assertEquals('approved in baseline', $checkpoint->baseline_url);
     }
+
+    /**
+     * Test that baselines are handled properly.
+     */
+    public function testBaseliningWithMeta()
+    {
+        $baseline = factory(Snapshot::class)->create();
+        factory(Checkpoint::class)->create([
+            'snapshot_id' => $baseline->id,
+            'name' => 'an existing image',
+            'image_url' => 'with meta',
+            'status' => Checkpoint::STATUS_APPROVED,
+            'meta' => ['s' => 't'],
+        ]);
+
+        factory(Checkpoint::class)->create([
+            'snapshot_id' => $baseline->id,
+            'name' => 'an existing image',
+            'image_url' => 'without meta',
+            'status' => Checkpoint::STATUS_APPROVED,
+        ]);
+
+        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'an existing image',
+            'baseline_url' => null,
+            'meta' => ['s' => 't'],
+        ]);
+
+        $job = new FindCheckpointBaseline($checkpoint);
+        $job->handle();
+        $checkpoint->refresh();
+
+        $this->assertEquals('with meta', $checkpoint->baseline_url);
+
+        $checkpoint2 = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'an existing image',
+            'baseline_url' => null,
+        ]);
+
+        $job = new FindCheckpointBaseline($checkpoint2);
+        $job->handle();
+        $checkpoint2->refresh();
+
+        $this->assertEquals('without meta', $checkpoint2->baseline_url);
+    }
 }

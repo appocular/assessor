@@ -41,6 +41,7 @@ class SnapshotObserverTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => null,
+            'status' => Checkpoint::STATUS_EXPECTED,
             'baseline_url' => 'deadbeef',
         ]);
 

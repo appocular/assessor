@@ -200,4 +200,39 @@ class CheckpointObserverTest extends \TestCase
             ],
         ];
     }
+
+    /**
+     * Test that checkpoint goes from pending/expected to unknown when they get
+     * an image.
+     */
+    public function testStatusChangeOnGettingAImage()
+    {
+        $observer = new CheckpointObserver();
+
+        $snapshot = factory(Snapshot::class)->create();
+
+        $checkpoint1 = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'image_url' => '',
+            'status' => Checkpoint::STATUS_PENDING,
+        ]);
+        $checkpoint1->syncOriginal();
+        $checkpoint1->image_url = 'banana';
+
+        $observer->updating($checkpoint1);
+
+        $this->assertEquals(Checkpoint::STATUS_UNKNOWN, $checkpoint1->status);
+
+        $checkpoint2 = factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'image_url' => '',
+            'status' => Checkpoint::STATUS_EXPECTED,
+        ]);
+        $checkpoint2->syncOriginal();
+        $checkpoint2->image_url = 'banana';
+
+        $observer->updating($checkpoint2);
+
+        $this->assertEquals(Checkpoint::STATUS_UNKNOWN, $checkpoint2->status);
+    }
 }

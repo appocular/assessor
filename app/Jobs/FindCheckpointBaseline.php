@@ -40,12 +40,17 @@ class FindCheckpointBaseline extends Job
         ));
         $baseline_url = '';
         $baseline = $checkpoint->snapshot->getBaseline();
+
         // Bail out if baseline has disappeared in the meantime.
         while ($baseline) {
-            $baseCheckpoint = $baseline->checkpoints()->where([
-                'name' => $checkpoint->name,
-                'meta' => $checkpoint->meta
-            ])->first();
+            $baseCheckpoint = $baseline->checkpoints()->where(function ($query) use ($checkpoint) {
+                $query->where('name', $checkpoint->name);
+                if (is_null($checkpoint->meta)) {
+                    $query->whereNull('meta');
+                } else {
+                    $query->where('meta', json_encode($checkpoint->meta));
+                }
+            })->first();
             // No parent baseline, break out.
             if (!$baseCheckpoint) {
                 break;

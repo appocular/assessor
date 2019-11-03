@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Laravel\Lumen\Routing\UrlGenerator;
 use PDOException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
@@ -42,6 +43,12 @@ class BatchController extends BaseController
                 $snapshot = Snapshot::findOrFail($request->input('id'));
             }
         }
+
+        if (!$snapshot) {
+            Log::error(sprintf('Could not create nor load snapshot for batch %s', $batch->id));
+            throw new HttpException(500, 'Internal error');
+        }
+
         // Add history if the snapshot has no baseline.
         if ($request->has('history') && !$snapshot->baselineIdentified()) {
             try {
@@ -109,9 +116,6 @@ class BatchController extends BaseController
         } catch (PDOException $e) {
             $checkpoint = $snapshot->checkpoints()->find($id);
         }
-
-        // Apparently create doesn't save?
-        $checkpoint->save();
 
         dispatch(new SubmitImage($checkpoint, $request->input('image')));
 

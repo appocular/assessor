@@ -121,4 +121,50 @@ class CheckpointModelTest extends \TestCase
         $checkpoint->ignore();
         $this->seeInDatabase('checkpoints', ['id' => $checkpoint->id, 'status' => Checkpoint::STATUS_IGNORED]);
     }
+
+    public function testResetting()
+    {
+        $snapshot = factory(Snapshot::class)->create();
+        factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'approved',
+            'image_url' => 'image',
+            'baseline_url' => 'baseline',
+            'diff_url' => 'stuff',
+            'status' => Checkpoint::STATUS_APPROVED,
+            'diff_status' => Checkpoint::DIFF_STATUS_IDENTICAL,
+        ]);
+
+        factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'pending',
+            'image_url' => '',
+            'status' => Checkpoint::STATUS_PENDING,
+        ]);
+
+        factory(Checkpoint::class)->create([
+            'snapshot_id' => $snapshot->id,
+            'name' => 'expected',
+            'image_url' => '',
+            'status' => Checkpoint::STATUS_EXPECTED,
+        ]);
+
+        Checkpoint::resetBaselines($snapshot->id);
+
+        $this->seeInDatabase('checkpoints', [
+            'name' => 'approved',
+            'baseline_url' => null,
+            'diff_url' => null,
+            'status' => Checkpoint::STATUS_UNKNOWN,
+            'diff_status' => Checkpoint::DIFF_STATUS_UNKNOWN,
+        ]);
+        $this->seeInDatabase('checkpoints', [
+            'name' => 'pending',
+            'status' => Checkpoint::STATUS_PENDING,
+        ]);
+
+        $this->missingFromDatabase('checkpoints', [
+            'name' => 'expected',
+        ]);
+    }
 }

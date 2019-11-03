@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Checkpoint extends Model
 {
     const STATUS_PENDING = 'pending';
+    const STATUS_EXPECTED = 'expected';
     const STATUS_UNKNOWN = 'unknown';
     const STATUS_APPROVED = 'approved';
     const STATUS_REJECTED = 'rejected';
@@ -49,14 +50,32 @@ class Checkpoint extends Model
     {
         $checkpoint = new static();
         $checkpoint->newModelQuery()
-            ->where([['snapshot_id', $snapshotId], ['image_url', null]])
+            ->where([
+                ['snapshot_id', $snapshotId],
+                ['status', self::STATUS_EXPECTED]
+            ])
             ->delete();
+
         $checkpoint->newModelQuery()
-            ->where('snapshot_id', $snapshotId)
+            ->where([
+                ['snapshot_id', $snapshotId],
+                ['status', '<>', self::STATUS_PENDING]
+            ])
             ->update([
                 'baseline_url' => null,
                 'diff_url' => null,
                 'status' => self::STATUS_UNKNOWN,
+                'diff_status' => self::DIFF_STATUS_UNKNOWN,
+            ]);
+
+        $checkpoint->newModelQuery()
+            ->where([
+                ['snapshot_id', $snapshotId],
+                ['status', self::STATUS_PENDING]
+            ])
+            ->update([
+                'baseline_url' => null,
+                'diff_url' => null,
                 'diff_status' => self::DIFF_STATUS_UNKNOWN,
             ]);
     }
@@ -82,6 +101,18 @@ class Checkpoint extends Model
         $checkpoint = $this->replicate();
         $checkpoint->id = self::getId($snapshot->id, $checkpoint->name, $checkpoint->meta);
         $checkpoint->snapshot()->associate($snapshot);
+        return $checkpoint;
+    }
+
+    public function createExpected(Snapshot $snapshot): Checkpoint
+    {
+        $checkpoint = new self([
+            'id' => self::getId($snapshot->id, $this->name, $this->meta),
+            'name' => $this->name,
+            'meta' => $this->meta,
+            'status' => Checkpoint::STATUS_EXPECTED,
+        ]);
+        $snapshot->checkpoints()->save($checkpoint);
         return $checkpoint;
     }
 
@@ -196,6 +227,6 @@ class Checkpoint extends Model
 
     public function isPending()
     {
-        return $this->status === self::STATUS_PENDING;
+        return $this->status === self::STATUS_PENDING || $this->status === self::STATUS_EXPECTED;
     }
 }

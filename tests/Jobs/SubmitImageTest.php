@@ -6,6 +6,7 @@ use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\SubmitImage;
 use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use RuntimeException;
 
@@ -18,6 +19,9 @@ class SubmitImageTest extends \TestCase
      */
     public function testSubmittingImage()
     {
+        // Disable jobs triggered by observers.
+        Queue::fake();
+
         $keeper = $this->prophesize(Keeper::class);
         $keeper->store('image data')->willReturn('image url')->shouldBeCalled();
         $checkpoint = factory(Checkpoint::class)->create([
@@ -36,6 +40,8 @@ class SubmitImageTest extends \TestCase
      */
     public function testErrorLogging()
     {
+        Queue::fake();
+
         Log::shouldReceive('info')
             ->once();
 
@@ -53,6 +59,7 @@ class SubmitImageTest extends \TestCase
         $keeper->store('image data')->willThrow(new RuntimeException('bad stuff'))->shouldBeCalled();
 
         $job = new SubmitImage($checkpoint, base64_encode('image data'));
+        $this->expectException(RuntimeException::class);
         $job->handle($keeper->reveal());
     }
 }

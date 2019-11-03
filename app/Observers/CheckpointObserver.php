@@ -4,7 +4,6 @@ namespace Appocular\Assessor\Observers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\SubmitDiff;
-use Appocular\Clients\Contracts\Differ;
 use Illuminate\Support\Facades\Log;
 
 class CheckpointObserver
@@ -14,6 +13,11 @@ class CheckpointObserver
      */
     public function updating(Checkpoint $checkpoint)
     {
+        // Set status to unknown for pendin/expected images when they get an image.
+        if ($checkpoint->isPending() && $checkpoint->isDirty('image_url') && !empty($checkpoint->image_url)) {
+            $checkpoint->status = Checkpoint::STATUS_UNKNOWN;
+        }
+
         // Reset diff if image or baseline changes.
         if ($checkpoint->isDirty('image_url') || $checkpoint->isDirty('baseline_url')) {
             $checkpoint->resetDiff();

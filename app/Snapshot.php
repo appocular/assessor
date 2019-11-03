@@ -7,6 +7,7 @@ use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class Snapshot extends Model
 {
@@ -129,7 +130,7 @@ class Snapshot extends Model
     public function triggerCheckpointBaselining() : void
     {
         if ($baseline = $this->getBaseline()) {
-            Log::info(sprintf('Collectiong Checkpoints for baselines finding for snapshot %s', $this->id));
+            Log::info(sprintf('Collectiong checkpoints for baselines finding for snapshot %s', $this->id));
             $baselineCheckpoints = [];
             foreach ($baseline->checkpoints()->get() as $checkpoint) {
                 if ($checkpoint->shouldPropagate()) {
@@ -138,6 +139,7 @@ class Snapshot extends Model
             }
 
             foreach ($this->checkpoints()->get() as $checkpoint) {
+                Log::debug('exists: ' . $checkpoint->identifier());
                 unset($baselineCheckpoints[$checkpoint->identifier()]);
                 dispatch(new FindCheckpointBaseline($checkpoint));
             }
@@ -146,9 +148,8 @@ class Snapshot extends Model
             // the baseline so they exist in this snapshot.
             foreach ($baselineCheckpoints as $baseCheckpoint) {
                 try {
-                    $checkpoint = $baseCheckpoint->cloneTo($this);
-                    $checkpoint->image_url = '';
-                    $checkpoint->save();
+                    Log::debug('expceted: ' . $baseCheckpoint->identifier());
+                    $checkpoint = $baseCheckpoint->createExpected($this);
                     dispatch(new FindCheckpointBaseline($checkpoint));
                 } catch (Throwable $e) {
                     // We'll assume that any errors is because someone beat us
