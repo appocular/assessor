@@ -110,8 +110,11 @@ class Checkpoint extends Model
             'id' => self::getId($snapshot->id, $this->name, $this->meta),
             'name' => $this->name,
             'meta' => $this->meta,
-            'status' => Checkpoint::STATUS_EXPECTED,
         ]);
+        // Status is not fillable, so set it afterwards.
+        // TODO: use empty $guard on models?
+        $checkpoint->status = Checkpoint::STATUS_EXPECTED;
+
         $snapshot->checkpoints()->save($checkpoint);
         return $checkpoint;
     }
