@@ -33,8 +33,9 @@ $factory->define(Appocular\Assessor\Checkpoint::class, function (Faker\Generator
         'image_url' => $faker->sha256,
         'baseline_url' => $faker->sha256,
         'diff_url' => $faker->sha256,
-        'status' => 'unknown',
+        'image_status' => 'available',
         'diff_status' => 'unknown',
+        'approval_status' => 'unknown',
         'meta' => null,
     ];
 });

@@ -400,7 +400,8 @@ Endpoint for reporting differences.
 - `image_url`: *http://localhost:8081/image/3f9200a6dee485e3fbf67e68b1e9f2bbb6e48387dd1e9c676c2e0bf48feb1a98* (string, nullable) - URL of image.
 - `baseline_url` (string, nullable) - URL of baseline.
 - `diff_url` (string, nullable) - URL of diff.
-- `status`: unknown, approved, rejected, ignored (enum) - Checkpoint status.
+- `image_status`: pending, expected, available (enum) - Checkpoint image status.
+- `approval_status`: unknown, approved, rejected, ignored (enum) - Checkpoint approval status.
 - `diff_status`: unknown, identical, different (enum) - Checkpoint diff status.
 - `actions` (CheckpointActions) - Actions available for this checkpoint.
 - `slug`: *frontpage* (string) - A somewhat human-readable identifiier for this checkpoint, usable in URLs. Only guaranteed to be unique within the same checkpoint.

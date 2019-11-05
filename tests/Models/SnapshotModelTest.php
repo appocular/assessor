@@ -24,7 +24,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -58,7 +58,7 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -92,14 +92,14 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a deleted image',
             'image_url' => '',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -137,14 +137,14 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
             'image_url' => 'a rejected image',
-            'status' => Checkpoint::STATUS_REJECTED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -173,7 +173,7 @@ class SnapshotModelTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
             'image_url' => 'lala',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -181,21 +181,21 @@ class SnapshotModelTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
             'image_url' => 'lala',
-            'status' => Checkpoint::STATUS_REJECTED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
         $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
             'image_url' => '',
-            'status' => Checkpoint::STATUS_REJECTED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -231,14 +231,14 @@ class SnapshotModelTest extends \TestCase
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
             'image_url' => '',
-            'status' => Checkpoint::STATUS_IGNORED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_IGNORED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -267,21 +267,21 @@ class SnapshotModelTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
             'image_url' => 'lala',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
             'image_url' => '',
-            'status' => Checkpoint::STATUS_IGNORED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_IGNORED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -318,12 +318,14 @@ class SnapshotModelTest extends \TestCase
         $checkpoints[] = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'one',
-            'status' => 'unknown',
+            'image_status' => Checkpoint::IMAGE_STATUS_AVAILABLE,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
         $checkpoints[] = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'one',
-            'status' => 'unknown',
+            'image_status' => Checkpoint::IMAGE_STATUS_AVAILABLE,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
         // Run status is waiting if there's unknown checkpoints.
@@ -332,7 +334,7 @@ class SnapshotModelTest extends \TestCase
         $this->assertEquals(Snapshot::RUN_STATUS_WAITING, $snapshot->run_status);
 
         // Should stay at unknown as long as there's unknown checkpoints.
-        $checkpoints[0]->status = Checkpoint::STATUS_APPROVED;
+        $checkpoints[0]->approval_status = Checkpoint::APPROVAL_STATUS_APPROVED;
         $checkpoints[0]->save();
 
         $snapshot->updateStatus();
@@ -340,7 +342,7 @@ class SnapshotModelTest extends \TestCase
         $this->assertEquals(Snapshot::RUN_STATUS_WAITING, $snapshot->run_status);
 
         // Should pass when all checkpoints are either approved or ignored
-        $checkpoints[1]->status = Checkpoint::STATUS_IGNORED;
+        $checkpoints[1]->approval_status = Checkpoint::APPROVAL_STATUS_IGNORED;
         $checkpoints[1]->save();
 
         $snapshot->updateStatus();
@@ -357,14 +359,15 @@ class SnapshotModelTest extends \TestCase
         $batch->delete();
 
         // Or pending Checkpoints.
-        $checkpoints[1]->status = Checkpoint::STATUS_PENDING;
+        $checkpoints[1]->image_status = Checkpoint::IMAGE_STATUS_PENDING;
         $checkpoints[1]->save();
 
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
         $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
 
         // Should fail if there's rejected checkpoints.
-        $checkpoints[1]->status = Checkpoint::STATUS_REJECTED;
+        $checkpoints[1]->image_status = Checkpoint::IMAGE_STATUS_AVAILABLE;
+        $checkpoints[1]->approval_status = Checkpoint::APPROVAL_STATUS_REJECTED;
         $checkpoints[1]->save();
 
         $snapshot->updateStatus();
@@ -372,7 +375,7 @@ class SnapshotModelTest extends \TestCase
         $this->assertEquals(Snapshot::RUN_STATUS_DONE, $snapshot->run_status);
 
         // Rejected trumps unknown.
-        $checkpoints[0]->status = Checkpoint::STATUS_UNKNOWN;
+        $checkpoints[0]->approval_status = Checkpoint::APPROVAL_STATUS_UNKNOWN;
         $checkpoints[0]->save();
 
         $snapshot->updateStatus();

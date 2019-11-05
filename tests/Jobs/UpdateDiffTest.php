@@ -54,12 +54,17 @@ class UpdateDiffTest extends \TestCase
             $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
         ];
 
-        foreach ([Checkpoint::STATUS_APPROVED, Checkpoint::STATUS_REJECTED, Checkpoint::STATUS_IGNORED] as $status) {
+        $statuses = [
+            Checkpoint::APPROVAL_STATUS_APPROVED,
+            Checkpoint::APPROVAL_STATUS_REJECTED,
+            Checkpoint::APPROVAL_STATUS_IGNORED
+        ];
+        foreach ($statuses as $approval_status) {
             $checkpoints[] = $snapshot->checkpoints()->save(factory(Checkpoint::class)->make([
                 'image_url' => $checkpoints[0]->image_url,
                 'baseline_url' => $checkpoints[0]->baseline_url,
                 'diff_url' => 'original diff',
-                'status' => $status,
+                'approval_status' => $approval_status,
                 'meta' => null,
             ]));
         }

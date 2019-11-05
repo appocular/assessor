@@ -73,7 +73,8 @@ class SnapshotTest extends \TestCase
                 'image_url' => $checkpoint->image_url,
                 'baseline_url' => $checkpoint->baseline_url,
                 'diff_url' => $checkpoint->diff_url,
-                'status' => 'unknown',
+                'image_status' => 'available',
+                'approval_status' => 'unknown',
                 'diff_status' => 'unknown',
                 'actions' => [
                     'approve' => route('checkpoint.approve', ['id' => $checkpoint->id]),

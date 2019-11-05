@@ -29,7 +29,7 @@ class CheckpointObserverTest extends \TestCase
             'image_url' => 'image',
             'baseline_url' => 'baseline',
             'diff_url' => 'a diff',
-            'status' => Checkpoint::STATUS_REJECTED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
             'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
         $checkpoint->syncOriginal();
@@ -39,7 +39,7 @@ class CheckpointObserverTest extends \TestCase
 
         $this->assertEquals(null, $checkpoint->diff_url);
         $this->assertEquals(Checkpoint::DIFF_STATUS_UNKNOWN, $checkpoint->diff_status);
-        $this->assertEquals(Checkpoint::STATUS_UNKNOWN, $checkpoint->status);
+        $this->assertEquals(Checkpoint::APPROVAL_STATUS_UNKNOWN, $checkpoint->approval_status);
     }
 
     /**
@@ -56,7 +56,7 @@ class CheckpointObserverTest extends \TestCase
             'image_url' => 'image',
             'baseline_url' => 'baseline',
             'diff_url' => 'a diff',
-            'status' => Checkpoint::STATUS_UNKNOWN,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
             'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
 
@@ -70,11 +70,11 @@ class CheckpointObserverTest extends \TestCase
         $checkpoint->snapshot = $snapshotMock->reveal();
 
         $checkpoint->syncOriginal();
-        $checkpoint->status = Checkpoint::STATUS_APPROVED;
+        $checkpoint->approval_status = Checkpoint::APPROVAL_STATUS_APPROVED;
         $observer->updated($checkpoint);
 
         $checkpoint->syncOriginal();
-        $checkpoint->status = Checkpoint::STATUS_REJECTED;
+        $checkpoint->approval_status = Checkpoint::APPROVAL_STATUS_REJECTED;
 
         $observer->updated($checkpoint);
     }
@@ -95,7 +95,8 @@ class CheckpointObserverTest extends \TestCase
             'image_url' => 'image',
             'baseline_url' => null,
             'diff_url' => null,
-            'status' => Checkpoint::STATUS_UNKNOWN,
+            'image_status' => Checkpoint::IMAGE_STATUS_AVAILABLE,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
             'diff_status' => Checkpoint::DIFF_STATUS_UNKNOWN,
         ]);
 
@@ -108,6 +109,7 @@ class CheckpointObserverTest extends \TestCase
 
         $checkpoint->diff_status = Checkpoint::DIFF_STATUS_UNKNOWN;
         $checkpoint->image_url = '';
+        $checkpoint->image_status = Checkpoint::IMAGE_STATUS_EXPECTED;
         $checkpoint->syncOriginal();
         $this->assertFalse($checkpoint->hasDiff());
         $checkpoint->baseline_url = 'baseline';
@@ -132,7 +134,6 @@ class CheckpointObserverTest extends \TestCase
             'image_url' => 'image',
             'baseline_url' => null,
             'diff_url' => null,
-            'status' => Checkpoint::STATUS_UNKNOWN,
             'diff_status' => Checkpoint::DIFF_STATUS_UNKNOWN,
         ]);
 
@@ -152,10 +153,10 @@ class CheckpointObserverTest extends \TestCase
      * @dataProvider diffStatusChecks
      */
     public function testNoDiffAutomaticallyAproves(
-        $existingStatus,
+        $existingApprovalStatus,
         $existingDiffStatus,
         $change,
-        $expectedStatus,
+        $expectedApprovalStatus,
         $expectedDiffStatus
     ) {
         $observer = new CheckpointObserver();
@@ -167,7 +168,7 @@ class CheckpointObserverTest extends \TestCase
             'image_url' => 'image',
             'baseline_url' => 'baseline',
             'diff_url' => 'a diff',
-            'status' => $existingStatus,
+            'approval_status' => $existingApprovalStatus,
             'diff_status' => $existingDiffStatus,
         ]);
         $checkpoint->syncOriginal();
@@ -175,7 +176,7 @@ class CheckpointObserverTest extends \TestCase
 
         $observer->updating($checkpoint);
 
-        $this->assertEquals($expectedStatus, $checkpoint->status);
+        $this->assertEquals($expectedApprovalStatus, $checkpoint->approval_status);
         $this->assertEquals($expectedDiffStatus, $checkpoint->diff_status);
     }
 
@@ -184,25 +185,25 @@ class CheckpointObserverTest extends \TestCase
         return[
             // Approve identical diffs.
             [
-                Checkpoint::STATUS_UNKNOWN,
+                Checkpoint::APPROVAL_STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_IDENTICAL,
-                Checkpoint::STATUS_APPROVED,
+                Checkpoint::APPROVAL_STATUS_APPROVED,
                 Checkpoint::DIFF_STATUS_IDENTICAL,
             ],
             // But don't do anything for differences, it's up to the user..
             [
-                Checkpoint::STATUS_UNKNOWN,
+                Checkpoint::APPROVAL_STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_DIFFERENT,
-                Checkpoint::STATUS_UNKNOWN,
+                Checkpoint::APPROVAL_STATUS_UNKNOWN,
                 Checkpoint::DIFF_STATUS_DIFFERENT,
             ],
         ];
     }
 
     /**
-     * Test that checkpoint goes from pending/expected to unknown when they get
+     * Test that checkpoint goes from pending/expected to available when they get
      * an image.
      */
     public function testStatusChangeOnGettingAImage()
@@ -214,25 +215,25 @@ class CheckpointObserverTest extends \TestCase
         $checkpoint1 = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => '',
-            'status' => Checkpoint::STATUS_PENDING,
+            'image_status' => Checkpoint::IMAGE_STATUS_PENDING,
         ]);
         $checkpoint1->syncOriginal();
         $checkpoint1->image_url = 'banana';
 
         $observer->updating($checkpoint1);
 
-        $this->assertEquals(Checkpoint::STATUS_UNKNOWN, $checkpoint1->status);
+        $this->assertEquals(Checkpoint::IMAGE_STATUS_AVAILABLE, $checkpoint1->image_status);
 
         $checkpoint2 = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => '',
-            'status' => Checkpoint::STATUS_EXPECTED,
+            'image_status' => Checkpoint::IMAGE_STATUS_EXPECTED,
         ]);
         $checkpoint2->syncOriginal();
         $checkpoint2->image_url = 'banana';
 
         $observer->updating($checkpoint2);
 
-        $this->assertEquals(Checkpoint::STATUS_UNKNOWN, $checkpoint2->status);
+        $this->assertEquals(Checkpoint::IMAGE_STATUS_AVAILABLE, $checkpoint2->image_status);
     }
 }

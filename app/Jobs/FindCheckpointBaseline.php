@@ -60,7 +60,7 @@ class FindCheckpointBaseline extends Job
             // image. This even works for deleted images, as they have an
             // empty string for URL, and new images gets an empty baseline
             // URL.
-            if ($baseCheckpoint->status == Checkpoint::STATUS_APPROVED) {
+            if ($baseCheckpoint->approval_status == Checkpoint::APPROVAL_STATUS_APPROVED) {
                 $baseline_url = $baseCheckpoint->image_url;
                 break;
             }

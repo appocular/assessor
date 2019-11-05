@@ -7,16 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Checkpoint extends Model
 {
-    const STATUS_PENDING = 'pending';
-    const STATUS_EXPECTED = 'expected';
-    const STATUS_UNKNOWN = 'unknown';
-    const STATUS_APPROVED = 'approved';
-    const STATUS_REJECTED = 'rejected';
-    const STATUS_IGNORED = 'ignored';
+    public const IMAGE_STATUS_PENDING = 'pending';
+    public const IMAGE_STATUS_EXPECTED = 'expected';
+    public const IMAGE_STATUS_AVAILABLE = 'available';
 
-    const DIFF_STATUS_UNKNOWN = 'unknown';
-    const DIFF_STATUS_IDENTICAL = 'identical';
-    const DIFF_STATUS_DIFFERENT = 'different';
+    public const DIFF_STATUS_UNKNOWN = 'unknown';
+    public const DIFF_STATUS_IDENTICAL = 'identical';
+    public const DIFF_STATUS_DIFFERENT = 'different';
+
+    public const APPROVAL_STATUS_UNKNOWN = 'unknown';
+    public const APPROVAL_STATUS_APPROVED = 'approved';
+    public const APPROVAL_STATUS_REJECTED = 'rejected';
+    public const APPROVAL_STATUS_IGNORED = 'ignored';
 
     protected $fillable = ['id', 'name', 'snapshot_id', 'image_url', 'baseline_url', 'diff_url', 'meta'];
 
@@ -52,30 +54,18 @@ class Checkpoint extends Model
         $checkpoint->newModelQuery()
             ->where([
                 ['snapshot_id', $snapshotId],
-                ['status', self::STATUS_EXPECTED]
+                ['image_status', self::IMAGE_STATUS_EXPECTED]
             ])
             ->delete();
 
         $checkpoint->newModelQuery()
             ->where([
                 ['snapshot_id', $snapshotId],
-                ['status', '<>', self::STATUS_PENDING]
             ])
             ->update([
                 'baseline_url' => null,
                 'diff_url' => null,
-                'status' => self::STATUS_UNKNOWN,
-                'diff_status' => self::DIFF_STATUS_UNKNOWN,
-            ]);
-
-        $checkpoint->newModelQuery()
-            ->where([
-                ['snapshot_id', $snapshotId],
-                ['status', self::STATUS_PENDING]
-            ])
-            ->update([
-                'baseline_url' => null,
-                'diff_url' => null,
+                'approval_status' => self::APPROVAL_STATUS_UNKNOWN,
                 'diff_status' => self::DIFF_STATUS_UNKNOWN,
             ]);
     }
@@ -113,7 +103,7 @@ class Checkpoint extends Model
         ]);
         // Status is not fillable, so set it afterwards.
         // TODO: use empty $guard on models?
-        $checkpoint->status = Checkpoint::STATUS_EXPECTED;
+        $checkpoint->image_status = Checkpoint::IMAGE_STATUS_EXPECTED;
 
         $snapshot->checkpoints()->save($checkpoint);
         return $checkpoint;
@@ -126,9 +116,8 @@ class Checkpoint extends Model
     {
         $this->diff_url = null;
         $this->diff_status = self::DIFF_STATUS_UNKNOWN;
-        if (in_array($this->status, [self::STATUS_APPROVED, self::STATUS_REJECTED, self::STATUS_IGNORED])) {
-            $this->status = self::STATUS_UNKNOWN;
-        }
+            $this->approval_status = self::APPROVAL_STATUS_UNKNOWN;
+
     }
 
     /**
@@ -138,7 +127,7 @@ class Checkpoint extends Model
     {
         // If the diff is identical, automatically approve this checkpoint.
         if ($this->diff_status == self::DIFF_STATUS_IDENTICAL) {
-            $this->status = self::STATUS_APPROVED;
+            $this->approval_status = self::APPROVAL_STATUS_APPROVED;
         }
     }
 
@@ -164,7 +153,7 @@ class Checkpoint extends Model
             ->whereNested(function ($query) use ($diff_url) {
                 $query->where('diff_url')->where('diff_url', '<>', $diff_url, 'or');
             })
-            ->where('status', self::STATUS_UNKNOWN)
+            ->where('approval_status', self::APPROVAL_STATUS_UNKNOWN)
             ->get();
 
         foreach ($checkpoints as $checkpoint) {
@@ -191,7 +180,7 @@ class Checkpoint extends Model
      */
     public function shouldPropagate() : bool
     {
-        return !(empty($this->image_url) && $this->status == self::STATUS_APPROVED);
+        return !(empty($this->image_url) && $this->approval_status == self::APPROVAL_STATUS_APPROVED);
     }
 
     /**
@@ -202,7 +191,7 @@ class Checkpoint extends Model
         if ($this->isPending()) {
             return;
         }
-        $this->status = self::STATUS_APPROVED;
+        $this->approval_status = self::APPROVAL_STATUS_APPROVED;
         $this->save();
     }
 
@@ -214,7 +203,7 @@ class Checkpoint extends Model
         if ($this->isPending()) {
             return;
         }
-        $this->status = self::STATUS_REJECTED;
+        $this->approval_status = self::APPROVAL_STATUS_REJECTED;
         $this->save();
     }
 
@@ -226,12 +215,12 @@ class Checkpoint extends Model
         if ($this->isPending()) {
             return;
         }
-        $this->status = self::STATUS_IGNORED;
+        $this->approval_status = self::APPROVAL_STATUS_IGNORED;
         $this->save();
     }
 
     public function isPending()
     {
-        return $this->status === self::STATUS_PENDING || $this->status === self::STATUS_EXPECTED;
+        return $this->image_status !== self::IMAGE_STATUS_AVAILABLE;
     }
 }

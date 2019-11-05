@@ -167,10 +167,10 @@ class Snapshot extends Model
     public function updateStatus() : void
     {
         $this->refresh();
-        $pendingCount = $this->checkpoints->where('status', Checkpoint::STATUS_PENDING)->count();
-        $unknownCount = $this->checkpoints->where('status', Checkpoint::STATUS_UNKNOWN)->count();
+        $pendingCount = $this->checkpoints->where('image_status', Checkpoint::IMAGE_STATUS_PENDING)->count();
+        $unknownCount = $this->checkpoints->where('approval_status', Checkpoint::APPROVAL_STATUS_UNKNOWN)->count();
         $batchCount = $this->batches()->count();
-        if ($this->checkpoints->where('status', Checkpoint::STATUS_REJECTED)->count() > 0) {
+        if ($this->checkpoints->where('approval_status', Checkpoint::APPROVAL_STATUS_REJECTED)->count() > 0) {
             $this->status = self::STATUS_FAILED;
         } elseif ($unknownCount > 0 || $pendingCount > 0 || $batchCount > 0) {
             $this->status = self::STATUS_UNKNOWN;

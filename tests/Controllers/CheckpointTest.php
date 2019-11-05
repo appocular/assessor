@@ -64,7 +64,8 @@ class CheckpointTest extends \TestCase
             'image_url' => $checkpoints[0]->image_url,
             'baseline_url' => $checkpoints[0]->baseline_url,
             'diff_url' => $checkpoints[0]->diff_url,
-            'status' => 'unknown',
+            'image_status' => 'available',
+            'approval_status' => 'unknown',
             'diff_status' => 'unknown',
             'actions' => [
                 'approve' => route('checkpoint.approve', ['id' => $checkpoints[0]->id]),
@@ -83,7 +84,8 @@ class CheckpointTest extends \TestCase
             'image_url' => $checkpoints[1]->image_url,
             'baseline_url' => $checkpoints[1]->baseline_url,
             'diff_url' => $checkpoints[1]->diff_url,
-            'status' => 'unknown',
+            'image_status' => 'available',
+            'approval_status' => 'unknown',
             'diff_status' => 'unknown',
             'actions' => [
                 'approve' => route('checkpoint.approve', ['id' => $checkpoints[1]->id]),
@@ -114,7 +116,8 @@ class CheckpointTest extends \TestCase
             'image_url' => $checkpoints[0]->image_url,
             'baseline_url' => $checkpoints[0]->baseline_url,
             'diff_url' => $checkpoints[0]->diff_url,
-            'status' => 'unknown',
+            'image_status' => 'available',
+            'approval_status' => 'unknown',
             'diff_status' => 'unknown',
             'actions' => [
                 'approve' => route('checkpoint.approve', ['id' => $checkpoints[0]->id]),
@@ -136,12 +139,12 @@ class CheckpointTest extends \TestCase
 
         $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         // Verify that it's not approved.
-        $this->seeJson(['status' => 'unknown']);
+        $this->seeJson(['approval_status' => 'unknown']);
 
         $this->put('checkpoint/' . $checkpoints[0]->id . '/approve');
 
         $this->get('checkpoint/' . $checkpoints[0]->id);
-        $this->seeJson(['status' => 'approved']);
+        $this->seeJson(['approval_status' => 'approved']);
     }
 
     public function testRejectingCheckpoint()
@@ -154,12 +157,12 @@ class CheckpointTest extends \TestCase
 
         $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         // Verify that it's not rejected.
-        $this->seeJson(['status' => 'unknown']);
+        $this->seeJson(['approval_status' => 'unknown']);
 
         $this->put('checkpoint/' . $checkpoints[0]->id . '/reject');
 
         $this->get('checkpoint/' . $checkpoints[0]->id);
-        $this->seeJson(['status' => 'rejected']);
+        $this->seeJson(['approval_status' => 'rejected']);
     }
 
     public function testIgnoringCheckpoint()
@@ -172,11 +175,11 @@ class CheckpointTest extends \TestCase
 
         $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         // Verify that it's not ignored.
-        $this->seeJson(['status' => 'unknown']);
+        $this->seeJson(['approval_status' => 'unknown']);
 
         $this->put('checkpoint/' . $checkpoints[0]->id . '/ignore');
 
         $this->get('checkpoint/' . $checkpoints[0]->id);
-        $this->seeJson(['status' => 'ignored']);
+        $this->seeJson(['approval_status' => 'ignored']);
     }
 }

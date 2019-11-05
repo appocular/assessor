@@ -22,8 +22,9 @@ class CheckpointResource extends Resource
             'image_url' => $this->image_url,
             'baseline_url' => $this->baseline_url,
             'diff_url' => $this->diff_url,
-            'status' => $this->status,
+            'image_status' => $this->image_status,
             'diff_status' => $this->diff_status,
+            'approval_status' => $this->approval_status,
             'actions' => [
                 'approve' => route('checkpoint.approve', ['id' => $this->id]),
                 'reject' => route('checkpoint.reject', ['id' => $this->id]),

@@ -13,9 +13,9 @@ class CheckpointObserver
      */
     public function updating(Checkpoint $checkpoint)
     {
-        // Set status to unknown for pendin/expected images when they get an image.
+        // Set image status to available for pendin/expected images when they get an image.
         if ($checkpoint->isPending() && $checkpoint->isDirty('image_url') && !empty($checkpoint->image_url)) {
-            $checkpoint->status = Checkpoint::STATUS_UNKNOWN;
+            $checkpoint->image_status = Checkpoint::IMAGE_STATUS_AVAILABLE;
         }
 
         // Reset diff if image or baseline changes.
@@ -49,8 +49,8 @@ class CheckpointObserver
             dispatch(new SubmitDiff($checkpoint->image_url, $checkpoint->baseline_url));
         }
 
-        // Update snapshot status when checkpoint status changes.
-        if ($checkpoint->isDirty('status')) {
+        // Update snapshot status when checkpoint approval status changes.
+        if ($checkpoint->isDirty('approval_status')) {
             $checkpoint->snapshot->updateStatus();
         }
     }

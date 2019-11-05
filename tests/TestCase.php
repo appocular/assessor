@@ -10,6 +10,8 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
      */
     public function createApplication()
     {
+        // Seems there is a memory leak somewhere when testing, so bump limit.
+        ini_set('memory_limit', '256M');
         return require __DIR__.'/../bootstrap/app.php';
     }
 }

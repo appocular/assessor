@@ -15,12 +15,14 @@ class CheckpointModelTest extends \TestCase
      */
     public function testBulkDiffUpdatesSetsStatusesCorrectly(
         $name,
-        $existingStatus,
+        $existingImageStatus,
         $existingDiffStatus,
+        $existingApprovalStatus,
         $existingDiffUrl,
         $difference,
-        $expectedStatus,
+        $expectedImageStatus,
         $expectedDiffStatus,
+        $expectedApprovalStatus,
         $expectedDiffUrl
     ) {
         $snapshot = factory(Snapshot::class)->create();
@@ -30,16 +32,18 @@ class CheckpointModelTest extends \TestCase
             'image_url' => 'image',
             'baseline_url' => 'baseline',
             'diff_url' => $existingDiffUrl,
-            'status' => $existingStatus,
+            'image_status' => $existingImageStatus,
             'diff_status' => $existingDiffStatus,
+            'approval_status' => $existingApprovalStatus,
         ]);
 
         Checkpoint::updateDiffs('image', 'baseline', 'new_diff', $difference);
 
         $this->seeInDatabase('checkpoints', [
             'name' => $name,
-            'status' => $expectedStatus,
+            'image_status' => $expectedImageStatus,
             'diff_status' => $expectedDiffStatus,
+            'approval_status' => $expectedApprovalStatus,
             'diff_url' => $expectedDiffUrl,
         ]);
     }
@@ -50,34 +54,40 @@ class CheckpointModelTest extends \TestCase
             // Updating with a difference shouldn't change status.
             [
                 'unknown',
-                Checkpoint::STATUS_UNKNOWN,
+                Checkpoint::IMAGE_STATUS_AVAILABLE,
                 Checkpoint::DIFF_STATUS_UNKNOWN,
+                Checkpoint::APPROVAL_STATUS_UNKNOWN,
                 null,
                 true,
-                Checkpoint::STATUS_UNKNOWN,
+                Checkpoint::IMAGE_STATUS_AVAILABLE,
                 Checkpoint::DIFF_STATUS_DIFFERENT,
+                Checkpoint::APPROVAL_STATUS_UNKNOWN,
                 'new_diff',
             ],
             // Updating with an identical diff should auto-approve.
             [
                 'unknown',
-                Checkpoint::STATUS_UNKNOWN,
+                Checkpoint::IMAGE_STATUS_AVAILABLE,
                 Checkpoint::DIFF_STATUS_UNKNOWN,
+                Checkpoint::APPROVAL_STATUS_UNKNOWN,
                 null,
                 false,
-                Checkpoint::STATUS_APPROVED,
+                Checkpoint::IMAGE_STATUS_AVAILABLE,
                 Checkpoint::DIFF_STATUS_IDENTICAL,
+                Checkpoint::APPROVAL_STATUS_APPROVED,
                 'new_diff',
             ],
             // Check that existing diffs doesn't get overwritten.
             [
                 'unknown',
-                Checkpoint::STATUS_APPROVED,
+                Checkpoint::IMAGE_STATUS_AVAILABLE,
                 Checkpoint::DIFF_STATUS_DIFFERENT,
+                Checkpoint::APPROVAL_STATUS_APPROVED,
                 'diff',
                 true,
-                Checkpoint::STATUS_APPROVED,
+                Checkpoint::IMAGE_STATUS_AVAILABLE,
                 Checkpoint::DIFF_STATUS_DIFFERENT,
+                Checkpoint::APPROVAL_STATUS_APPROVED,
                 'diff',
             ],
         ];
@@ -89,11 +99,14 @@ class CheckpointModelTest extends \TestCase
         $checkpoint = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'image',
-            'status' => Checkpoint::STATUS_UNKNOWN,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
         $checkpoint->approve();
-        $this->seeInDatabase('checkpoints', ['id' => $checkpoint->id, 'status' => Checkpoint::STATUS_APPROVED]);
+        $this->seeInDatabase('checkpoints', [
+            'id' => $checkpoint->id,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED
+        ]);
     }
 
     public function testRejecting()
@@ -102,11 +115,14 @@ class CheckpointModelTest extends \TestCase
         $checkpoint = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'image',
-            'status' => Checkpoint::STATUS_UNKNOWN,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
         $checkpoint->reject();
-        $this->seeInDatabase('checkpoints', ['id' => $checkpoint->id, 'status' => Checkpoint::STATUS_REJECTED]);
+        $this->seeInDatabase('checkpoints', [
+            'id' => $checkpoint->id,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED
+        ]);
     }
 
     public function testIgnoring()
@@ -115,11 +131,14 @@ class CheckpointModelTest extends \TestCase
         $checkpoint = factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'image',
-            'status' => Checkpoint::STATUS_UNKNOWN,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
         $checkpoint->ignore();
-        $this->seeInDatabase('checkpoints', ['id' => $checkpoint->id, 'status' => Checkpoint::STATUS_IGNORED]);
+        $this->seeInDatabase('checkpoints', [
+            'id' => $checkpoint->id,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_IGNORED
+        ]);
     }
 
     public function testResetting()
@@ -131,7 +150,7 @@ class CheckpointModelTest extends \TestCase
             'image_url' => 'image',
             'baseline_url' => 'baseline',
             'diff_url' => 'stuff',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
             'diff_status' => Checkpoint::DIFF_STATUS_IDENTICAL,
         ]);
 
@@ -139,14 +158,16 @@ class CheckpointModelTest extends \TestCase
             'snapshot_id' => $snapshot->id,
             'name' => 'pending',
             'image_url' => '',
-            'status' => Checkpoint::STATUS_PENDING,
+            'image_status' => Checkpoint::IMAGE_STATUS_PENDING,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
         factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'expected',
             'image_url' => '',
-            'status' => Checkpoint::STATUS_EXPECTED,
+            'image_status' => Checkpoint::IMAGE_STATUS_EXPECTED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
         Checkpoint::resetBaselines($snapshot->id);
@@ -155,12 +176,13 @@ class CheckpointModelTest extends \TestCase
             'name' => 'approved',
             'baseline_url' => null,
             'diff_url' => null,
-            'status' => Checkpoint::STATUS_UNKNOWN,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
             'diff_status' => Checkpoint::DIFF_STATUS_UNKNOWN,
         ]);
         $this->seeInDatabase('checkpoints', [
             'name' => 'pending',
-            'status' => Checkpoint::STATUS_PENDING,
+            'image_status' => Checkpoint::IMAGE_STATUS_PENDING,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
         $this->missingFromDatabase('checkpoints', [

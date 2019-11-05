@@ -52,7 +52,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an unrelated image',
             'image_url' => 'not related',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -79,14 +79,14 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'approved in baseline',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an unrelated image',
             'image_url' => 'not related',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -114,7 +114,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'rejected in baseline',
-            'status' => Checkpoint::STATUS_REJECTED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -136,7 +136,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'approved in baseline parent',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -144,7 +144,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'ignored in baseline',
-            'status' => Checkpoint::STATUS_REJECTED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
         $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -152,7 +152,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'rejected in baseline',
-            'status' => Checkpoint::STATUS_REJECTED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -181,7 +181,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => '',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -203,7 +203,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'approved in baseline parent',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -211,7 +211,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => '',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -238,14 +238,14 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'approved in baseline',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an unrelated image',
             'image_url' => 'not related',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
@@ -272,7 +272,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'with meta',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
             'meta' => ['s' => 't'],
         ]);
 
@@ -280,7 +280,7 @@ class FindCheckpointBaselineTest extends \TestCase
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'without meta',
-            'status' => Checkpoint::STATUS_APPROVED,
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
         $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
