@@ -41,7 +41,7 @@ class ApproveSnapshot extends Command
     {
         $snapshot = Snapshot::findOrFail($this->argument('snapshot_id'));
         foreach ($snapshot->checkpoints as $checkpoint) {
-            $checkpoint->status = Checkpoint::STATUS_APPROVED;
+            $checkpoint->approval_status = Checkpoint::APPROVAL_STATUS_APPROVED;
             $checkpoint->save();
         }
     }
