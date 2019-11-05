@@ -58,30 +58,33 @@ EOF;
             throw new RuntimeError('Not a GitHub repo, cannot update commit status');
         }
 
-        switch ([$this->snapshot->status, $this->snapshot->run_status]) {
-            case [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_PENDING]:
-            case [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_PENDING]:
+        switch ([$this->snapshot->status, $this->snapshot->processing_status, $this->snapshot->run_status]) {
+            case [Snapshot::STATUS_UNKNOWN, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_PENDING]:
+            case [Snapshot::STATUS_PASSED, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_PENDING]:
+            case [Snapshot::STATUS_PASSED, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_DONE]:
+            case [Snapshot::STATUS_PASSED, Snapshot::PROCESSING_STATUS_DONE, Snapshot::RUN_STATUS_PENDING]:
                 $state = 'pending';
                 $description = 'In progress. Please wait.';
                 break;
 
-            case [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_PENDING]:
-            case [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_DONE]:
+            case [Snapshot::STATUS_FAILED, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_PENDING]:
+            case [Snapshot::STATUS_FAILED, Snapshot::PROCESSING_STATUS_DONE, Snapshot::RUN_STATUS_PENDING]:
+            case [Snapshot::STATUS_FAILED, Snapshot::PROCESSING_STATUS_DONE, Snapshot::RUN_STATUS_DONE]:
                 $state = 'failure';
                 $description = 'Failed!';
                 break;
 
-            case [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_WAITING]:
+            case [Snapshot::STATUS_FAILED, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_DONE]:
                 $state = 'failure';
                 $description = 'Failed! More differences detected, please review.';
                 break;
 
-            case [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_WAITING]:
+            case [Snapshot::STATUS_UNKNOWN, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_DONE]:
                 $state = 'failure';
                 $description = 'Differences detected, please review.';
                 break;
 
-            case [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_DONE]:
+            case [Snapshot::STATUS_PASSED, Snapshot::PROCESSING_STATUS_DONE, Snapshot::RUN_STATUS_DONE]:
                 $state = 'success';
                 $description = 'Passed!';
                 break;

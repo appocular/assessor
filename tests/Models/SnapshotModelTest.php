@@ -328,10 +328,11 @@ class SnapshotModelTest extends \TestCase
             'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
-        // Run status is waiting if there's unknown checkpoints.
+        // Processing status is waiting if there's unknown checkpoints.
         $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
-        $this->assertEquals(Snapshot::RUN_STATUS_WAITING, $snapshot->run_status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_PENDING, $snapshot->processing_status);
+        $this->assertEquals(Snapshot::RUN_STATUS_DONE, $snapshot->run_status);
 
         // Should stay at unknown as long as there's unknown checkpoints.
         $checkpoints[0]->approval_status = Checkpoint::APPROVAL_STATUS_APPROVED;
@@ -339,7 +340,8 @@ class SnapshotModelTest extends \TestCase
 
         $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
-        $this->assertEquals(Snapshot::RUN_STATUS_WAITING, $snapshot->run_status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_PENDING, $snapshot->processing_status);
+        $this->assertEquals(Snapshot::RUN_STATUS_DONE, $snapshot->run_status);
 
         // Should pass when all checkpoints are either approved or ignored
         $checkpoints[1]->approval_status = Checkpoint::APPROVAL_STATUS_IGNORED;
@@ -347,6 +349,7 @@ class SnapshotModelTest extends \TestCase
 
         $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_PASSED, $snapshot->status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_DONE, $snapshot->processing_status);
         $this->assertEquals(Snapshot::RUN_STATUS_DONE, $snapshot->run_status);
 
         // Run status should be pending as long as there's active batches.
@@ -354,6 +357,7 @@ class SnapshotModelTest extends \TestCase
 
         $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_DONE, $snapshot->processing_status);
         $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
 
         $batch->delete();
@@ -363,6 +367,7 @@ class SnapshotModelTest extends \TestCase
         $checkpoints[1]->save();
 
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_DONE, $snapshot->processing_status);
         $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
 
         // Should fail if there's rejected checkpoints.
@@ -372,6 +377,7 @@ class SnapshotModelTest extends \TestCase
 
         $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_FAILED, $snapshot->status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_DONE, $snapshot->processing_status);
         $this->assertEquals(Snapshot::RUN_STATUS_DONE, $snapshot->run_status);
 
         // Rejected trumps unknown.
@@ -380,6 +386,7 @@ class SnapshotModelTest extends \TestCase
 
         $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_FAILED, $snapshot->status);
-        $this->assertEquals(Snapshot::RUN_STATUS_WAITING, $snapshot->run_status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_PENDING, $snapshot->processing_status);
+        $this->assertEquals(Snapshot::RUN_STATUS_DONE, $snapshot->run_status);
     }
 }

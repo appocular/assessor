@@ -23,6 +23,7 @@ class SnapshotResource extends Resource
             'id' => $this->id,
             'status' => $this->status,
             'run_status' => $this->run_status,
+            'processing_status' => $this->processing_status,
             'checkpoints' => CheckpointResource::collection($this->checkpoints),
             'baseline_url' => $baseline ? route('snapshot.show', ['id' => $baseline->id]) : null,
         ];

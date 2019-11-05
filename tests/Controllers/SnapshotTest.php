@@ -58,6 +58,7 @@ class SnapshotTest extends \TestCase
             'id' => $snapshot->id,
             'checkpoints' => [],
             'status' => 'unknown',
+            'processing_status' => 'pending',
             'run_status' => 'pending',
             'baseline_url' => route('snapshot.show', ['id' => $baseline->id]),
         ]);
@@ -93,6 +94,7 @@ class SnapshotTest extends \TestCase
             'id' => $snapshot->id,
             'checkpoints' => $checkpointsJson,
             'status' => 'unknown',
+            'processing_status' => 'pending',
             'run_status' => 'pending',
             'baseline_url' => route('snapshot.show', ['id' => $baseline->id]),
         ]);

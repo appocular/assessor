@@ -14,32 +14,37 @@ class Snapshot extends Model
     /**
      * Snapshot status is pending.
      */
-    const STATUS_UNKNOWN = 'unknown';
+    public const STATUS_UNKNOWN = 'unknown';
 
     /**
      * Snapshot passed. All checkpoints either passed or is approved or ignored.
      */
-    const STATUS_PASSED = 'passed';
+    public const STATUS_PASSED = 'passed';
 
     /**
      * Snapshot failed. Rejected checkpoints exists.
      */
-    const STATUS_FAILED = 'failed';
+    public const STATUS_FAILED = 'failed';
 
     /**
-     * Snapshot is still pending (batch still running).
+     * Snapshot needs human input. Unknown checkpoints exists.
      */
-    const RUN_STATUS_PENDING = 'pending';
+    public const PROCESSING_STATUS_PENDING = 'pending';
 
     /**
-     * Snapshot is waiting for user action (unknown checkpoints exists).
+     * Snapshot has been processed. No unknown checkpoints exists.
      */
-    const RUN_STATUS_WAITING = 'waiting';
+    public const PROCESSING_STATUS_DONE = 'done';
+
+    /**
+     * Snapshot is still pending (batch still running/pending checkpoints).
+     */
+    public const RUN_STATUS_PENDING = 'pending';
 
     /**
      * Snapshot is done (all checkpoints have non-unknown status and no active batches).
      */
-    const RUN_STATUS_DONE = 'done';
+    public const RUN_STATUS_DONE = 'done';
 
     protected $fillable = ['id', 'repo_id'];
 
@@ -178,13 +183,14 @@ class Snapshot extends Model
             $this->status = self::STATUS_PASSED;
         }
 
-        if ($unknownCount > 0) {
-            $this->run_status = self::RUN_STATUS_WAITING;
-        } else {
-            $this->run_status = ($pendingCount > 0 || $batchCount > 0) ?
+        $this->processing_status = $unknownCount > 0 ?
+            self::PROCESSING_STATUS_PENDING :
+            self::PROCESSING_STATUS_DONE;
+
+
+        $this->run_status = ($pendingCount > 0 || $batchCount > 0) ?
             self::RUN_STATUS_PENDING :
             self::RUN_STATUS_DONE;
-        }
 
         $this->save();
     }

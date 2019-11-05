@@ -21,6 +21,7 @@ class GitHubStatusUpdateTest extends \TestCase
         putenv('GITHUB_PASSWORD=gpassword');
         $this->snapshot = factory(Snapshot::class)->make([
             'status' => Snapshot::STATUS_UNKNOWN,
+            'processing_status' => Snapshot::PROCESSING_STATUS_PENDING,
             'run_status' => Snapshot::RUN_STATUS_PENDING,
         ]);
         $this->snapshot->repo = factory(Repo::class)->make([
@@ -67,12 +68,13 @@ class GitHubStatusUpdateTest extends \TestCase
      *
      * @dataProvider statusProvider
      */
-    public function testStatusUpdateToGithub($status, $run_status, $state, $description)
+    public function testStatusUpdateToGithub($status, $processing_status, $run_status, $state, $description)
     {
         Log::shouldReceive('info')
             ->once();
 
         $this->snapshot->status = $status;
+        $this->snapshot->processing_status = $processing_status;
         $this->snapshot->run_status = $run_status;
 
         $response = $this->prophesize(ResponseInterface::class);
@@ -106,26 +108,108 @@ class GitHubStatusUpdateTest extends \TestCase
             // human-processed yet, or no diff) and running status should
             // provide running message. This state is only possible on a newly
             // created Snapshot.
-            [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_PENDING, 'pending', 'In progress. Please wait.'],
-            // All checkpoints passed, approved or ignored, but batch still running. Still pending.
-            [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_PENDING, 'pending', 'In progress. Please wait.'],
-            // Failed checkpoint exists, this is overall failure, even if we're still running.
-            [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_PENDING, 'failure', 'Failed!'],
-            // Shouldn't happen.
-            [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_DONE, 'error',
-             'Snapshot in unknown/impossible state? Please seek help.'],
-            // All checkpoints passed/approved/ignored and no more batches.
-            [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_DONE, 'success', 'Passed!'],
-            // Rejected checkpoint and no running batches.
-            [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_DONE, 'failure', 'Failed!'],
-            // Run done, but unprocessed checkpoints, signal human processing is needed.
-            [Snapshot::STATUS_UNKNOWN, Snapshot::RUN_STATUS_WAITING, 'failure', 'Differences detected, please review.'],
-            // Shouldn't happen.
-            [Snapshot::STATUS_PASSED, Snapshot::RUN_STATUS_WAITING, 'error',
-             'Snapshot in unknown/impossible state? Please seek help.'],
+            [
+                Snapshot::STATUS_UNKNOWN,
+                Snapshot::PROCESSING_STATUS_PENDING,
+                Snapshot::RUN_STATUS_PENDING,
+                'pending',
+                'In progress. Please wait.'
+            ],
+            // All checkpoints passed, approved or ignored, but batch still
+            // running. Still pending.
+            [
+                Snapshot::STATUS_PASSED,
+                Snapshot::PROCESSING_STATUS_PENDING,
+                Snapshot::RUN_STATUS_PENDING,
+                'pending',
+                'In progress. Please wait.'
+            ],
+            // Failed checkpoint exists, this is overall failure, even if
+            // we're still running.
+            [
+                Snapshot::STATUS_FAILED,
+                Snapshot::PROCESSING_STATUS_PENDING,
+                Snapshot::RUN_STATUS_PENDING,
+                'failure',
+                'Failed!'
+            ],
+            // Shouldn't happen. Unknown checkpoints causes processing status
+            // to be pending.
+            [
+                Snapshot::STATUS_UNKNOWN,
+                Snapshot::PROCESSING_STATUS_DONE,
+                Snapshot::RUN_STATUS_PENDING,
+                'error',
+                'Snapshot in unknown/impossible state? Please seek help.'
+            ],
+            // This shouldn't happen either, but we'll be open to the
+            // possibility that status only considers processed checkpoints.
+            [
+                Snapshot::STATUS_PASSED,
+                Snapshot::PROCESSING_STATUS_DONE,
+                Snapshot::RUN_STATUS_PENDING,
+                'pending',
+                'In progress. Please wait.'
+            ],
+            // Failed checkpoint exists, this is overall failure, even if
+            // we're still running.
+            [
+                Snapshot::STATUS_FAILED,
+                Snapshot::PROCESSING_STATUS_DONE,
+                Snapshot::RUN_STATUS_PENDING,
+                'failure',
+                'Failed!'
+            ],
+            // Run done, but unprocessed checkpoints, signal human processing
+            // is needed.
+            [
+                Snapshot::STATUS_UNKNOWN,
+                Snapshot::PROCESSING_STATUS_PENDING,
+                Snapshot::RUN_STATUS_DONE,
+                'failure',
+                'Differences detected, please review.'
+            ],
+            // Shouldn't happen, unknown checkpoints cause status to be
+            // unknown, but we'll allow it..
+            [
+                Snapshot::STATUS_PASSED,
+                Snapshot::PROCESSING_STATUS_PENDING,
+                Snapshot::RUN_STATUS_DONE,
+                'pending',
+                'In progress. Please wait.'
+            ],
             // Rejected checkpoint, but more differences exists.
-            [Snapshot::STATUS_FAILED, Snapshot::RUN_STATUS_WAITING, 'failure',
-             'Failed! More differences detected, please review.'],
+            [
+                Snapshot::STATUS_FAILED,
+                Snapshot::PROCESSING_STATUS_PENDING,
+                Snapshot::RUN_STATUS_DONE,
+                'failure',
+                'Failed! More differences detected, please review.'
+            ],
+            // Shouldn't happen.
+            [
+                Snapshot::STATUS_UNKNOWN,
+                Snapshot::PROCESSING_STATUS_DONE,
+                Snapshot::RUN_STATUS_DONE,
+                'error',
+                'Snapshot in unknown/impossible state? Please seek help.'
+            ],
+            // All checkpoints passed/approved/ignored and no more batches/pending.
+            [
+                Snapshot::STATUS_PASSED,
+                Snapshot::PROCESSING_STATUS_DONE,
+                Snapshot::RUN_STATUS_DONE,
+                'success',
+                'Passed!'
+            ],
+            // Rejected checkpoint and no running batches/pending.
+            [
+                Snapshot::STATUS_FAILED,
+                Snapshot::PROCESSING_STATUS_DONE,
+                Snapshot::RUN_STATUS_DONE,
+                'failure',
+                'Failed!'
+            ],
         ];
     }
 
