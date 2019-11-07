@@ -1,6 +1,10 @@
 
+.PHONEY: phpcs
+phpcs:
+	./vendor/bin/phpcs
+
 .PHONEY: test
-test: test-unit test-api
+test: test-unit phpcs test-api
 
 .PHONEY: test-unit
 test-unit:
@@ -35,3 +39,9 @@ docs/Assessor\ API.html: docs/Assessor\ API.apib
 .PHONEY: clean
 clean: clean-coverage
 	rm -rf docs/Assessor\ API.html
+
+.PHONEY: watch-test
+watch-test:
+	while true; do \
+	  find . \( -name .git -o -name vendor \) -prune -o -name '#*' -o -name '*.php' -a -print | entr -cd make test-unit test-api; \
+	done
