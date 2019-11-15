@@ -144,7 +144,6 @@ class Snapshot extends Model
             }
 
             foreach ($this->checkpoints()->get() as $checkpoint) {
-                Log::debug('exists: ' . $checkpoint->identifier());
                 unset($baselineCheckpoints[$checkpoint->identifier()]);
                 dispatch(new FindCheckpointBaseline($checkpoint));
             }
@@ -153,13 +152,18 @@ class Snapshot extends Model
             // the baseline so they exist in this snapshot.
             foreach ($baselineCheckpoints as $baseCheckpoint) {
                 try {
-                    Log::debug('expceted: ' . $baseCheckpoint->identifier());
                     $checkpoint = $baseCheckpoint->createExpected($this);
-                    dispatch(new FindCheckpointBaseline($checkpoint));
                 } catch (Throwable $e) {
                     // We'll assume that any errors is because someone beat us
                     // in creating the checkpoint, and quietly chug along.
                 }
+            }
+
+            // Now that both existing and expected checkpoints exists in the
+            // database, queue baseline finding.
+            foreach ($this->checkpoints()->get() as $checkpoint) {
+                unset($baselineCheckpoints[$checkpoint->identifier()]);
+                dispatch(new FindCheckpointBaseline($checkpoint));
             }
         }
     }
