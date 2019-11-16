@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Controllers;
+namespace Appocular\Assessor\Http\Controllers;
 
-use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Models\Checkpoint;
+use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\SlugGenerator;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class SnapshotTest extends \TestCase
+class SnapshotControllerTest extends TestCase
 {
     use DatabaseMigrations;
 

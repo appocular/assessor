@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Commands;
+namespace Appocular\Assessor\Console\Commands;
 
-use Appocular\Assessor\Repo;
+use Appocular\Assessor\Models\Repo;
+use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class AddRepoCommandTest extends \TestCase
+class AddRepoTest extends TestCase
 {
     use DatabaseMigrations;
 

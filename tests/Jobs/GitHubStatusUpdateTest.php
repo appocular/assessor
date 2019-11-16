@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Jobs;
+namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Jobs\GitHubStatusUpdate;
 use Appocular\Assessor\Repo;
 use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Prophecy\Argument;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class GitHubStatusUpdateTest extends \TestCase
+class GitHubStatusUpdateTest extends TestCase
 {
 
     public function setUp(): void

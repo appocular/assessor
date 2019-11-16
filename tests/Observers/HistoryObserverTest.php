@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Observers;
+namespace Appocular\Assessor\Observers;
 
 use Appocular\Assessor\History;
 use Appocular\Assessor\Jobs\SnapshotBaselining;
-use Appocular\Assessor\Observers\HistoryObserver;
 use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class HistoryObserverTest extends \TestCase
+class HistoryObserverTest extends TestCase
 {
     use DatabaseMigrations;
 

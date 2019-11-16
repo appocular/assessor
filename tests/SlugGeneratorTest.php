@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Appocular\Assessor\SlugGenerator;
+namespace Appocular\Assessor;
+
 use PHPUnit\Framework\TestCase;
 
-// phpcs:ignore PSR1.Classes.ClassDeclaration.MissingNamespace
 class SlugGeneratorTest extends TestCase
 {
     public function testGeneration(): void

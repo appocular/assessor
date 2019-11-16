@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Jobs;
+namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
 use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Illuminate\Contracts\Queue\Job;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Prophecy\Argument;
 
-class QueueCheckpointBaseliningTest extends \TestCase
+class QueueCheckpointBaseliningTest extends TestCase
 {
     use DatabaseMigrations;
 

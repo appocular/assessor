@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Observers;
+namespace Appocular\Assessor\Observers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\GitHubStatusUpdate;
 use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
-use Appocular\Assessor\Observers\SnapshotObserver;
 use Appocular\Assessor\Repo;
 use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class SnapshotObserverTest extends \TestCase
+class SnapshotObserverTest extends TestCase
 {
     use DatabaseMigrations;
 

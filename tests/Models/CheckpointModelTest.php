@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Models;
+namespace Appocular\Assessor\Models;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class CheckpointModelTest extends \TestCase
+class CheckpointModelTest extends TestCase
 {
     use DatabaseMigrations;
 

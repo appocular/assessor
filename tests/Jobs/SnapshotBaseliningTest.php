@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Jobs;
+namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Jobs\SnapshotBaselining;
 use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class SnapshotBaseliningTest extends \TestCase
+class SnapshotBaseliningTest extends TestCase
 {
     use DatabaseMigrations;
 

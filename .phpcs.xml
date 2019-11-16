@@ -43,6 +43,7 @@
              it can check if the filepath is correct. -->
 	<property name="rootNamespaces" type="array">
 	  <element key="app" value="Appocular\Assessor"/>
+	  <element key="tests" value="Appocular\Assessor"/>
 	</property>
 	<!-- <property name="skipDirs" type="array"> -->
 	<!-- 	<element value="components"/> -->

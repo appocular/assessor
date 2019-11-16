@@ -1,13 +1,13 @@
 <?php
 
-// phpcs:disable SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalFunctions.NonFullyQualified
-
 declare(strict_types=1);
 
-use Laravel\Lumen\Application;
+namespace Appocular\Assessor;
 
-// phpcs:ignore PSR1.Classes.ClassDeclaration.MissingNamespace
-abstract class TestCase extends Laravel\Lumen\Testing\TestCase
+use Laravel\Lumen\Application;
+use Laravel\Lumen\Testing\TestCase as LumenTestCase;
+
+abstract class TestCase extends LumenTestCase
 {
     /**
      * Creates the application.
@@ -17,7 +17,7 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
     public function createApplication(): Application
     {
         // Seems there is a memory leak somewhere when testing, so bump limit.
-        ini_set('memory_limit', '256M');
+        \ini_set('memory_limit', '256M');
 
         return require __DIR__ . '/../bootstrap/app.php';
     }

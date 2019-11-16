@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Jobs;
+namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Jobs\SubmitDiff;
+use Appocular\Assessor\TestCase;
 use Appocular\Clients\Contracts\Differ;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
-class SubmitDiffTest extends \TestCase
+class SubmitDiffTest extends TestCase
 {
     /**
      * Test that diffs are submitted to Differ.

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Controllers;
+namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Jobs\UpdateDiff;
+use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class DiffTest extends \TestCase
+class DiffControllerTest extends TestCase
 {
     use DatabaseMigrations;
 

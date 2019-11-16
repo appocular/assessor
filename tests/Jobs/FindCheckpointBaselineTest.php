@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Jobs;
+namespace Appocular\Assessor\Jobs;
 
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class FindCheckpointBaselineTest extends \TestCase
+class FindCheckpointBaselineTest extends TestCase
 {
     use DatabaseMigrations;
 

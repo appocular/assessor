@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Controllers;
+namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Jobs\SubmitImage;
-use Appocular\Assessor\Repo;
+use Appocular\Assessor\Models\Repo;
+use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class BatchTest extends \TestCase
+class BatchControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -143,7 +144,7 @@ class BatchTest extends \TestCase
         // http://www.schaik.com/pngsuite/pngsuite_bas_png.html As
         // BatchController checks for a PNG header, we need something that
         // looks like an image, and an actual image is the superior likeness.
-        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
+        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../../fixtures/images/basn6a16.png'));
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
         $this->assertResponseStatus(201);
@@ -209,7 +210,7 @@ class BatchTest extends \TestCase
         $batch_id = $this->startBatch($id);
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
-        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
+        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../../fixtures/images/basn6a16.png'));
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
         $this->assertResponseStatus(201);
@@ -265,7 +266,7 @@ class BatchTest extends \TestCase
         $batch_id = $this->startBatch($id);
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
-        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
+        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../../fixtures/images/basn6a16.png'));
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => '1', 'image' => $image]);
         $this->assertResponseStatus(201);

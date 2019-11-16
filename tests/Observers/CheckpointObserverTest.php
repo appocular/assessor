@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Observers;
+namespace Appocular\Assessor\Observers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\SubmitDiff;
-use Appocular\Assessor\Observers\CheckpointObserver;
 use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class CheckpointObserverTest extends \TestCase
+class CheckpointObserverTest extends TestCase
 {
     use DatabaseMigrations;
 

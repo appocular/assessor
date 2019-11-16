@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Jobs;
+namespace Appocular\Assessor\Jobs;
 
 use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Jobs\SubmitImage;
+use Appocular\Assessor\TestCase;
 use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use RuntimeException;
 
-class SubmitImageTest extends \TestCase
+class SubmitImageTest extends TestCase
 {
     use DatabaseMigrations;
 
