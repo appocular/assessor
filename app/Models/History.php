@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Appocular\Assessor;
+namespace Appocular\Assessor\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -58,6 +58,6 @@ class History extends Model
      */
     public function snapshot(): BelongsTo
     {
-        return $this->belongsTo('Appocular\Assessor\Snapshot');
+        return $this->belongsTo('Appocular\Assessor\Models\Snapshot');
     }
 }

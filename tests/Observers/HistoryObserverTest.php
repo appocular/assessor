@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Observers;
 
-use Appocular\Assessor\History;
 use Appocular\Assessor\Jobs\SnapshotBaselining;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\History;
+use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;

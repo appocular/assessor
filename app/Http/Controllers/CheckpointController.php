@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Http\Controllers;
 
-use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Http\Resources\CheckpointResource;
+use Appocular\Assessor\Models\Checkpoint;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class CheckpointController extends BaseController

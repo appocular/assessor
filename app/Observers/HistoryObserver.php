@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Observers;
 
-use Appocular\Assessor\History;
 use Appocular\Assessor\Jobs\SnapshotBaselining;
+use Appocular\Assessor\Models\History;
 
 class HistoryObserver
 {

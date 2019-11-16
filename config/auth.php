@@ -67,7 +67,7 @@ return [
     'providers' => [
         'repo' => [
             'driver' => 'eloquent',
-            'model'  => Appocular\Assessor\Repo::class,
+            'model'  => Appocular\Assessor\Models\Repo::class,
         ],
     ],
 

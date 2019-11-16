@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Appocular\Assessor;
+namespace Appocular\Assessor\Models;
 
 use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Illuminate\Database\Eloquent\Collection;
@@ -76,7 +76,7 @@ class Snapshot extends Model
      */
     public function repo(): BelongsTo
     {
-        return $this->belongsTo('Appocular\Assessor\Repo', 'repo_id', 'uri');
+        return $this->belongsTo('Appocular\Assessor\Models\Repo', 'repo_id', 'uri');
     }
 
     /**
@@ -84,7 +84,7 @@ class Snapshot extends Model
      */
     public function batches(): HasMany
     {
-        return $this->hasMany('Appocular\Assessor\Batch');
+        return $this->hasMany('Appocular\Assessor\Models\Batch');
     }
 
     /**
@@ -92,7 +92,7 @@ class Snapshot extends Model
      */
     public function checkpoints(): HasMany
     {
-        return $this->hasMany('Appocular\Assessor\Checkpoint')->orderBy('name');
+        return $this->hasMany('Appocular\Assessor\Models\Checkpoint')->orderBy('name');
     }
 
     /**
@@ -100,7 +100,7 @@ class Snapshot extends Model
      */
     public function history(): HasOne
     {
-        return $this->hasOne('Appocular\Assessor\History');
+        return $this->hasOne('Appocular\Assessor\Models\History');
     }
 
     /**

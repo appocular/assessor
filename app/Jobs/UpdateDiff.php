@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Models\Checkpoint;
 
 class UpdateDiff extends Job
 {

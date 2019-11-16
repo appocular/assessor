@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Observers;
 
-use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\SubmitDiff;
+use Appocular\Assessor\Models\Checkpoint;
 
 class CheckpointObserver
 {

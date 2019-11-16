@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Models\Checkpoint;
 use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -14,7 +14,7 @@ class SubmitImage extends Job
     /**
      * Checkpoint to submit image for.
      *
-     * @var \Appocular\Assessor\Checkpoint
+     * @var \Appocular\Assessor\Models\Checkpoint
      */
     public $checkpoint;
 

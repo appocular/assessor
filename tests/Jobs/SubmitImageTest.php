@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Models\Checkpoint;
 use Appocular\Assessor\TestCase;
 use Appocular\Clients\Contracts\Keeper;
 use Illuminate\Support\Facades\Log;

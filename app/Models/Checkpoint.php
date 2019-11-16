@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Appocular\Assessor;
+namespace Appocular\Assessor\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -60,7 +60,7 @@ class Checkpoint extends Model
      */
     public function snapshot(): BelongsTo
     {
-        return $this->belongsTo('Appocular\Assessor\Snapshot');
+        return $this->belongsTo('Appocular\Assessor\Models\Snapshot');
     }
 
     /**
@@ -98,6 +98,7 @@ class Checkpoint extends Model
      * Sorts meta data to the canonical representation.
      *
      * @param array<string, string> $meta
+     *
      * @return array<string, string>
      */
     public static function cleanMeta(array $meta): array

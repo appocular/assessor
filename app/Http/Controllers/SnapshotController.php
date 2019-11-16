@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Http\Resources\SnapshotResource;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Snapshot;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class SnapshotController extends BaseController

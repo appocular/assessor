@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Models\Checkpoint;
 use Illuminate\Support\Facades\Log;
 
 class FindCheckpointBaseline extends Job
@@ -12,7 +12,7 @@ class FindCheckpointBaseline extends Job
     /**
      * Checkpoint to baseline.
      *
-     * @var \Appocular\Assessor\Checkpoint
+     * @var \Appocular\Assessor\Models\Checkpoint
      */
     public $checkpoint;
 

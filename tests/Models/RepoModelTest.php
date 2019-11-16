@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Models;
 
-use Appocular\Assessor\Repo;
 use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use RuntimeException;

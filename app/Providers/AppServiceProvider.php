@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Providers;
 
-use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\History;
 use Appocular\Assessor\Http\Resources\CheckpointResource;
 use Appocular\Assessor\Http\Resources\SnapshotResource;
+use Appocular\Assessor\Models\Checkpoint;
+use Appocular\Assessor\Models\History;
+use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\Observers\CheckpointObserver;
 use Appocular\Assessor\Observers\HistoryObserver;
 use Appocular\Assessor\Observers\SnapshotObserver;
-use Appocular\Assessor\Snapshot;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Observers;
 
-use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\GitHubStatusUpdate;
 use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
-use Appocular\Assessor\Repo;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Checkpoint;
+use Appocular\Assessor\Models\Repo;
+use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;

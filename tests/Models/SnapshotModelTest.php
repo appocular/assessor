@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Models;
 
-use Appocular\Assessor\Batch;
-use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\FindCheckpointBaseline;
-use Appocular\Assessor\Snapshot;
 use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;

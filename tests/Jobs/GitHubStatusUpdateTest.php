@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Repo;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Repo;
+use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\TestCase;
 use Exception;
 use Illuminate\Support\Facades\Log;

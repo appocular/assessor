@@ -13,13 +13,13 @@ declare(strict_types=1);
 |
 */
 
-$factory->define(Appocular\Assessor\Batch::class, static function (Faker\Generator $faker) {
+$factory->define(Appocular\Assessor\Models\Batch::class, static function (Faker\Generator $faker) {
     return [
         'snapshot_id' => $faker->sha256,
     ];
 });
 
-$factory->define(Appocular\Assessor\Snapshot::class, static function (Faker\Generator $faker) {
+$factory->define(Appocular\Assessor\Models\Snapshot::class, static function (Faker\Generator $faker) {
     return [
         'id' => $faker->sha256,
         'status' => 'unknown',
@@ -29,7 +29,7 @@ $factory->define(Appocular\Assessor\Snapshot::class, static function (Faker\Gene
     ];
 });
 
-$factory->define(Appocular\Assessor\Checkpoint::class, static function (Faker\Generator $faker) {
+$factory->define(Appocular\Assessor\Models\Checkpoint::class, static function (Faker\Generator $faker) {
     return [
         // ID is most likely a sha1, as used by Git.
         'id' => $faker->sha1,
@@ -45,13 +45,13 @@ $factory->define(Appocular\Assessor\Checkpoint::class, static function (Faker\Ge
 });
 
 // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
-$factory->define(Appocular\Assessor\History::class, static function (Faker\Generator $faker) {
+$factory->define(Appocular\Assessor\Models\History::class, static function (Faker\Generator $faker) {
     return [
         'history' => '',
     ];
 });
 
-$factory->define(Appocular\Assessor\Repo::class, static function (Faker\Generator $faker) {
+$factory->define(Appocular\Assessor\Models\Repo::class, static function (Faker\Generator $faker) {
     return [
         'uri' => $faker->text(20),
         'api_token' => $faker->sha256,

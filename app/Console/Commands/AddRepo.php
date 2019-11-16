@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Console\Commands;
 
-use Appocular\Assessor\Repo;
+use Appocular\Assessor\Models\Repo;
 use Illuminate\Console\Command;
 
 class AddRepo extends Command

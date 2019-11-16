@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Snapshot;
 use Illuminate\Support\Facades\Log;
 
 class SnapshotBaselining extends Job
@@ -12,7 +12,7 @@ class SnapshotBaselining extends Job
     /**
      * Snapshot to baseline.
      *
-     * @var \Appocular\Assessor\Snapshot
+     * @var \Appocular\Assessor\Models\Snapshot
      */
     public $snapshot;
 

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Observers;
 
-use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\GitHubStatusUpdate;
 use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Checkpoint;
+use Appocular\Assessor\Models\Snapshot;
 use Illuminate\Support\Facades\Log;
 
 class SnapshotObserver

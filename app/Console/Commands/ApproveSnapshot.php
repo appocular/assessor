@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Console\Commands;
 
-use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Checkpoint;
+use Appocular\Assessor\Models\Snapshot;
 use Illuminate\Console\Command;
 
 class ApproveSnapshot extends Command

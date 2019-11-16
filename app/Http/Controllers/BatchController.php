@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Http\Controllers;
 
-use Appocular\Assessor\Batch;
-use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\History;
 use Appocular\Assessor\Jobs\SubmitImage;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Batch;
+use Appocular\Assessor\Models\Checkpoint;
+use Appocular\Assessor\Models\History;
+use Appocular\Assessor\Models\Snapshot;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;

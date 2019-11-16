@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Appocular\Assessor;
+namespace Appocular\Assessor\Models;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Checkpoint;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Checkpoint;
+use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;

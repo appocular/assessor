@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Observers;
 
-use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\SubmitDiff;
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Checkpoint;
+use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;

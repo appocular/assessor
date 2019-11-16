@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Appocular\Assessor\Jobs;
 
-use Appocular\Assessor\Snapshot;
+use Appocular\Assessor\Models\Snapshot;
 
 class QueueCheckpointBaselining extends Job
 {
     /**
      * Snapshot to queue checkpoint baselining for.
      *
-     * @var \Appocular\Assessor\Snapshot
+     * @var \Appocular\Assessor\Models\Snapshot
      */
     public $snapshot;
 

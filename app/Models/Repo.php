@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Appocular\Assessor;
+namespace Appocular\Assessor\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Webpatser\Uuid\Uuid;
