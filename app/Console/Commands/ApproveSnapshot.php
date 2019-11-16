@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Console\Commands;
 
-use Appocular\Assessor\Snapshot;
 use Appocular\Assessor\Checkpoint;
+use Appocular\Assessor\Snapshot;
 use Illuminate\Console\Command;
 
 class ApproveSnapshot extends Command
@@ -24,8 +26,6 @@ class ApproveSnapshot extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -34,15 +34,16 @@ class ApproveSnapshot extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): ?int
     {
         $snapshot = Snapshot::findOrFail($this->argument('snapshot_id'));
+
         foreach ($snapshot->checkpoints as $checkpoint) {
             $checkpoint->approval_status = Checkpoint::APPROVAL_STATUS_APPROVED;
             $checkpoint->save();
         }
+
+        return 0;
     }
 }

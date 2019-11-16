@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor;
 
-use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -46,15 +50,31 @@ class Snapshot extends Model
      */
     public const RUN_STATUS_DONE = 'done';
 
+    /**
+     * Tell Eloquent which properties are fillable.
+     *
+     * @var array<string>
+     */
     protected $fillable = ['id', 'repo_id'];
 
+    /**
+     * Tell Eloquent that our key isn't an incrementing number.
+     *
+     * @var bool
+     */
     public $incrementing = false;
+
+    /**
+     * Tell Eloquent that our key is a string.
+     *
+     * @var string
+     */
     protected $keyType = 'string';
 
     /**
      * Get the repo for the snapshot.
      */
-    public function repo()
+    public function repo(): BelongsTo
     {
         return $this->belongsTo('Appocular\Assessor\Repo', 'repo_id', 'uri');
     }
@@ -62,7 +82,7 @@ class Snapshot extends Model
     /**
      * Get the current batches for the snapshot.
      */
-    public function batches()
+    public function batches(): HasMany
     {
         return $this->hasMany('Appocular\Assessor\Batch');
     }
@@ -70,7 +90,7 @@ class Snapshot extends Model
     /**
      * Get the checkpoints for the snapshot.
      */
-    public function checkpoints()
+    public function checkpoints(): HasMany
     {
         return $this->hasMany('Appocular\Assessor\Checkpoint')->orderBy('name');
     }
@@ -78,7 +98,7 @@ class Snapshot extends Model
     /**
      * Get the history for the snapshot.
      */
-    public function history()
+    public function history(): HasOne
     {
         return $this->hasOne('Appocular\Assessor\History');
     }
@@ -86,15 +106,15 @@ class Snapshot extends Model
     /**
      * Whether the baseline has been identified.
      */
-    public function baselineIdentified() : bool
+    public function baselineIdentified(): bool
     {
-        return !empty($this->baseline);
+        return $this->baseline !== null && $this->baseline !== '';
     }
 
     /**
      * Set the baseline.
      */
-    public function setBaseline(Snapshot $baseline) : void
+    public function setBaseline(Snapshot $baseline): void
     {
         $this->baseline = $baseline->id;
     }
@@ -102,7 +122,7 @@ class Snapshot extends Model
     /**
      * Set the baseline to none.
      */
-    public function setNoBaseline() : void
+    public function setNoBaseline(): void
     {
         $this->baseline = '';
     }
@@ -110,20 +130,21 @@ class Snapshot extends Model
     /**
      * Get baseline.
      */
-    public function getBaseline() : ?Snapshot
+    public function getBaseline(): ?Snapshot
     {
-        if ($this->baselineIdentified()) {
-            return self::find($this->baseline);
+        if (!$this->baselineIdentified()) {
+            return null;
         }
-        return null;
+
+        return self::find($this->baseline);
     }
 
     /**
      * Is snapshot done?
      */
-    public function isDone() : bool
+    public function isDone(): bool
     {
-        return $this->run_status == self::RUN_STATUS_DONE;
+        return $this->run_status === self::RUN_STATUS_DONE;
     }
 
     /**
@@ -132,39 +153,37 @@ class Snapshot extends Model
      * Queues FindCheckpointBaseline jobs to find the baseline of the
      * individual checkpoints.
      */
-    public function triggerCheckpointBaselining() : void
+    public function triggerCheckpointBaselining(): void
     {
-        if ($baseline = $this->getBaseline()) {
-            Log::info(sprintf('Collectiong checkpoints for baselines finding for snapshot %s', $this->id));
-            $baselineCheckpoints = [];
-            foreach ($baseline->checkpoints()->get() as $checkpoint) {
-                if ($checkpoint->shouldPropagate()) {
-                    $baselineCheckpoints[$checkpoint->identifier()] = $checkpoint;
-                }
-            }
+        $baseline = $this->getBaseline();
 
-            foreach ($this->checkpoints()->get() as $checkpoint) {
-                unset($baselineCheckpoints[$checkpoint->identifier()]);
-                dispatch(new FindCheckpointBaseline($checkpoint));
-            }
+        if (!$baseline) {
+            return;
+        }
 
-            // Create imageless checkpoints for the remaining checkpoints in
-            // the baseline so they exist in this snapshot.
-            foreach ($baselineCheckpoints as $baseCheckpoint) {
-                try {
-                    $checkpoint = $baseCheckpoint->createExpected($this);
-                } catch (Throwable $e) {
-                    // We'll assume that any errors is because someone beat us
-                    // in creating the checkpoint, and quietly chug along.
-                }
-            }
+        Log::info(\sprintf('Collectiong checkpoints for baselines finding for snapshot %s', $this->id));
+        $baselineCheckpoints = [];
 
-            // Now that both existing and expected checkpoints exists in the
-            // database, queue baseline finding.
-            foreach ($this->checkpoints()->get() as $checkpoint) {
-                unset($baselineCheckpoints[$checkpoint->identifier()]);
-                dispatch(new FindCheckpointBaseline($checkpoint));
+        foreach ($this->checkpoints()->get() as $checkpoint) {
+            unset($baselineCheckpoints[$checkpoint->identifier()]);
+        }
+
+        // Create imageless checkpoints for the remaining checkpoints in
+        // the baseline so they exist in this snapshot.
+        foreach ($baselineCheckpoints as $baseCheckpoint) {
+            try {
+                $checkpoint = $baseCheckpoint->createExpected($this);
+            } catch (Throwable $e) {
+                // We'll assume that any errors is because someone beat us
+                // in creating the checkpoint, and quietly chug along.
             }
+        }
+
+        // Now that both existing and expected checkpoints exists in the
+        // database, queue baseline finding.
+        foreach ($this->checkpoints()->get() as $checkpoint) {
+            unset($baselineCheckpoints[$checkpoint->identifier()]);
+            \dispatch(new FindCheckpointBaseline($checkpoint));
         }
     }
 
@@ -173,12 +192,13 @@ class Snapshot extends Model
      *
      * Updates the status depending on the status of it's checkpoints.
      */
-    public function updateStatus() : void
+    public function updateStatus(): void
     {
         $this->refresh();
         $pendingCount = $this->checkpoints->where('image_status', Checkpoint::IMAGE_STATUS_PENDING)->count();
         $unknownCount = $this->checkpoints->where('approval_status', Checkpoint::APPROVAL_STATUS_UNKNOWN)->count();
         $batchCount = $this->batches()->count();
+
         if ($this->checkpoints->where('approval_status', Checkpoint::APPROVAL_STATUS_REJECTED)->count() > 0) {
             $this->status = self::STATUS_FAILED;
         } elseif ($unknownCount > 0 || $pendingCount > 0 || $batchCount > 0) {
@@ -192,7 +212,7 @@ class Snapshot extends Model
             self::PROCESSING_STATUS_DONE;
 
 
-        $this->run_status = ($pendingCount > 0 || $batchCount > 0) ?
+        $this->run_status = $pendingCount > 0 || $batchCount > 0 ?
             self::RUN_STATUS_PENDING :
             self::RUN_STATUS_DONE;
 
@@ -202,7 +222,7 @@ class Snapshot extends Model
     /**
      * Get descendant snapshots.
      */
-    public function getDescendants() : Collection
+    public function getDescendants(): Collection
     {
         return self::where(['baseline' => $this->id])->get();
     }

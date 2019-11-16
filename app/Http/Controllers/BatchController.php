@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Batch;
@@ -7,20 +9,18 @@ use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\History;
 use Appocular\Assessor\Jobs\SubmitImage;
 use Appocular\Assessor\Snapshot;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Laravel\Lumen\Routing\UrlGenerator;
 use PDOException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BatchController extends BaseController
 {
-    public function create(Request $request, UrlGenerator $urlGenerator)
+    public function create(Request $request, UrlGenerator $urlGenerator): Response
     {
         $this->validate($request, [
             'id' => 'required|string|min:1|max:255',
@@ -30,6 +30,7 @@ class BatchController extends BaseController
 
         $batch = new Batch();
         $snapshot = Snapshot::find($request->input('id'));
+
         if (!$snapshot) {
             // New snapshot, try to create it, and if that throws an error,
             // try to load it again in case we're in a race condition with
@@ -45,7 +46,8 @@ class BatchController extends BaseController
         }
 
         if (!$snapshot) {
-            Log::error(sprintf('Could not create nor load snapshot for batch %s', $batch->id));
+            Log::error(\sprintf('Could not create nor load snapshot for batch %s', $batch->id));
+
             throw new HttpException(500, 'Internal error');
         }
 
@@ -60,22 +62,23 @@ class BatchController extends BaseController
                 // We assume it's because it already exist.
             }
         }
+
         $batch->snapshot()->associate($snapshot);
         $batch->save();
 
-        Log::info(sprintf('Starting batch %s for snapshot %s', $batch->id, $snapshot->id));
+        Log::info(\sprintf('Starting batch %s for snapshot %s', $batch->id, $snapshot->id));
 
         return (new Response('', 201))->header('Location', $urlGenerator->to('/batch', $batch->id));
     }
 
-    public function delete($batchId, Request $request)
+    public function delete(string $batchId): void
     {
         $batch = Batch::findOrFail($batchId);
-        Log::info(sprintf('Ending batch %s for snapshot %s', $batch->id, $batch->snapshot->id));
+        Log::info(\sprintf('Ending batch %s for snapshot %s', $batch->id, $batch->snapshot->id));
         $batch->delete();
     }
 
-    public function addCheckpoint(Request $request, UrlGenerator $urlGenerator, $batchId)
+    public function addCheckpoint(Request $request, UrlGenerator $urlGenerator, string $batchId): Response
     {
         $batch = Batch::findOrFail($batchId);
         $snapshot = $batch->snapshot;
@@ -84,29 +87,33 @@ class BatchController extends BaseController
             'name' => 'required|string|min:1|max:255',
             'image' => 'required|string',
             'meta' => 'array',
-            'meta.*' => 'string'
+            'meta.*' => 'string',
         ]);
 
-        $meta = null;
-        if ($meta = $request->input('meta')) {
+        $meta = $request->input('meta');
+
+        if ($meta) {
             $meta = Checkpoint::cleanMeta($meta);
         }
 
-        $imageData = base64_decode($request->input('image'), true);
+        $imageData = \base64_decode($request->input('image'), true);
 
         // Check that the data has a PNG header. Else we can bail out early
         // and avoid sending the data to the image store.
-        $pngHeader = chr(137) . chr(80) . chr(78) . chr(71) . chr(13) . chr(10) . chr(26) . chr(10);
-        if (!$imageData || substr($imageData, 0, 8) !== $pngHeader) {
-            throw new BadRequestHttpException('Bad image data');
-            Log::error(sprintf(
+        $pngHeader = \chr(137) . \chr(80) . \chr(78) . \chr(71) . \chr(13) . \chr(10) . \chr(26) . \chr(10);
+
+        if (!$imageData || \substr($imageData, 0, 8) !== $pngHeader) {
+            Log::error(\sprintf(
                 'Error saving image for checkpoint "%s" in batch %s',
                 $request->input('name'),
-                $batch->id
+                $batch->id,
             ));
+
+            throw new BadRequestHttpException('Bad image data');
         }
 
         $id = Checkpoint::getId($snapshot->id, $request->input('name'), $meta);
+
         try {
             $checkpoint = $snapshot->checkpoints()->create([
                 'id' => $id,
@@ -117,13 +124,13 @@ class BatchController extends BaseController
             $checkpoint = $snapshot->checkpoints()->find($id);
         }
 
-        dispatch(new SubmitImage($checkpoint, $request->input('image')));
+        \dispatch(new SubmitImage($checkpoint, $request->input('image')));
 
-        Log::info(sprintf('Added checkpoint "%s" in batch %s', $request->input('name'), $batch->id));
+        Log::info(\sprintf('Added checkpoint "%s" in batch %s', $request->input('name'), $batch->id));
 
         return (new Response('', 201))->header(
             'Location',
-            $urlGenerator->route('checkpoint.show', ['id' => $checkpoint->id])
+            $urlGenerator->route('checkpoint.show', ['id' => $checkpoint->id]),
         );
     }
 }

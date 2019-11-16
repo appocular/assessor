@@ -1,20 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingNamespace
 class CreateSnapshotsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('snapshots', function (Blueprint $table) {
+        Schema::create('snapshots', static function (Blueprint $table): void {
             $table->string('id')->primary();
             $table->string('repo_id');
             $table->string('baseline')->nullable();
@@ -26,10 +26,8 @@ class CreateSnapshotsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('snapshots');
     }

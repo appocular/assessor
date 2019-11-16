@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use Appocular\Assessor\SlugGenerator;
 use PHPUnit\Framework\TestCase;
 
 // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingNamespace
 class SlugGeneratorTest extends TestCase
 {
-    public function testGeneration()
+    public function testGeneration(): void
     {
         $this->assertEquals('frontpage', SlugGenerator::toSlug('Frontpage'));
         // Escape troublesome characters.
@@ -19,7 +21,7 @@ class SlugGeneratorTest extends TestCase
         $this->assertEquals('a-checkpoint--203d', SlugGenerator::toSlug('A checkpoint‽'));
     }
 
-    public function testGenerationWithMeta()
+    public function testGenerationWithMeta(): void
     {
         $this->assertEquals('frontpage,a:b,c:d', SlugGenerator::toSlug('Frontpage', ['c' => 'd', 'a' => 'b']));
     }

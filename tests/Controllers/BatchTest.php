@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Controllers;
 
 use Appocular\Assessor\Jobs\SubmitImage;
 use Appocular\Assessor\Repo;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\WithoutMiddleware;
-use Prophecy\Argument;
 
 class BatchTest extends \TestCase
 {
@@ -30,20 +30,20 @@ class BatchTest extends \TestCase
      * first request in a test, and the Authorization headert thus "sticks
      * around" for the subsequent requests, rendering passing the header to
      * them pointless.
+     *
+     * @return array<string, string>
      */
-    public function headers()
+    public function headers(): array
     {
         return ["Authorization" => 'Bearer RepoToken'];
     }
 
     /**
      * Test that a batch can be created and deleted.
-     *
-     * @return void
      */
-    public function testCreateAndDelete()
+    public function testCreateAndDelete(): void
     {
-        $id = str_repeat('0', 40);
+        $id = \str_repeat('0', 40);
         $batch_id = $this->startBatch($id);
 
         // Assert that we can see the batch and snapshot in the database.
@@ -60,7 +60,7 @@ class BatchTest extends \TestCase
     /**
      * Test that the snapshot is associated with the repo that owns the token.
      */
-    public function testRepoAssociation()
+    public function testRepoAssociation(): void
     {
         $id = 'banano';
         $batch_id = $this->startBatch($id);
@@ -70,13 +70,13 @@ class BatchTest extends \TestCase
         $this->seeInDatabase('snapshots', ['id' => $id, 'repo_id' => $this->repoId]);
     }
 
-    public function testUnknownBatch()
+    public function testUnknownBatch(): void
     {
         $this->delete('/batch/random', [], $this->headers());
         $this->assertResponseStatus(404);
     }
 
-    public function testBatchValidation()
+    public function testBatchValidation(): void
     {
         $this->json('POST', '/batch', [], $this->headers());
         $this->assertResponseStatus(422);
@@ -85,7 +85,7 @@ class BatchTest extends \TestCase
         ]);
     }
 
-    public function testHistoryHandling()
+    public function testHistoryHandling(): void
     {
         // Suppress jobs so the history isn't processed before we have chance to inpect it.
         Queue::fake();
@@ -102,16 +102,16 @@ class BatchTest extends \TestCase
         // Assert that the history is still there.
         $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
 
-        $batch_id = $this->startBatch($id, "three\nfour");
+        $this->startBatch($id, "three\nfour");
 
         // Assert that the history is still the same.
         $this->seeInDatabase('history', ['snapshot_id' => $id, 'history' => "one\ntwo"]);
         $this->missingFromDatabase('history', ['snapshot_id' => $id, 'history' => "three\nfour"]);
     }
 
-    public function testCheckpointValidation()
+    public function testCheckpointValidation(): void
     {
-        $id = str_repeat('1', 40);
+        $id = \str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', []);
@@ -122,9 +122,9 @@ class BatchTest extends \TestCase
         ]);
     }
 
-    public function testBadCheckpoint()
+    public function testBadCheckpoint(): void
     {
-        $id = str_repeat('1', 40);
+        $id = \str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => 'random data']);
@@ -132,18 +132,18 @@ class BatchTest extends \TestCase
         $this->assertEquals("Bad image data\n", $this->response->getContent());
     }
 
-    public function testAddingCheckpoint()
+    public function testAddingCheckpoint(): void
     {
         Queue::fake();
 
-        $id = str_repeat('1', 40);
+        $id = \str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
         // Test image taken from
         // http://www.schaik.com/pngsuite/pngsuite_bas_png.html As
         // BatchController checks for a PNG header, we need something that
         // looks like an image, and an actual image is the superior likeness.
-        $image = base64_encode(file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
+        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
         $this->assertResponseStatus(201);
@@ -181,7 +181,7 @@ class BatchTest extends \TestCase
         $this->assertResponseStatus(200);
 
         // A new batch on another snapshot should be able to add the same image.
-        $id2 = str_repeat('2', 40);
+        $id2 = \str_repeat('2', 40);
         $batch_id = $this->startBatch($id2);
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
@@ -201,15 +201,15 @@ class BatchTest extends \TestCase
         ]);
     }
 
-    public function testAddingCheckpointWithMetadata()
+    public function testAddingCheckpointWithMetadata(): void
     {
         Queue::fake();
 
-        $id = str_repeat('1', 40);
+        $id = \str_repeat('1', 40);
         $batch_id = $this->startBatch($id);
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
-        $image = base64_encode(file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
+        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => 'test image', 'image' => $image]);
         $this->assertResponseStatus(201);
@@ -217,14 +217,14 @@ class BatchTest extends \TestCase
         $this->json(
             'POST',
             '/batch/' . $batch_id . '/checkpoint',
-            ['name' => 'test image', 'image' => $image, 'meta' => ['test' => 'value']]
+            ['name' => 'test image', 'image' => $image, 'meta' => ['test' => 'value']],
         );
         $this->assertResponseStatus(201);
 
         $this->json(
             'POST',
             '/batch/' . $batch_id . '/checkpoint',
-            ['name' => 'test image', 'image' => $image, 'meta' => ['test' => 'value', 'key2' => 'more data']]
+            ['name' => 'test image', 'image' => $image, 'meta' => ['test' => 'value', 'key2' => 'more data']],
         );
         $this->assertResponseStatus(201);
 
@@ -232,7 +232,7 @@ class BatchTest extends \TestCase
         $this->json(
             'POST',
             '/batch/' . $batch_id . '/checkpoint',
-            ['name' => 'test image', 'image' => $image, 'meta' => ['key2' => 'more data', 'test' => 'value']]
+            ['name' => 'test image', 'image' => $image, 'meta' => ['key2' => 'more data', 'test' => 'value']],
         );
         $this->assertResponseStatus(201);
 
@@ -257,15 +257,15 @@ class BatchTest extends \TestCase
         ]);
     }
 
-    public function testMetadataValidation()
+    public function testMetadataValidation(): void
     {
         Queue::fake();
 
-        $id = str_repeat('7', 40);
+        $id = \str_repeat('7', 40);
         $batch_id = $this->startBatch($id);
 
         // Test image taken from http://www.schaik.com/pngsuite/pngsuite_bas_png.html
-        $image = base64_encode(file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
+        $image = \base64_encode(\file_get_contents(__DIR__ . '/../../fixtures/images/basn6a16.png'));
 
         $this->json('POST', '/batch/' . $batch_id . '/checkpoint', ['name' => '1', 'image' => $image]);
         $this->assertResponseStatus(201);
@@ -273,34 +273,34 @@ class BatchTest extends \TestCase
         $this->json(
             'POST',
             '/batch/' . $batch_id . '/checkpoint',
-            ['name' => '2', 'image' => $image, 'meta' => ['test' => 'test']]
+            ['name' => '2', 'image' => $image, 'meta' => ['test' => 'test']],
         );
         $this->assertResponseStatus(201);
 
         $this->json(
             'POST',
             '/batch/' . $batch_id . '/checkpoint',
-            ['name' => '3', 'image' => $image, 'meta' => ['test' => 'test', 'test more' => 'value']]
+            ['name' => '3', 'image' => $image, 'meta' => ['test' => 'test', 'test more' => 'value']],
         );
         $this->assertResponseStatus(201);
 
         $this->json(
             'POST',
             '/batch/' . $batch_id . '/checkpoint',
-            ['name' => '4', 'image' => $image, 'meta' => ['test' => 'test', 'test more' => ['value']]]
+            ['name' => '4', 'image' => $image, 'meta' => ['test' => 'test', 'test more' => ['value']]],
         );
         $this->assertResponseStatus(422);
         $this->json(
             'POST',
             '/batch/' . $batch_id . '/checkpoint',
-            ['name' => '4', 'image' => $image, 'meta' => ['test' => []]]
+            ['name' => '4', 'image' => $image, 'meta' => ['test' => []]],
         );
         $this->assertResponseStatus(422);
 
         $this->json(
             'POST',
             '/batch/' . $batch_id . '/checkpoint',
-            ['name' => '4', 'image' => $image, 'meta' => ['test' => null]]
+            ['name' => '4', 'image' => $image, 'meta' => ['test' => null]],
         );
         $this->assertResponseStatus(422);
     }
@@ -308,19 +308,22 @@ class BatchTest extends \TestCase
     /**
      * Start a batch and return the id.
      */
-    public function startBatch($id, $history = null)
+    public function startBatch(string $id, ?string $history = null): string
     {
 
         $data = ['id' => $id];
+
         if ($history) {
             $data['history'] = $history;
         }
+
         $this->json('POST', '/batch', $data, $this->headers());
 
         $this->assertResponseStatus(201);
         $this->assertTrue($this->response->headers->has('Location'));
         $location = $this->response->headers->get('Location');
-        $parts = explode('/', $location);
-        return array_pop($parts);
+        $parts = \explode('/', $location);
+
+        return \array_pop($parts);
     }
 }

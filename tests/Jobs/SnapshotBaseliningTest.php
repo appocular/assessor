@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jobs;
 
 use Appocular\Assessor\Jobs\SnapshotBaselining;
@@ -10,10 +12,10 @@ class SnapshotBaseliningTest extends \TestCase
 {
     use DatabaseMigrations;
 
-    public function testFindingBaseline()
+    public function testFindingBaseline(): void
     {
-        $baseline = factory(Snapshot::class)->create();
-        $snapshot = factory(Snapshot::class)->create();
+        $baseline = \factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
 
         $snapshot->history()->create(['history' => "banana\n" . $baseline->id . "\napple\n"]);
 
@@ -25,10 +27,10 @@ class SnapshotBaseliningTest extends \TestCase
         $this->missingFromDatabase('history', ['snapshot_id' => $snapshot->id]);
     }
 
-    public function testNotFindingBaseline()
+    public function testNotFindingBaseline(): void
     {
-        $baseline = factory(Snapshot::class)->create();
-        $snapshot = factory(Snapshot::class)->create();
+        \factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
 
         $snapshot->history()->create(['history' => "banana\npineapple\napple\n"]);
 
@@ -40,10 +42,10 @@ class SnapshotBaseliningTest extends \TestCase
         $this->missingFromDatabase('history', ['snapshot_id' => $snapshot->id]);
     }
 
-    public function testIgnoringItself()
+    public function testIgnoringItself(): void
     {
-        $baseline = factory(Snapshot::class)->create();
-        $snapshot = factory(Snapshot::class)->create();
+        $baseline = \factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
 
         $snapshot->history()->create(['history' => $snapshot->id . "\nbanana\n" . $baseline->id . "\napple\n"]);
 

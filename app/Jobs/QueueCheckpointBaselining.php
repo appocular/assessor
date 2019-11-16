@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Jobs;
 
 use Appocular\Assessor\Snapshot;
-use Illuminate\Support\Facades\Log;
 
 class QueueCheckpointBaselining extends Job
 {
     /**
-     * @var Snapshot
+     * Snapshot to queue checkpoint baselining for.
+     *
+     * @var \Appocular\Assessor\Snapshot
      */
     public $snapshot;
 
@@ -19,14 +22,13 @@ class QueueCheckpointBaselining extends Job
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $this->snapshot->refresh();
         $baseline = $this->snapshot->getBaseline();
-        if (!$baseline || $baseline->run_status != Snapshot::RUN_STATUS_DONE) {
+
+        if (!$baseline || $baseline->run_status !== Snapshot::RUN_STATUS_DONE) {
             // Cop out if things change too quickly.
             return;
         }

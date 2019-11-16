@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Jobs\UpdateDiff;
@@ -14,7 +16,7 @@ class DiffController extends BaseController
      *
      * Fires a DiffSubmitted event to update Checkpoints.
      */
-    public function submit(Request $request)
+    public function submit(Request $request): Response
     {
         $this->validate($request, [
             'image_url' => 'required|string|min:1|max:255',
@@ -23,11 +25,11 @@ class DiffController extends BaseController
             'different' => 'required|boolean',
         ]);
 
-        dispatch(new UpdateDiff(
+        \dispatch(new UpdateDiff(
             $request->input('image_url'),
             $request->input('baseline_url'),
             $request->input('diff_url'),
-            $request->input('different')
+            $request->input('different'),
         ));
 
         // Always return success.

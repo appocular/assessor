@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Jobs;
 
 use Appocular\Assessor\Snapshot;
@@ -8,7 +10,9 @@ use Illuminate\Support\Facades\Log;
 class SnapshotBaselining extends Job
 {
     /**
-     * @var Snapshot
+     * Snapshot to baseline.
+     *
+     * @var \Appocular\Assessor\Snapshot
      */
     public $snapshot;
 
@@ -19,25 +23,28 @@ class SnapshotBaselining extends Job
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $snapshot = $this->snapshot;
         $snapshot->refresh();
         $history = $snapshot->history;
+
         if (!$history) {
             // Someone beat us to it.
             return;
         }
+
         $history->delete();
-        Log::info(sprintf('Finding baseline for snapshot %s', $snapshot->id));
+        Log::info(\sprintf('Finding baseline for snapshot %s', $snapshot->id));
         $foundBaseline = null;
 
-        foreach (explode("\n", $history->history) as $id) {
-            if ($id !== $snapshot->id && $baseline = Snapshot::find($id)) {
+        foreach (\explode("\n", $history->history) as $id) {
+            $baseline = Snapshot::find($id);
+
+            if ($id !== $snapshot->id && $baseline) {
                 $foundBaseline = $baseline;
+
                 break;
             }
         }
@@ -47,10 +54,11 @@ class SnapshotBaselining extends Job
         } else {
             $snapshot->setNoBaseline();
         }
-        Log::info(sprintf(
+
+        Log::info(\sprintf(
             'Setting baseline for snapshot %s to %s',
             $snapshot->id,
-            $foundBaseline ? $foundBaseline->id : '"none"'
+            $foundBaseline ? $foundBaseline->id : '"none"',
         ));
 
         $snapshot->save();

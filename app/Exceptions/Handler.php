@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Exceptions;
 
 use Exception;
@@ -15,7 +17,7 @@ class Handler extends ExceptionHandler
     /**
      * A list of the exception types that should not be reported.
      *
-     * @var array
+     * @var array<string>
      */
     protected $dontReport = [
         AuthorizationException::class,
@@ -28,11 +30,8 @@ class Handler extends ExceptionHandler
      * Report or log an exception.
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @param  \Exception  $e
-     * @return void
      */
-    public function report(Exception $e)
+    public function report(Exception $e): void
     {
         parent::report($e);
     }
@@ -41,18 +40,20 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
-     * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+    public function render($request, Exception $e): Response
     {
         $rendered = parent::render($request, $e);
 
         if ($e instanceof ValidationException) {
             return new Response($e->errors(), $rendered->getStatusCode());
-        } elseif ($e instanceof ModelNotFoundException) {
+        }
+
+        if ($e instanceof ModelNotFoundException) {
             return new Response("", $rendered->getStatusCode(), ['Content-Type' => 'text/plain']);
         }
+
         return new Response($e->getMessage() . "\n", $rendered->getStatusCode(), ['Content-Type' => 'text/plain']);
     }
 }

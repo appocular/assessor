@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jobs;
 
 use Appocular\Assessor\Checkpoint;
@@ -7,7 +9,6 @@ use Appocular\Assessor\Jobs\FindCheckpointBaseline;
 use Appocular\Assessor\Snapshot;
 use Illuminate\Support\Facades\Event;
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class FindCheckpointBaselineTest extends \TestCase
 {
@@ -16,7 +17,7 @@ class FindCheckpointBaselineTest extends \TestCase
     /**
      * Suppress model events so we can test in isolation.
      */
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         Event::fake();
@@ -25,9 +26,9 @@ class FindCheckpointBaselineTest extends \TestCase
     /**
      * Test that the job handles deleted checkpoints without throwing up.
      */
-    public function testDeletedCheckpointHandling()
+    public function testDeletedCheckpointHandling(): void
     {
-        $checkpoint = factory(Checkpoint::class)->create([
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => 'test',
             'name' => 'new image',
             'baseline_url' => null,
@@ -45,18 +46,18 @@ class FindCheckpointBaselineTest extends \TestCase
     /**
      * Check that the baseline_url remains empty when no parent exists.
      */
-    public function testNewCheckpoint()
+    public function testNewCheckpoint(): void
     {
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an unrelated image',
             'image_url' => 'not related',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -72,25 +73,25 @@ class FindCheckpointBaselineTest extends \TestCase
     /**
      * Test that an approved ancestor gets used as baseline.
      */
-    public function testAcceptedBaseline()
+    public function testAcceptedBaseline(): void
     {
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'approved in baseline',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an unrelated image',
             'image_url' => 'not related',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -106,19 +107,19 @@ class FindCheckpointBaselineTest extends \TestCase
     /**
      * Test that rejected and ignored ancestors are not used.
      */
-    public function testRejectedOrIgnoredBaseline()
+    public function testRejectedOrIgnoredBaseline(): void
     {
         // If there's no approved baseline, baseline_url should be ''.
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'rejected in baseline',
             'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -131,32 +132,32 @@ class FindCheckpointBaselineTest extends \TestCase
         $this->assertEquals('', $checkpoint->baseline_url);
 
         // If there's an approved ancestor baseline, use its image_url.
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'approved in baseline parent',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'ignored in baseline',
             'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
-        $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'rejected in baseline',
             'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -173,19 +174,19 @@ class FindCheckpointBaselineTest extends \TestCase
      * Test that if there's no approved ancestor, it's handled as a new
      * checkpoint.
      */
-    public function testDeletedBaseline()
+    public function testDeletedBaseline(): void
     {
         // If there's no approved baseline, baseline_url should be ''.
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => '',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -198,24 +199,24 @@ class FindCheckpointBaselineTest extends \TestCase
         $this->assertEquals('', $checkpoint->baseline_url);
 
         // If there's an approved ancestor baseline, use its image_url.
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'approved in baseline parent',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => '',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -231,25 +232,25 @@ class FindCheckpointBaselineTest extends \TestCase
     /**
      * Test that an existing baseline gets replaced.
      */
-    public function testRebaselining()
+    public function testRebaselining(): void
     {
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'approved in baseline',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an unrelated image',
             'image_url' => 'not related',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => 'old baseline',
@@ -265,10 +266,10 @@ class FindCheckpointBaselineTest extends \TestCase
     /**
      * Test that baselines are handled properly.
      */
-    public function testBaseliningWithMeta()
+    public function testBaseliningWithMeta(): void
     {
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'with meta',
@@ -276,15 +277,15 @@ class FindCheckpointBaselineTest extends \TestCase
             'meta' => ['s' => 't'],
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'image_url' => 'without meta',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -297,7 +298,7 @@ class FindCheckpointBaselineTest extends \TestCase
 
         $this->assertEquals('with meta', $checkpoint->baseline_url);
 
-        $checkpoint2 = factory(Checkpoint::class)->create([
+        $checkpoint2 = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,

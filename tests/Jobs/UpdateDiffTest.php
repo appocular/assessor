@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jobs;
 
 use Appocular\Assessor\Checkpoint;
@@ -15,7 +17,7 @@ class UpdateDiffTest extends \TestCase
     /**
      * Suppress model events so we can test in isolation.
      */
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         Event::fake();
@@ -24,15 +26,15 @@ class UpdateDiffTest extends \TestCase
     /**
      * Test that job updates checkpoints.
      */
-    public function testUpdatingDiff()
+    public function testUpdatingDiff(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
-        $job = new UpdateDiff($checkpoints[0]->image_url, $checkpoints[0]->baseline_url, 'diff', 1);
+        $job = new UpdateDiff($checkpoints[0]->image_url, $checkpoints[0]->baseline_url, 'diff', true);
         $job->handle();
 
         $checkpoints[0]->refresh();
@@ -47,20 +49,21 @@ class UpdateDiffTest extends \TestCase
     /**
      * Test that approved/rejected checkpoints doesn't get updated.
      */
-    public function testNotUpdatingProcessed()
+    public function testNotUpdatingProcessed(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
         $statuses = [
             Checkpoint::APPROVAL_STATUS_APPROVED,
             Checkpoint::APPROVAL_STATUS_REJECTED,
-            Checkpoint::APPROVAL_STATUS_IGNORED
+            Checkpoint::APPROVAL_STATUS_IGNORED,
         ];
+
         foreach ($statuses as $approval_status) {
-            $checkpoints[] = $snapshot->checkpoints()->save(factory(Checkpoint::class)->make([
+            $checkpoints[] = $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make([
                 'image_url' => $checkpoints[0]->image_url,
                 'baseline_url' => $checkpoints[0]->baseline_url,
                 'diff_url' => 'original diff',
@@ -69,7 +72,7 @@ class UpdateDiffTest extends \TestCase
             ]));
         }
 
-        $job = new UpdateDiff($checkpoints[0]->image_url, $checkpoints[0]->baseline_url, 'diff', 1);
+        $job = new UpdateDiff($checkpoints[0]->image_url, $checkpoints[0]->baseline_url, 'diff', true);
         $job->handle();
 
         $checkpoints[0]->refresh();
@@ -81,17 +84,17 @@ class UpdateDiffTest extends \TestCase
         $this->assertEquals(
             $checkpoints[1]->getAttributes(),
             $checkpoints[1]->fresh()->getAttributes(),
-            'Approved checkpoint was updated.'
+            'Approved checkpoint was updated.',
         );
         $this->assertEquals(
             $checkpoints[2]->getAttributes(),
             $checkpoints[2]->fresh()->getAttributes(),
-            'Rejected checkpoint was updated.'
+            'Rejected checkpoint was updated.',
         );
         $this->assertEquals(
             $checkpoints[3]->getAttributes(),
             $checkpoints[3]->fresh()->getAttributes(),
-            'Ignored checkpoint was updated.'
+            'Ignored checkpoint was updated.',
         );
     }
 }

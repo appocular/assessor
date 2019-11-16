@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Models;
 
 use Appocular\Assessor\Batch;
@@ -17,18 +19,18 @@ class SnapshotModelTest extends \TestCase
      * Test that baseline finding triggers checkpoint baselining for all
      * checkpoints.
      */
-    public function testNewBaselining()
+    public function testNewBaselining(): void
     {
         Queue::fake();
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'new image',
             'baseline_url' => null,
@@ -37,10 +39,11 @@ class SnapshotModelTest extends \TestCase
         $snapshot->triggerCheckpointBaselining();
 
         $expectedCheckpoints = ['an existing image', 'new image'];
-        $expectedCheckpoints = array_flip($expectedCheckpoints);
-        Queue::assertPushed(FindCheckpointBaseline::class, function ($job) use (&$expectedCheckpoints) {
+        $expectedCheckpoints = \array_flip($expectedCheckpoints);
+        Queue::assertPushed(FindCheckpointBaseline::class, static function ($job) use (&$expectedCheckpoints): ?bool {
             if (isset($expectedCheckpoints[$job->checkpoint->name])) {
                 unset($expectedCheckpoints[$job->checkpoint->name]);
+
                 return true;
             }
         });
@@ -51,18 +54,18 @@ class SnapshotModelTest extends \TestCase
     /**
      * Test that baselining finds an existing checkpoint.
      */
-    public function testAcceptedBaselining()
+    public function testAcceptedBaselining(): void
     {
         Queue::fake();
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -71,10 +74,11 @@ class SnapshotModelTest extends \TestCase
         $snapshot->triggerCheckpointBaselining();
 
         $expectedCheckpoints = ['an existing image'];
-        $expectedCheckpoints = array_flip($expectedCheckpoints);
-        Queue::assertPushed(FindCheckpointBaseline::class, function ($job) use (&$expectedCheckpoints) {
+        $expectedCheckpoints = \array_flip($expectedCheckpoints);
+        Queue::assertPushed(FindCheckpointBaseline::class, static function ($job) use (&$expectedCheckpoints): ?bool {
             if (isset($expectedCheckpoints[$job->checkpoint->name])) {
                 unset($expectedCheckpoints[$job->checkpoint->name]);
+
                 return true;
             }
         });
@@ -85,25 +89,25 @@ class SnapshotModelTest extends \TestCase
     /**
      * Test that baselining ignores a checkpoint that is an approved deletion.
      */
-    public function testDeletedBaselining()
+    public function testDeletedBaselining(): void
     {
         Queue::fake();
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a deleted image',
             'image_url' => '',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -112,12 +116,11 @@ class SnapshotModelTest extends \TestCase
         $snapshot->triggerCheckpointBaselining();
 
         $expectedCheckpoints = ['an existing image'];
-        $expectedCheckpoints = array_flip($expectedCheckpoints);
-        Queue::assertPushed(FindCheckpointBaseline::class, function ($job) use (&$expectedCheckpoints) {
-            if (isset($expectedCheckpoints[$job->checkpoint->name])) {
-                unset($expectedCheckpoints[$job->checkpoint->name]);
-                return true;
-            }
+        $expectedCheckpoints = \array_flip($expectedCheckpoints);
+        Queue::assertPushed(FindCheckpointBaseline::class, static function ($job) use (&$expectedCheckpoints): bool {
+            unset($expectedCheckpoints[$job->checkpoint->name]);
+
+            return true;
         });
 
         $this->assertCount(0, $expectedCheckpoints);
@@ -129,26 +132,26 @@ class SnapshotModelTest extends \TestCase
      * ancestor of rejected checkpoints (the change wasn't approved in the
      * previous snapshot).
      */
-    public function testRejectedBaselining()
+    public function testRejectedBaselining(): void
     {
         // If the rejected checkpoint has no ancestor, it should be ignored.
         Queue::fake();
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
             'image_url' => 'a rejected image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -157,49 +160,48 @@ class SnapshotModelTest extends \TestCase
         $snapshot->triggerCheckpointBaselining();
 
         $expectedCheckpoints = ['an existing image'];
-        $expectedCheckpoints = array_flip($expectedCheckpoints);
-        Queue::assertPushed(FindCheckpointBaseline::class, function ($job) use (&$expectedCheckpoints) {
-            if (isset($expectedCheckpoints[$job->checkpoint->name])) {
-                unset($expectedCheckpoints[$job->checkpoint->name]);
-                return true;
-            }
+        $expectedCheckpoints = \array_flip($expectedCheckpoints);
+        Queue::assertPushed(FindCheckpointBaseline::class, static function ($job) use (&$expectedCheckpoints): bool {
+            unset($expectedCheckpoints[$job->checkpoint->name]);
+
+            return true;
         });
 
         $this->assertCount(0, $expectedCheckpoints);
 
         // If the rejected checkpoint has an approved ancestor, it should be added.
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
             'image_url' => 'lala',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
             'image_url' => 'lala',
             'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
-        $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'a rejected image',
-            'image_url' => '',
+            'image_url' => 'lolo',
             'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -208,12 +210,11 @@ class SnapshotModelTest extends \TestCase
         $snapshot->triggerCheckpointBaselining();
 
         $expectedCheckpoints = ['an existing image', 'a rejected image'];
-        $expectedCheckpoints = array_flip($expectedCheckpoints);
-        Queue::assertPushed(FindCheckpointBaseline::class, function ($job) use (&$expectedCheckpoints) {
-            if (isset($expectedCheckpoints[$job->checkpoint->name])) {
-                unset($expectedCheckpoints[$job->checkpoint->name]);
-                return true;
-            }
+        $expectedCheckpoints = \array_flip($expectedCheckpoints);
+        Queue::assertPushed(FindCheckpointBaseline::class, static function ($job) use (&$expectedCheckpoints): bool {
+            unset($expectedCheckpoints[$job->checkpoint->name]);
+
+            return true;
         });
 
         $this->assertCount(0, $expectedCheckpoints);
@@ -223,26 +224,26 @@ class SnapshotModelTest extends \TestCase
      * Check that baselining handles ignored checkpoints like rejected
      * checkpoints.
      */
-    public function testIgnoredBaselining()
+    public function testIgnoredBaselining(): void
     {
         // If the ignored checkpoint has no ancestor, it should be completely ignored.
         Queue::fake();
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
             'image_url' => '',
             'approval_status' => Checkpoint::APPROVAL_STATUS_IGNORED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -251,41 +252,40 @@ class SnapshotModelTest extends \TestCase
         $snapshot->triggerCheckpointBaselining();
 
         $expectedCheckpoints = ['an existing image'];
-        $expectedCheckpoints = array_flip($expectedCheckpoints);
-        Queue::assertPushed(FindCheckpointBaseline::class, function ($job) use (&$expectedCheckpoints) {
-            if (isset($expectedCheckpoints[$job->checkpoint->name])) {
-                unset($expectedCheckpoints[$job->checkpoint->name]);
-                return true;
-            }
+        $expectedCheckpoints = \array_flip($expectedCheckpoints);
+        Queue::assertPushed(FindCheckpointBaseline::class, static function ($job) use (&$expectedCheckpoints): bool {
+            unset($expectedCheckpoints[$job->checkpoint->name]);
+
+            return true;
         });
 
         $this->assertCount(0, $expectedCheckpoints);
 
         // If the ignored checkpoint has an approved ancestor, it should be added.
-        $baseline = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
             'image_url' => 'lala',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        $baseline = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an existing image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $baseline->id,
             'name' => 'an ignored image',
-            'image_url' => '',
+            'image_url' => 'lolo',
             'approval_status' => Checkpoint::APPROVAL_STATUS_IGNORED,
         ]);
 
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'an existing image',
             'baseline_url' => null,
@@ -294,12 +294,11 @@ class SnapshotModelTest extends \TestCase
         $snapshot->triggerCheckpointBaselining();
 
         $expectedCheckpoints = ['an existing image', 'an ignored image'];
-        $expectedCheckpoints = array_flip($expectedCheckpoints);
-        Queue::assertPushed(FindCheckpointBaseline::class, function ($job) use (&$expectedCheckpoints) {
-            if (isset($expectedCheckpoints[$job->checkpoint->name])) {
-                unset($expectedCheckpoints[$job->checkpoint->name]);
-                return true;
-            }
+        $expectedCheckpoints = \array_flip($expectedCheckpoints);
+        Queue::assertPushed(FindCheckpointBaseline::class, static function ($job) use (&$expectedCheckpoints): bool {
+            unset($expectedCheckpoints[$job->checkpoint->name]);
+
+            return true;
         });
 
         $this->assertCount(0, $expectedCheckpoints);
@@ -310,18 +309,18 @@ class SnapshotModelTest extends \TestCase
      * and that run status is set depending on whether there's any unknown
      * checkpoints left or any active batches.
      */
-    public function testStatusUpdate()
+    public function testStatusUpdate(): void
     {
         Queue::fake();
         $checkpoints = [];
-        $snapshot = factory(Snapshot::class)->create();
-        $checkpoints[] = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create();
+        $checkpoints[] = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'one',
             'image_status' => Checkpoint::IMAGE_STATUS_AVAILABLE,
             'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
-        $checkpoints[] = factory(Checkpoint::class)->create([
+        $checkpoints[] = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'one',
             'image_status' => Checkpoint::IMAGE_STATUS_AVAILABLE,
@@ -353,7 +352,7 @@ class SnapshotModelTest extends \TestCase
         $this->assertEquals(Snapshot::RUN_STATUS_DONE, $snapshot->run_status);
 
         // Run status should be pending as long as there's active batches.
-        $batch = factory(Batch::class)->create(['snapshot_id' => $snapshot->id]);
+        $batch = \factory(Batch::class)->create(['snapshot_id' => $snapshot->id]);
 
         $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);

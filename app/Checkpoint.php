@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor;
 
-use Appocular\Assessor\Snapshot;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Checkpoint extends Model
 {
@@ -20,21 +22,43 @@ class Checkpoint extends Model
     public const APPROVAL_STATUS_REJECTED = 'rejected';
     public const APPROVAL_STATUS_IGNORED = 'ignored';
 
+    /**
+     * Tell Eloquent which properties are fillable.
+     *
+     * @var array<string>
+     */
     protected $fillable = ['id', 'name', 'snapshot_id', 'image_url', 'baseline_url', 'diff_url', 'meta'];
 
+    /**
+     * Tell Eloquent that our key isn't an incrementing number.
+     *
+     * @var bool
+     */
     public $incrementing = false;
+
+    /**
+     * Tell Eloquent that our key is a string.
+     *
+     * @var string
+     */
     protected $keyType = 'string';
 
+    /**
+     * Tell Eloquent how to cast columns.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         // Store meta as JSON in the database.
         'meta' => 'array',
     ];
 
-
     /**
      * Get the snapshot for the checkpoint.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function snapshot()
+    public function snapshot(): BelongsTo
     {
         return $this->belongsTo('Appocular\Assessor\Snapshot');
     }
@@ -48,13 +72,13 @@ class Checkpoint extends Model
      * @param string $snapshotId
      *   Id of the snapshot to reset for.
      */
-    public static function resetBaselines(string $snapshotId) : void
+    public static function resetBaselines(string $snapshotId): void
     {
         $checkpoint = new static();
         $checkpoint->newModelQuery()
             ->where([
                 ['snapshot_id', $snapshotId],
-                ['image_status', self::IMAGE_STATUS_EXPECTED]
+                ['image_status', self::IMAGE_STATUS_EXPECTED],
             ])
             ->delete();
 
@@ -70,20 +94,30 @@ class Checkpoint extends Model
             ]);
     }
 
-    public static function cleanMeta(array $meta)
+    /**
+     * Sorts meta data to the canonical representation.
+     *
+     * @param array<string, string> $meta
+     * @return array<string, string>
+     */
+    public static function cleanMeta(array $meta): array
     {
-        ksort($meta);
+        \ksort($meta);
+
         return $meta;
     }
 
-    public static function getId(string $snapshotId, $name, ?array $meta = null): string
+    /**
+     * @param array<string, string> $meta
+     */
+    public static function getId(string $snapshotId, string $name, ?array $meta = null): string
     {
-        return hash('sha256', $snapshotId . $name . ($meta ? json_encode($meta) : ''));
+        return \hash('sha256', $snapshotId . $name . ($meta ? \json_encode($meta) : ''));
     }
 
-    public function identifier()
+    public function identifier(): string
     {
-        return $this->name . ($this->meta ? json_encode($this->meta) : '');
+        return $this->name . ($this->meta ? \json_encode($this->meta) : '');
     }
 
     public function cloneTo(Snapshot $snapshot): Checkpoint
@@ -91,6 +125,7 @@ class Checkpoint extends Model
         $checkpoint = $this->replicate();
         $checkpoint->id = self::getId($snapshot->id, $checkpoint->name, $checkpoint->meta);
         $checkpoint->snapshot()->associate($snapshot);
+
         return $checkpoint;
     }
 
@@ -106,29 +141,31 @@ class Checkpoint extends Model
         $checkpoint->image_status = Checkpoint::IMAGE_STATUS_EXPECTED;
 
         $snapshot->checkpoints()->save($checkpoint);
+
         return $checkpoint;
     }
 
     /**
      * Reset diff for checkpoint.
      */
-    public function resetDiff() : void
+    public function resetDiff(): void
     {
         $this->diff_url = null;
         $this->diff_status = self::DIFF_STATUS_UNKNOWN;
             $this->approval_status = self::APPROVAL_STATUS_UNKNOWN;
-
     }
 
     /**
      * Maybe update status from diff_status.
      */
-    public function updateStatusFromDiff() : void
+    public function updateStatusFromDiff(): void
     {
         // If the diff is identical, automatically approve this checkpoint.
-        if ($this->diff_status == self::DIFF_STATUS_IDENTICAL) {
-            $this->approval_status = self::APPROVAL_STATUS_APPROVED;
+        if ($this->diff_status !== self::DIFF_STATUS_IDENTICAL) {
+            return;
         }
+
+        $this->approval_status = self::APPROVAL_STATUS_APPROVED;
     }
 
     /**
@@ -143,15 +180,15 @@ class Checkpoint extends Model
      * @param bool $different
      *   Whether the image and baseline differ.
      */
-    public static function updateDiffs(string $image_url, string $baseline_url, string $diff_url, bool $different) : void
+    public static function updateDiffs(string $image_url, string $baseline_url, string $diff_url, bool $different): void
     {
         // Get all the checkpoints for this image and baseline combination.
         // Weed out those with the same diff (we assume they've already been
         // updated) and those which have been approved/rejected/ignored
         // (doesn't make sense to update those).
         $checkpoints = self::where(['image_url' => $image_url, 'baseline_url' => $baseline_url])
-            ->whereNested(function ($query) use ($diff_url) {
-                $query->where('diff_url')->where('diff_url', '<>', $diff_url, 'or');
+            ->whereNested(static function ($query) use ($diff_url): void {
+                    $query->where('diff_url')->where('diff_url', '<>', $diff_url, 'or');
             })
             ->where('approval_status', self::APPROVAL_STATUS_UNKNOWN)
             ->get();
@@ -168,7 +205,7 @@ class Checkpoint extends Model
     /**
      * Does checkpoint have a diff.
      */
-    public function hasDiff() : bool
+    public function hasDiff(): bool
     {
         return $this->diff_status !== self::DIFF_STATUS_UNKNOWN;
     }
@@ -178,19 +215,22 @@ class Checkpoint extends Model
      *
      * Unless it's an approved removal, it should.
      */
-    public function shouldPropagate() : bool
+    public function shouldPropagate(): bool
     {
-        return !(empty($this->image_url) && $this->approval_status == self::APPROVAL_STATUS_APPROVED);
+        // While '0' is technically not quite the same as '' or null, it's
+        // also an invalid URL, so we don't care.
+        return $this->image_url || $this->approval_status === self::APPROVAL_STATUS_APPROVED;
     }
 
     /**
      * Approve checkpoint.
      */
-    public function approve()
+    public function approve(): void
     {
         if ($this->isPending()) {
             return;
         }
+
         $this->approval_status = self::APPROVAL_STATUS_APPROVED;
         $this->save();
     }
@@ -198,11 +238,12 @@ class Checkpoint extends Model
     /**
      * Reject checkpoint.
      */
-    public function reject()
+    public function reject(): void
     {
         if ($this->isPending()) {
             return;
         }
+
         $this->approval_status = self::APPROVAL_STATUS_REJECTED;
         $this->save();
     }
@@ -210,16 +251,17 @@ class Checkpoint extends Model
     /**
      * Ignore checkpoint.
      */
-    public function ignore()
+    public function ignore(): void
     {
         if ($this->isPending()) {
             return;
         }
+
         $this->approval_status = self::APPROVAL_STATUS_IGNORED;
         $this->save();
     }
 
-    public function isPending()
+    public function isPending(): bool
     {
         return $this->image_status !== self::IMAGE_STATUS_AVAILABLE;
     }

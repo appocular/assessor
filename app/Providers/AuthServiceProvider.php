@@ -1,31 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Providers;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
-
-    /**
      * Boot the authentication services for the application.
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
-        $this->app['auth']->viaRequest('frontend', function ($request) {
-            if ($request->bearerToken() && $request->bearerToken() == env('FRONTEND_TOKEN')) {
-                return new class implements \Illuminate\Contracts\Auth\Authenticatable {
+        $this->app['auth']->viaRequest('frontend', static function ($request): ?Authenticatable {
+            if ($request->bearerToken() && $request->bearerToken() === \env('FRONTEND_TOKEN')) {
+                // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
+                // phpcs:disable SlevomatCodingStandard.ControlStructures.ControlStructureSpacing.IncorrectLinesCountAfterControlStructure
+                // phpcs:disable SlevomatCodingStandard.ControlStructures.ControlStructureSpacing.IncorrectLinesCountBeforeFirstControlStructure
+                // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+                // phpcs:disable SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
+                return new class implements Authenticatable {
                     public function getAuthIdentifierName()
                     {
                         return 'name';
@@ -47,12 +45,20 @@ class AuthServiceProvider extends ServiceProvider
                     {
                     }
                 };
+                // phpcs:enable
             }
+
+            return null;
         });
 
-        $this->app['auth']->viaRequest('shared_token', function ($request) {
-            if ($request->bearerToken() && $request->bearerToken() == env('SHARED_TOKEN')) {
-                return new class implements \Illuminate\Contracts\Auth\Authenticatable {
+        $this->app['auth']->viaRequest('shared_token', static function ($request): ?Authenticatable {
+            if ($request->bearerToken() && $request->bearerToken() === \env('SHARED_TOKEN')) {
+                // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
+                // phpcs:disable SlevomatCodingStandard.ControlStructures.ControlStructureSpacing.IncorrectLinesCountAfterControlStructure
+                // phpcs:disable SlevomatCodingStandard.ControlStructures.ControlStructureSpacing.IncorrectLinesCountBeforeFirstControlStructure
+                // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+                // phpcs:disable SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
+                return new class implements Authenticatable {
                     public function getAuthIdentifierName()
                     {
                         return 'name';
@@ -74,7 +80,10 @@ class AuthServiceProvider extends ServiceProvider
                     {
                     }
                 };
+                // phpcs:enable
             }
+
+            return null;
         });
     }
 }

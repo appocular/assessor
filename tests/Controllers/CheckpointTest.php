@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Controllers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\SlugGenerator;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\WithoutMiddleware;
-use Prophecy\Argument;
 
 class CheckpointTest extends \TestCase
 {
@@ -27,8 +27,10 @@ class CheckpointTest extends \TestCase
      * first request in a test, and the Authorization headert thus "sticks
      * around" for the subsequent requests, rendering passing the header to
      * them pointless.
+     *
+     * @return array<string, string>
      */
-    public function headers()
+    public function headers(): array
     {
         return ["Authorization" => 'Bearer FrontendToken'];
     }
@@ -36,30 +38,30 @@ class CheckpointTest extends \TestCase
     /**
      * Test that access control works.
      */
-    public function testAccessControl()
+    public function testAccessControl(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
         $this->get('checkpoint/' . $checkpoints[0]->id);
         $this->assertResponseStatus(401);
     }
 
-    public function testGettingCheckpoint()
+    public function testGettingCheckpoint(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
         $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'self' => route('checkpoint.show', ['id' => $checkpoints[0]->id]),
+            'self' => \route('checkpoint.show', ['id' => $checkpoints[0]->id]),
             'name' => $checkpoints[0]->name,
             'image_url' => $checkpoints[0]->image_url,
             'baseline_url' => $checkpoints[0]->baseline_url,
@@ -68,9 +70,9 @@ class CheckpointTest extends \TestCase
             'approval_status' => 'unknown',
             'diff_status' => 'unknown',
             'actions' => [
-                'approve' => route('checkpoint.approve', ['id' => $checkpoints[0]->id]),
-                'reject' => route('checkpoint.reject', ['id' => $checkpoints[0]->id]),
-                'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[0]->id]),
+                'approve' => \route('checkpoint.approve', ['id' => $checkpoints[0]->id]),
+                'reject' => \route('checkpoint.reject', ['id' => $checkpoints[0]->id]),
+                'ignore' => \route('checkpoint.ignore', ['id' => $checkpoints[0]->id]),
             ],
             'slug' => SlugGenerator::toSlug($checkpoints[0]->name),
             'meta' => null,
@@ -79,7 +81,7 @@ class CheckpointTest extends \TestCase
         $this->get('checkpoint/' . $checkpoints[1]->id);
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'self' => route('checkpoint.show', ['id' => $checkpoints[1]->id]),
+            'self' => \route('checkpoint.show', ['id' => $checkpoints[1]->id]),
             'name' => $checkpoints[1]->name,
             'image_url' => $checkpoints[1]->image_url,
             'baseline_url' => $checkpoints[1]->baseline_url,
@@ -88,9 +90,9 @@ class CheckpointTest extends \TestCase
             'approval_status' => 'unknown',
             'diff_status' => 'unknown',
             'actions' => [
-                'approve' => route('checkpoint.approve', ['id' => $checkpoints[1]->id]),
-                'reject' => route('checkpoint.reject', ['id' => $checkpoints[1]->id]),
-                'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[1]->id]),
+                'approve' => \route('checkpoint.approve', ['id' => $checkpoints[1]->id]),
+                'reject' => \route('checkpoint.reject', ['id' => $checkpoints[1]->id]),
+                'ignore' => \route('checkpoint.ignore', ['id' => $checkpoints[1]->id]),
             ],
             'slug' => SlugGenerator::toSlug($checkpoints[1]->name),
             'meta' => null,
@@ -99,19 +101,19 @@ class CheckpointTest extends \TestCase
         $this->assertResponseStatus(404);
     }
 
-    public function testCheckpointMeta()
+    public function testCheckpointMeta(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make([
-                'meta' => ['test' => 'banana', 'test2' => 'something']
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make([
+                'meta' => ['test' => 'banana', 'test2' => 'something'],
             ])),
         ];
 
         $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'self' => route('checkpoint.show', ['id' => $checkpoints[0]->id]),
+            'self' => \route('checkpoint.show', ['id' => $checkpoints[0]->id]),
             'name' => $checkpoints[0]->name,
             'image_url' => $checkpoints[0]->image_url,
             'baseline_url' => $checkpoints[0]->baseline_url,
@@ -120,21 +122,21 @@ class CheckpointTest extends \TestCase
             'approval_status' => 'unknown',
             'diff_status' => 'unknown',
             'actions' => [
-                'approve' => route('checkpoint.approve', ['id' => $checkpoints[0]->id]),
-                'reject' => route('checkpoint.reject', ['id' => $checkpoints[0]->id]),
-                'ignore' => route('checkpoint.ignore', ['id' => $checkpoints[0]->id]),
+                'approve' => \route('checkpoint.approve', ['id' => $checkpoints[0]->id]),
+                'reject' => \route('checkpoint.reject', ['id' => $checkpoints[0]->id]),
+                'ignore' => \route('checkpoint.ignore', ['id' => $checkpoints[0]->id]),
             ],
             'slug' => SlugGenerator::toSlug($checkpoints[0]->name, ['test' => 'banana', 'test2' => 'something']),
             'meta' => ['test' => 'banana', 'test2' => 'something'],
         ]);
     }
 
-    public function testApprovingCheckpoint()
+    public function testApprovingCheckpoint(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
         $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
@@ -147,12 +149,12 @@ class CheckpointTest extends \TestCase
         $this->seeJson(['approval_status' => 'approved']);
     }
 
-    public function testRejectingCheckpoint()
+    public function testRejectingCheckpoint(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
         $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
@@ -165,12 +167,12 @@ class CheckpointTest extends \TestCase
         $this->seeJson(['approval_status' => 'rejected']);
     }
 
-    public function testIgnoringCheckpoint()
+    public function testIgnoringCheckpoint(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
         $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());

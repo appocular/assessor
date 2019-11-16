@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -10,12 +12,10 @@ class AddProcessingStatus extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::table('snapshots', function (Blueprint $table) {
+        Schema::table('snapshots', static function (Blueprint $table): void {
             $table->string('processing_status')->default('pending');
         });
 
@@ -29,12 +29,10 @@ class AddProcessingStatus extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::table('snapshots', function (Blueprint $table) {
+        Schema::table('snapshots', static function (Blueprint $table): void {
             $table->dropColumn('processing_status');
         });
     }

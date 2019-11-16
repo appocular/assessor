@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Jobs;
 
 use Appocular\Clients\Contracts\Differ;
@@ -8,7 +10,18 @@ use Throwable;
 
 class SubmitDiff extends Job
 {
+    /**
+     * URL of image to diff.
+     *
+     * @var string
+     */
     public $image_url;
+
+    /**
+     * URL of baseline to diff.
+     *
+     * @var string
+     */
     public $baseline_url;
 
     public function __construct(string $image_url, string $baseline_url)
@@ -19,24 +32,23 @@ class SubmitDiff extends Job
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle(Differ $differ)
+    public function handle(Differ $differ): void
     {
-        Log::info(sprintf(
+        Log::info(\sprintf(
             'Submitting diff for image %s, baseline %s',
             $this->image_url,
-            $this->baseline_url
+            $this->baseline_url,
         ));
+
         try {
             $differ->submit($this->image_url, $this->baseline_url);
         } catch (Throwable $e) {
-            Log::error(sprintf(
+            Log::error(\sprintf(
                 'Error submitting diff image %s, baseline %s: %s',
                 $this->image_url,
                 $this->baseline_url,
-                $e->getMessage()
+                $e->getMessage(),
             ));
         }
     }

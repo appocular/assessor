@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Console\Commands;
 
 use Appocular\Assessor\Repo;
@@ -23,8 +25,6 @@ class AddRepo extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -33,17 +33,19 @@ class AddRepo extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): ?int
     {
         $repo = new Repo(['uri' => $this->argument('uri')]);
         $token = $this->argument('token');
+
         if ($token) {
             $repo->api_token = $token;
         }
+
         $repo->save();
         $this->line($repo->uri . ' added with token: ' . $repo->api_token);
+
+        return 0;
     }
 }

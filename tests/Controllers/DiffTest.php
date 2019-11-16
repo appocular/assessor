@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Controllers;
 
 use Appocular\Assessor\Jobs\UpdateDiff;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\WithoutMiddleware;
 
 class DiffTest extends \TestCase
 {
@@ -25,8 +26,10 @@ class DiffTest extends \TestCase
      * first request in a test, and the Authorization headert thus "sticks
      * around" for the subsequent requests, rendering passing the header to
      * them pointless.
+     *
+     * @return array<string, string>
      */
-    public function headers()
+    public function headers(): array
     {
         return ["Authorization" => 'Bearer SharedToken'];
     }
@@ -35,7 +38,7 @@ class DiffTest extends \TestCase
     /**
      * Test that access control works.
      */
-    public function testAccessControl()
+    public function testAccessControl(): void
     {
         Queue::fake();
 
@@ -55,7 +58,7 @@ class DiffTest extends \TestCase
     /**
      * Test that posting diff fires DiffSubmitted event.
      */
-    public function testPostingDiff()
+    public function testPostingDiff(): void
     {
         Queue::fake();
 

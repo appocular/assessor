@@ -1,44 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Http\Resources\CheckpointResource;
-use Appocular\Clients\Contracts\Keeper;
-use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CheckpointController extends BaseController
 {
-    public function show($id)
+    public function show(string $id): CheckpointResource
     {
         $checkpoint = Checkpoint::findOrFail($id);
 
         return new CheckpointResource($checkpoint);
     }
 
-    public function approve($id)
+    public function approve(string $id): void
     {
         $checkpoint = Checkpoint::findOrFail($id);
 
         $checkpoint->approve();
-        return;
     }
 
-    public function reject($id)
+    public function reject(string $id): void
     {
         $checkpoint = Checkpoint::findOrFail($id);
 
         $checkpoint->reject();
-        return;
     }
 
-    public function ignore($id)
+    public function ignore(string $id): void
     {
         $checkpoint = Checkpoint::findOrFail($id);
 
         $checkpoint->ignore();
-        return;
     }
 }

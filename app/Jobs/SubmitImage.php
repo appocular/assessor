@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Jobs;
 
 use Appocular\Assessor\Checkpoint;
@@ -10,11 +12,15 @@ use Throwable;
 class SubmitImage extends Job
 {
     /**
+     * Checkpoint to submit image for.
+     *
      * @var \Appocular\Assessor\Checkpoint
      */
     public $checkpoint;
 
     /**
+     * PNG image data, base64 encoded.
+     *
      * @var string
      */
     public $pngData;
@@ -27,27 +33,26 @@ class SubmitImage extends Job
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle(Keeper $keeper)
+    public function handle(Keeper $keeper): void
     {
-        Log::info(sprintf(
+        Log::info(\sprintf(
             'Submitting image for checkpoint %s',
-            $this->checkpoint->id
+            $this->checkpoint->id,
         ));
+
         try {
-            $imageData = base64_decode($this->pngData, true);
+            $imageData = \base64_decode($this->pngData, true);
 
             $image_url = $keeper->store($imageData);
             $this->checkpoint->refresh();
             $this->checkpoint->image_url = $image_url;
             $this->checkpoint->save();
         } catch (Throwable $e) {
-            Log::error(sprintf(
+            Log::error(\sprintf(
                 'Error submitting image for checkpoint %s: %s',
                 $this->checkpoint->id,
-                $e->getMessage()
+                $e->getMessage(),
             ));
 
             // Rethrow so we'll retry later.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Observers;
 
 use Appocular\Assessor\History;
@@ -16,12 +18,12 @@ class HistoryObserverTest extends \TestCase
     /**
      * Test that a SnapshotBaselining job is queued when history is saved.
      */
-    public function testHistorySaveTriggersSnapshotBaselining()
+    public function testHistorySaveTriggersSnapshotBaselining(): void
     {
         Queue::fake();
 
-        $snapshot = factory(Snapshot::class)->create();
-        $history = factory(History::class)->create([
+        $snapshot = \factory(Snapshot::class)->create();
+        $history = \factory(History::class)->create([
             'snapshot_id' => $snapshot->id,
             'history' => "banana\npear\napple\n",
         ]);

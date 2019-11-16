@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Providers;
 
 use Appocular\Assessor\Checkpoint;
@@ -18,10 +20,8 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Snapshot::observe(SnapshotObserver::class);
         Checkpoint::observe(CheckpointObserver::class);
@@ -30,24 +30,23 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Register any application services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         // Don't use a wrapper on resource responses.
         SnapshotResource::withoutWrapping();
         CheckpointResource::withoutWrapping();
 
-        $this->app->singleton(HttpClientInterface::class, function ($app) {
+        $this->app->singleton(HttpClientInterface::class, static function (): HttpClientInterface {
             return HttpClient::create();
         });
 
-        if (env('APP_LOG_QUERIES', false)) {
+        // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
+        if (\env('APP_LOG_QUERIES', false)) {
             // Ensure that the dispatcher has been created.
             $this->app['events'];
             $log = $this->app['log'];
-            $this->app['db']->listen(function ($sql) use ($log) {
+            $this->app['db']->listen(static function ($sql) use ($log): void {
                 $log->debug("*** SQL ***");
                 $log->debug($sql->sql);
                 $log->debug($sql->bindings);

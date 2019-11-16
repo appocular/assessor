@@ -1,9 +1,13 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+// phpcs:disable SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalFunctions.NonFullyQualified
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/../vendor/autoload.php';
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
-    dirname(__DIR__)
+    dirname(__DIR__),
 ))->bootstrap();
 
 if (env('REPORT_COVERAGE', false)) {
@@ -14,10 +18,10 @@ if (env('REPORT_COVERAGE', false)) {
     $coverage->start('api-test');
 
     // Save code coverage when the request ends.
-    $handler = function () use ($coverage) {
+    $handler = static function () use ($coverage): void {
         $coverage->stop();
 
-        $writer = new \SebastianBergmann\CodeCoverage\Report\PHP();
+        $writer = new SebastianBergmann\CodeCoverage\Report\PHP();
         $writer->process($coverage, __DIR__ . '/../coverage/api.' . uniqid() . '.cov');
     };
 
@@ -36,7 +40,7 @@ if (env('REPORT_COVERAGE', false)) {
 */
 
 $app = new Laravel\Lumen\Application(
-    realpath(__DIR__.'/../')
+    realpath(__DIR__ . '/../'),
 );
 
 $app->withFacades();
@@ -56,12 +60,12 @@ $app->withEloquent();
 
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
-    Appocular\Assessor\Exceptions\Handler::class
+    Appocular\Assessor\Exceptions\Handler::class,
 );
 
 $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
-    Appocular\Assessor\Console\Kernel::class
+    Appocular\Assessor\Console\Kernel::class,
 );
 
 /*
@@ -97,7 +101,6 @@ $app->routeMiddleware([
 
 $app->register(Appocular\Assessor\Providers\AuthServiceProvider::class);
 $app->register(Appocular\Assessor\Providers\AppServiceProvider::class);
-$app->register(Appocular\Assessor\Providers\EventServiceProvider::class);
 $app->register(Appocular\Clients\KeeperServiceProvider::class);
 $app->register(Appocular\Clients\DifferServiceProvider::class);
 $app->register(Webpatser\Uuid\UuidServiceProvider::class);
@@ -116,8 +119,9 @@ $app->register(Fideloper\Proxy\TrustedProxyServiceProvider::class);
 
 $app->router->group([
     'namespace' => 'Appocular\Assessor\Http\Controllers',
-], function ($router) {
-    require __DIR__.'/../routes/web.php';
+    // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
+], static function ($router): void {
+    require __DIR__ . '/../routes/web.php';
 });
 
 return $app;

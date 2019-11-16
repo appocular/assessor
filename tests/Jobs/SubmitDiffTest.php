@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jobs;
 
 use Appocular\Assessor\Jobs\SubmitDiff;
@@ -12,7 +14,7 @@ class SubmitDiffTest extends \TestCase
     /**
      * Test that diffs are submitted to Differ.
      */
-    public function testSubmittingDiff()
+    public function testSubmittingDiff(): void
     {
         $differ = $this->prophesize(Differ::class);
         $differ->submit('image_url', 'baseline_url')->shouldBeCalled();
@@ -23,7 +25,7 @@ class SubmitDiffTest extends \TestCase
     /**
      * Test errors are logged.
      */
-    public function testErrorLogging()
+    public function testErrorLogging(): void
     {
         Log::shouldReceive('info')
             ->once();

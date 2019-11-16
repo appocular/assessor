@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Jobs;
 
 use Appocular\Assessor\Snapshot;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use RuntimeException;
 use Throwable;
 
 class GitHubStatusUpdate extends Job
@@ -21,21 +22,26 @@ class GitHubStatusUpdate extends Job
 }x
 EOF;
 
-    public static function isGitHubUri($uri): bool
+    public static function isGitHubUri(string $uri): bool
     {
-        return (preg_match(self::URI_PATTERN, $uri));
+        return (bool) \preg_match(self::URI_PATTERN, $uri);
     }
 
-    public static function parseUri(string $uri)
+    /**
+     * @return array<string>
+     */
+    public static function parseUri(string $uri): array
     {
-        if (preg_match(self::URI_PATTERN, $uri, $matches)) {
-            return [$matches['org'], preg_replace('{.git$}', '', $matches['repo'])];
+        if (\preg_match(self::URI_PATTERN, $uri, $matches)) {
+            return [$matches['org'], \preg_replace('{.git$}', '', $matches['repo'])];
         }
 
         return [];
     }
 
     /**
+     * Snapshot to report status for.
+     *
      * @var \Appocular\Assessor\Snapshot
      */
     protected $snapshot;
@@ -47,14 +53,13 @@ EOF;
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle(HttpClientInterface $client = null)
+    public function handle(?HttpClientInterface $client = null): void
     {
         $client = $client ?? HttpClient::create();
-        list($org, $repo) = self::parseUri($this->snapshot->repo->uri);
-        if (empty($org)) {
+        [$org, $repo] = self::parseUri($this->snapshot->repo->uri);
+
+        if ($org === null) {
             throw new RuntimeError('Not a GitHub repo, cannot update commit status');
         }
 
@@ -65,30 +70,30 @@ EOF;
             case [Snapshot::STATUS_PASSED, Snapshot::PROCESSING_STATUS_DONE, Snapshot::RUN_STATUS_PENDING]:
                 $state = 'pending';
                 $description = 'In progress. Please wait.';
-                break;
 
+                break;
             case [Snapshot::STATUS_FAILED, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_PENDING]:
             case [Snapshot::STATUS_FAILED, Snapshot::PROCESSING_STATUS_DONE, Snapshot::RUN_STATUS_PENDING]:
             case [Snapshot::STATUS_FAILED, Snapshot::PROCESSING_STATUS_DONE, Snapshot::RUN_STATUS_DONE]:
                 $state = 'failure';
                 $description = 'Failed!';
-                break;
 
+                break;
             case [Snapshot::STATUS_FAILED, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_DONE]:
                 $state = 'failure';
                 $description = 'Failed! More differences detected, please review.';
-                break;
 
+                break;
             case [Snapshot::STATUS_UNKNOWN, Snapshot::PROCESSING_STATUS_PENDING, Snapshot::RUN_STATUS_DONE]:
                 $state = 'failure';
                 $description = 'Differences detected, please review.';
-                break;
 
+                break;
             case [Snapshot::STATUS_PASSED, Snapshot::PROCESSING_STATUS_DONE, Snapshot::RUN_STATUS_DONE]:
                 $state = 'success';
                 $description = 'Passed!';
-                break;
 
+                break;
             default:
                 // Shouldn't happen.
                 $state = 'error';
@@ -97,30 +102,31 @@ EOF;
 
         $uri = 'https://api.github.com/repos/' . $org . '/' .
             $repo . '/statuses/' . $this->snapshot->id;
+
         try {
             Log::info('Sending status update for ' . $this->snapshot->repo->uri);
             $res = $client->request(
                 'POST',
                 $uri,
                 [
-                    'auth_basic' => [env('GITHUB_USER', ''), env('GITHUB_PASSWORD', '')],
+                    'auth_basic' => [\env('GITHUB_USER', ''), \env('GITHUB_PASSWORD', '')],
                     'json' => [
                         'context' => 'Appocular visual regression test',
                         'state' => $state,
                         'description' => $description,
-                        'target_url' => rtrim(env('STOPGAP_BASE_URI', 'https://appocular.io/'), '/') .
-                        '/' . $this->snapshot->id
-                    ]
-                ]
+                        'target_url' => \rtrim(\env('STOPGAP_BASE_URI', 'https://appocular.io/'), '/') .
+                        '/' . $this->snapshot->id,
+                    ],
+                ],
             );
 
-            if ($res->getStatusCode() != 201) {
-                Log::error(sprintf(
+            if ($res->getStatusCode() !== 201) {
+                Log::error(\sprintf(
                     'Unexpected %d response code from GitHub on "%s", user "%s", pass "%s"',
                     $res->getStatusCode(),
                     $uri,
-                    env('GITHUB_USER', ''),
-                    preg_replace('{.}', '*', env('GITHUB_PASSWORD', ''))
+                    \env('GITHUB_USER', ''),
+                    \preg_replace('{.}', '*', \env('GITHUB_PASSWORD', '')),
                 ));
             }
         } catch (Throwable $e) {

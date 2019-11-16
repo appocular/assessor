@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Controllers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\SlugGenerator;
 use Appocular\Assessor\Snapshot;
 use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\WithoutMiddleware;
-use Prophecy\Argument;
 
 class SnapshotTest extends \TestCase
 {
@@ -27,8 +27,10 @@ class SnapshotTest extends \TestCase
      * first request in a test, and the Authorization headert thus "sticks
      * around" for the subsequent requests, rendering passing the header to
      * them pointless.
+     *
+     * @return array<string, string>
      */
-    public function headers()
+    public function headers(): array
     {
         return ["Authorization" => 'Bearer FrontendToken'];
     }
@@ -36,40 +38,40 @@ class SnapshotTest extends \TestCase
     /**
      * Test that access control works.
      */
-    public function testAccessControl()
+    public function testAccessControl(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
 
         $this->get('snapshot/' . $snapshot->id);
         $this->assertResponseStatus(401);
     }
 
-    public function testGettingSnapshot()
+    public function testGettingSnapshot(): void
     {
-        $baseline = factory(Snapshot::class)->create();
-        $snapshot = factory(Snapshot::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create([
             'baseline' => $baseline->id,
         ]);
 
         $this->get('snapshot/' . $snapshot->id, $this->headers());
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'self' => route('snapshot.show', ['id' => $snapshot->id]),
+            'self' => \route('snapshot.show', ['id' => $snapshot->id]),
             'id' => $snapshot->id,
             'checkpoints' => [],
             'status' => 'unknown',
             'processing_status' => 'pending',
             'run_status' => 'pending',
-            'baseline_url' => route('snapshot.show', ['id' => $baseline->id]),
+            'baseline_url' => \route('snapshot.show', ['id' => $baseline->id]),
         ]);
 
         $checkpoints = [
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
-            $snapshot->checkpoints()->save(factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
+            $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
-        $checkpointsJson = array_map(function ($checkpoint) {
+        $checkpointsJson = \array_map(static function ($checkpoint): array {
             return [
-                'self' => route('checkpoint.show', ['id' => $checkpoint->id]),
+                'self' => \route('checkpoint.show', ['id' => $checkpoint->id]),
                 'name' => $checkpoint->name,
                 'image_url' => $checkpoint->image_url,
                 'baseline_url' => $checkpoint->baseline_url,
@@ -78,9 +80,9 @@ class SnapshotTest extends \TestCase
                 'approval_status' => 'unknown',
                 'diff_status' => 'unknown',
                 'actions' => [
-                    'approve' => route('checkpoint.approve', ['id' => $checkpoint->id]),
-                    'reject' => route('checkpoint.reject', ['id' => $checkpoint->id]),
-                    'ignore' => route('checkpoint.ignore', ['id' => $checkpoint->id]),
+                    'approve' => \route('checkpoint.approve', ['id' => $checkpoint->id]),
+                    'reject' => \route('checkpoint.reject', ['id' => $checkpoint->id]),
+                    'ignore' => \route('checkpoint.ignore', ['id' => $checkpoint->id]),
                 ],
                 'slug' => SlugGenerator::toSlug($checkpoint->name),
                 'meta' => null,
@@ -90,13 +92,13 @@ class SnapshotTest extends \TestCase
         $this->get('snapshot/' . $snapshot->id);
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
-            'self' => route('snapshot.show', ['id' => $snapshot->id]),
+            'self' => \route('snapshot.show', ['id' => $snapshot->id]),
             'id' => $snapshot->id,
             'checkpoints' => $checkpointsJson,
             'status' => 'unknown',
             'processing_status' => 'pending',
             'run_status' => 'pending',
-            'baseline_url' => route('snapshot.show', ['id' => $baseline->id]),
+            'baseline_url' => \route('snapshot.show', ['id' => $baseline->id]),
         ]);
     }
 }

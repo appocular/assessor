@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Models;
 
 use Appocular\Assessor\Checkpoint;
@@ -12,21 +14,22 @@ class CheckpointModelTest extends \TestCase
 
     /**
      * @dataProvider statusProvider
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.UselessDocComment
      */
     public function testBulkDiffUpdatesSetsStatusesCorrectly(
-        $name,
-        $existingImageStatus,
-        $existingDiffStatus,
-        $existingApprovalStatus,
-        $existingDiffUrl,
-        $difference,
-        $expectedImageStatus,
-        $expectedDiffStatus,
-        $expectedApprovalStatus,
-        $expectedDiffUrl
-    ) {
-        $snapshot = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        string $name,
+        string $existingImageStatus,
+        string $existingDiffStatus,
+        string $existingApprovalStatus,
+        ?string $existingDiffUrl,
+        bool $difference,
+        string $expectedImageStatus,
+        string $expectedDiffStatus,
+        string $expectedApprovalStatus,
+        string $expectedDiffUrl
+    ): void {
+        $snapshot = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => $name,
             'image_url' => 'image',
@@ -48,7 +51,10 @@ class CheckpointModelTest extends \TestCase
         ]);
     }
 
-    public function statusProvider()
+    /**
+     * @return array<array<string|bool|null>>
+     */
+    public function statusProvider(): array
     {
         return [
             // Updating with a difference shouldn't change status.
@@ -93,10 +99,10 @@ class CheckpointModelTest extends \TestCase
         ];
     }
 
-    public function testApproving()
+    public function testApproving(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create();
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
@@ -105,14 +111,14 @@ class CheckpointModelTest extends \TestCase
         $checkpoint->approve();
         $this->seeInDatabase('checkpoints', [
             'id' => $checkpoint->id,
-            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED
+            'approval_status' => Checkpoint::APPROVAL_STATUS_APPROVED,
         ]);
     }
 
-    public function testRejecting()
+    public function testRejecting(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create();
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
@@ -121,14 +127,14 @@ class CheckpointModelTest extends \TestCase
         $checkpoint->reject();
         $this->seeInDatabase('checkpoints', [
             'id' => $checkpoint->id,
-            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED
+            'approval_status' => Checkpoint::APPROVAL_STATUS_REJECTED,
         ]);
     }
 
-    public function testIgnoring()
+    public function testIgnoring(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
-        $checkpoint = factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create();
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'image',
             'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
@@ -137,14 +143,14 @@ class CheckpointModelTest extends \TestCase
         $checkpoint->ignore();
         $this->seeInDatabase('checkpoints', [
             'id' => $checkpoint->id,
-            'approval_status' => Checkpoint::APPROVAL_STATUS_IGNORED
+            'approval_status' => Checkpoint::APPROVAL_STATUS_IGNORED,
         ]);
     }
 
-    public function testResetting()
+    public function testResetting(): void
     {
-        $snapshot = factory(Snapshot::class)->create();
-        factory(Checkpoint::class)->create([
+        $snapshot = \factory(Snapshot::class)->create();
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'approved',
             'image_url' => 'image',
@@ -154,7 +160,7 @@ class CheckpointModelTest extends \TestCase
             'diff_status' => Checkpoint::DIFF_STATUS_IDENTICAL,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'pending',
             'image_url' => '',
@@ -162,7 +168,7 @@ class CheckpointModelTest extends \TestCase
             'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
         ]);
 
-        factory(Checkpoint::class)->create([
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'expected',
             'image_url' => '',

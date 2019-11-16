@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -10,19 +12,17 @@ class AddImageStatus extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         // Using two Schema::table calls, as doing both columns in one looses
         // image_status. Apparently the renaming causes a full table copy
         // which forgets the added column. Maybe just an issue on SOLite.
-        Schema::table('checkpoints', function (Blueprint $table) {
+        Schema::table('checkpoints', static function (Blueprint $table): void {
             $table->renameColumn('status', 'approval_status');
         });
 
-        Schema::table('checkpoints', function (Blueprint $table) {
+        Schema::table('checkpoints', static function (Blueprint $table): void {
             $table->string('image_status')->default('pending');
         });
 
@@ -38,10 +38,8 @@ class AddImageStatus extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         // Try to reverse.
         DB::table('checkpoints')->where('approval_status', 'unknown')
@@ -52,10 +50,10 @@ class AddImageStatus extends Migration
             ->update(['approval_status' => 'expceted']);
 
         // Staying safe and using two Schema::tables.
-        Schema::table('checkpoints', function (Blueprint $table) {
+        Schema::table('checkpoints', static function (Blueprint $table): void {
             $table->dropColumn('image_status');
         });
-        Schema::table('checkpoints', function (Blueprint $table) {
+        Schema::table('checkpoints', static function (Blueprint $table): void {
             $table->renameColumn('approval_status', 'status');
         });
     }

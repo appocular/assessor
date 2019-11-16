@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Observers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\GitHubStatusUpdate;
 use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
-use Appocular\Assessor\Jobs\SnapshotBaselining;
 use Appocular\Assessor\Observers\SnapshotObserver;
 use Appocular\Assessor\Repo;
 use Appocular\Assessor\Snapshot;
@@ -30,15 +31,15 @@ class SnapshotObserverTest extends \TestCase
      * Test that checkpoint baselines get reset when snapshots baseline
      * changes.
      */
-    public function testUpdateResetsCheckpointBaselinesWhenSnapshotBaselineChanges()
+    public function testUpdateResetsCheckpointBaselinesWhenSnapshotBaselineChanges(): void
     {
         $observer = new SnapshotObserver();
 
-        $baseline = factory(Snapshot::class)->create();
-        $snapshot = factory(Snapshot::class)->create(['baseline' => $baseline->id]);
-        factory(Checkpoint::class)->create(['snapshot_id' => $snapshot->id, 'baseline_url' => 'deadbeef']);
-        factory(Checkpoint::class)->create(['snapshot_id' => $snapshot->id, 'baseline_url' => 'deadbeef']);
-        factory(Checkpoint::class)->create([
+        $baseline = \factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create(['baseline' => $baseline->id]);
+        \factory(Checkpoint::class)->create(['snapshot_id' => $snapshot->id, 'baseline_url' => 'deadbeef']);
+        \factory(Checkpoint::class)->create(['snapshot_id' => $snapshot->id, 'baseline_url' => 'deadbeef']);
+        \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => null,
             'image_status' => Checkpoint::IMAGE_STATUS_EXPECTED,
@@ -60,7 +61,7 @@ class SnapshotObserverTest extends \TestCase
         $snapshot->syncOriginal();
 
         // Set new baseline.
-        $baseline = factory(Snapshot::class)->create();
+        $baseline = \factory(Snapshot::class)->create();
         $snapshot->baseline = $baseline->id;
 
         $observer->updated($snapshot);
@@ -76,10 +77,10 @@ class SnapshotObserverTest extends \TestCase
      * Test that checkpoint baselining job is queued when snapshot baseline
      * changes and the new baseline is done.
      */
-    public function testUpdateTriggersCheckpointBaseliningWhenSnopshotBaselineChanges()
+    public function testUpdateTriggersCheckpointBaseliningWhenSnopshotBaselineChanges(): void
     {
         Queue::fake();
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
 
         $observer = new SnapshotObserver();
         $observer->updated($snapshot);
@@ -95,7 +96,7 @@ class SnapshotObserverTest extends \TestCase
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
         $snapshot->syncOriginal();
-        $baseline = factory(Snapshot::class)->create();
+        $baseline = \factory(Snapshot::class)->create();
         $baseline->run_status = Snapshot::RUN_STATUS_PENDING;
         $baseline->save();
         $snapshot->setBaseline($baseline);
@@ -105,7 +106,7 @@ class SnapshotObserverTest extends \TestCase
         Queue::assertNotPushed(QueueCheckpointBaselining::class);
 
         $snapshot->syncOriginal();
-        $baseline = factory(Snapshot::class)->create();
+        $baseline = \factory(Snapshot::class)->create();
         $baseline->run_status = Snapshot::RUN_STATUS_DONE;
         $baseline->save();
         $snapshot->setBaseline($baseline);
@@ -115,7 +116,7 @@ class SnapshotObserverTest extends \TestCase
         Queue::assertPushed(QueueCheckpointBaselining::class, 1);
 
         $snapshot->syncOriginal();
-        $baseline = factory(Snapshot::class)->create();
+        $baseline = \factory(Snapshot::class)->create();
         $baseline->run_status = Snapshot::RUN_STATUS_DONE;
         $baseline->save();
         $snapshot->setBaseline($baseline);
@@ -129,14 +130,14 @@ class SnapshotObserverTest extends \TestCase
      * Test that descendant snapshots gets re-baselined when the snapshot
      * status changes to done.
      */
-    public function testStatusChangeTriggersDescendantBaselining()
+    public function testStatusChangeTriggersDescendantBaselining(): void
     {
         Queue::fake();
-        $snapshot = factory(Snapshot::class)->create([
+        $snapshot = \factory(Snapshot::class)->create([
             'status' => Snapshot::STATUS_UNKNOWN,
             'run_status' => Snapshot::RUN_STATUS_PENDING,
         ]);
-        $descendant = factory(Snapshot::class)->create(['baseline' => $snapshot->id]);
+        \factory(Snapshot::class)->create(['baseline' => $snapshot->id]);
 
         $observer = new SnapshotObserver();
         $snapshot->status = Snapshot::STATUS_PASSED;
@@ -157,11 +158,11 @@ class SnapshotObserverTest extends \TestCase
      * Test that a GitHub status change job i started if the repo is from
      * GitHub and status/run_status changes.
      */
-    public function testStatusChangeTriggersGitHubUpdate()
+    public function testStatusChangeTriggersGitHubUpdate(): void
     {
         Queue::fake();
         $observer = new SnapshotObserver();
-        $snapshot = factory(Snapshot::class)->create([
+        $snapshot = \factory(Snapshot::class)->create([
             'status' => Snapshot::STATUS_UNKNOWN,
             'run_status' => Snapshot::RUN_STATUS_PENDING,
         ]);
@@ -172,21 +173,21 @@ class SnapshotObserverTest extends \TestCase
         $snapshot->run_status = Snapshot::RUN_STATUS_DONE;
 
         // Shouldn't trigger on non-github repos.
-        $repo = factory(Repo::class)->create();
+        $repo = \factory(Repo::class)->create();
         $snapshot->repo()->associate($repo);
         $observer->saved($snapshot);
 
         Queue::assertNotPushed(GitHubStatusUpdate::class);
 
         // Should trigger on ssh URIs.
-        $repo = factory(Repo::class)->create(['uri' => 'git@github.com:appocular/assessor']);
+        $repo = \factory(Repo::class)->create(['uri' => 'git@github.com:appocular/assessor']);
         $snapshot->repo()->associate($repo);
 
         $observer->saved($snapshot);
         Queue::assertPushed(GitHubStatusUpdate::class);
 
         // Should trigger on https URIs.
-        $repo = factory(Repo::class)->create(['uri' => 'https://github.com/appocular/assessor']);
+        $repo = \factory(Repo::class)->create(['uri' => 'https://github.com/appocular/assessor']);
         $snapshot->repo()->associate($repo);
 
         $observer->saved($snapshot);
@@ -220,6 +221,5 @@ class SnapshotObserverTest extends \TestCase
 
         $observer->saved($snapshot);
         Queue::assertPushed(GitHubStatusUpdate::class, 5);
-
     }
 }

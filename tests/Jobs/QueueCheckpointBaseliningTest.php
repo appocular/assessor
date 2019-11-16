@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jobs;
 
 use Appocular\Assessor\Jobs\QueueCheckpointBaselining;
@@ -16,7 +18,7 @@ class QueueCheckpointBaseliningTest extends \TestCase
      * Test that checkpoint baselining is triggered when the baseline is
      * changed.
      */
-    public function testTriggering()
+    public function testTriggering(): void
     {
         $jobContract = $this->prophesize(Job::class);
         $jobContract->release(Argument::any())->shouldNotBeCalled();

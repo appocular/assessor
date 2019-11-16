@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Observers;
 
 use Appocular\Assessor\Checkpoint;
 use Appocular\Assessor\Jobs\SubmitDiff;
 use Appocular\Assessor\Observers\CheckpointObserver;
 use Appocular\Assessor\Snapshot;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
@@ -18,13 +19,13 @@ class CheckpointObserverTest extends \TestCase
      * Test that diffs gets reset when image or baseline is updated. Should
      * also reset status.
      */
-    public function testUpdatingResetsDiffWhenImageOrBaselineChanges()
+    public function testUpdatingResetsDiffWhenImageOrBaselineChanges(): void
     {
         $observer = new CheckpointObserver();
 
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
 
-        $checkpoint = factory(Checkpoint::class)->create([
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => 'image',
             'baseline_url' => 'baseline',
@@ -45,13 +46,13 @@ class CheckpointObserverTest extends \TestCase
     /**
      * Test that snapshot status gets updated when checkpoint status changes.
      */
-    public function testUpdatedTriggersSnapshotStatusUpdateOnCheckpointStatusChange()
+    public function testUpdatedTriggersSnapshotStatusUpdateOnCheckpointStatusChange(): void
     {
         $observer = new CheckpointObserver();
 
-        $snapshot = factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
+        $snapshot = \factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
 
-        $checkpoint = factory(Checkpoint::class)->create([
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => 'image',
             'baseline_url' => 'baseline',
@@ -82,15 +83,15 @@ class CheckpointObserverTest extends \TestCase
     /**
      * Test that new or deleted checkpoints gets a "different" diff status.
      */
-    public function testNewOrDeletedCheckpointsGetsDifferentDiffStatus()
+    public function testNewOrDeletedCheckpointsGetsDifferentDiffStatus(): void
     {
         Queue::fake();
 
         $observer = new CheckpointObserver();
 
-        $snapshot = factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
+        $snapshot = \factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
 
-        $checkpoint = factory(Checkpoint::class)->create([
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => 'image',
             'baseline_url' => null,
@@ -121,15 +122,15 @@ class CheckpointObserverTest extends \TestCase
     /**
      * Test that diff requests are submitted when image or baseline changed.
      */
-    public function testUpdatedTriggersDiffWhenImageOrBaselineChanges()
+    public function testUpdatedTriggersDiffWhenImageOrBaselineChanges(): void
     {
         Queue::fake();
 
         $observer = new CheckpointObserver();
 
-        $snapshot = factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
+        $snapshot = \factory(Snapshot::class)->create(['status' => Snapshot::STATUS_UNKNOWN]);
 
-        $checkpoint = factory(Checkpoint::class)->create([
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => 'image',
             'baseline_url' => null,
@@ -153,17 +154,17 @@ class CheckpointObserverTest extends \TestCase
      * @dataProvider diffStatusChecks
      */
     public function testNoDiffAutomaticallyAproves(
-        $existingApprovalStatus,
-        $existingDiffStatus,
-        $change,
-        $expectedApprovalStatus,
-        $expectedDiffStatus
-    ) {
+        string $existingApprovalStatus,
+        string $existingDiffStatus,
+        string $change,
+        string $expectedApprovalStatus,
+        string $expectedDiffStatus
+    ): void {
         $observer = new CheckpointObserver();
 
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
 
-        $checkpoint = factory(Checkpoint::class)->create([
+        $checkpoint = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => 'image',
             'baseline_url' => 'baseline',
@@ -180,7 +181,10 @@ class CheckpointObserverTest extends \TestCase
         $this->assertEquals($expectedDiffStatus, $checkpoint->diff_status);
     }
 
-    public function diffStatusChecks()
+    /**
+     * @return array<array<string>>
+     */
+    public function diffStatusChecks(): array
     {
         return[
             // Approve identical diffs.
@@ -206,13 +210,13 @@ class CheckpointObserverTest extends \TestCase
      * Test that checkpoint goes from pending/expected to available when they get
      * an image.
      */
-    public function testStatusChangeOnGettingAImage()
+    public function testStatusChangeOnGettingAImage(): void
     {
         $observer = new CheckpointObserver();
 
-        $snapshot = factory(Snapshot::class)->create();
+        $snapshot = \factory(Snapshot::class)->create();
 
-        $checkpoint1 = factory(Checkpoint::class)->create([
+        $checkpoint1 = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => '',
             'image_status' => Checkpoint::IMAGE_STATUS_PENDING,
@@ -224,7 +228,7 @@ class CheckpointObserverTest extends \TestCase
 
         $this->assertEquals(Checkpoint::IMAGE_STATUS_AVAILABLE, $checkpoint1->image_status);
 
-        $checkpoint2 = factory(Checkpoint::class)->create([
+        $checkpoint2 = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'image_url' => '',
             'image_status' => Checkpoint::IMAGE_STATUS_EXPECTED,

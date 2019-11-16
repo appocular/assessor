@@ -1,20 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Jobs;
 
 use Appocular\Assessor\Checkpoint;
 
 class UpdateDiff extends Job
 {
+    /**
+     * URL of image.
+     *
+     * @var string
+     */
     public $image_url;
-    public $baseline_url;
-    public $diff_url;
-    public $different;
 
     /**
-     * @var Snapshot
+     * URL of baseline.
+     *
+     * @var string
      */
-    public $snapshot;
+    public $baseline_url;
+
+    /**
+     * URL of diff.
+     *
+     * @var string
+     */
+    public $diff_url;
+
+    /**
+     * Is a difference detected?
+     *
+     * @var bool
+     */
+    public $different;
 
     public function __construct(string $image_url, string $baseline_url, string $diff_url, bool $different)
     {
@@ -26,10 +46,8 @@ class UpdateDiff extends Job
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Checkpoint::updateDiffs($this->image_url, $this->baseline_url, $this->diff_url, $this->different);
     }

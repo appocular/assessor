@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jobs;
 
 use Appocular\Assessor\Jobs\GitHubStatusUpdate;
 use Appocular\Assessor\Repo;
 use Appocular\Assessor\Snapshot;
+use Exception;
 use Illuminate\Support\Facades\Log;
+use Prophecy\Argument;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
-use Prophecy\Argument;
 
 class GitHubStatusUpdateTest extends \TestCase
 {
@@ -17,14 +20,14 @@ class GitHubStatusUpdateTest extends \TestCase
     {
         parent::setUp();
         // Common setup.
-        putenv('GITHUB_USER=guser');
-        putenv('GITHUB_PASSWORD=gpassword');
-        $this->snapshot = factory(Snapshot::class)->make([
+        \putenv('GITHUB_USER=guser');
+        \putenv('GITHUB_PASSWORD=gpassword');
+        $this->snapshot = \factory(Snapshot::class)->make([
             'status' => Snapshot::STATUS_UNKNOWN,
             'processing_status' => Snapshot::PROCESSING_STATUS_PENDING,
             'run_status' => Snapshot::RUN_STATUS_PENDING,
         ]);
-        $this->snapshot->repo = factory(Repo::class)->make([
+        $this->snapshot->repo = \factory(Repo::class)->make([
             'uri' => 'git@github.com:appocular/assessor',
         ]);
         // Pretend the above has been saved to database.
@@ -34,7 +37,7 @@ class GitHubStatusUpdateTest extends \TestCase
     /**
      * Test that GitHub URLs as properly recognized.
      */
-    public function testUriMatching()
+    public function testUriMatching(): void
     {
         $this->assertTrue(GitHubStatusUpdate::isGitHubUri('git@github.com:appocular/assessor.git'));
         $this->assertTrue(GitHubStatusUpdate::isGitHubUri('https://github.com/appocular/assessor'));
@@ -44,14 +47,18 @@ class GitHubStatusUpdateTest extends \TestCase
     }
 
     /**
+     * @param array<array<string|array>> $expected
      * @dataProvider uriProvider
      */
-    public function testUriParsing($uri, $expected)
+    public function testUriParsing(string $uri, array $expected): void
     {
         $this->assertEquals($expected, GitHubStatusUpdate::parseUri($uri));
     }
 
-    public function uriProvider()
+    /**
+     * @return array<array<string|array>>
+     */
+    public function uriProvider(): array
     {
         return [
             ['https://github.com/appocular/assessor', ['appocular', 'assessor']],
@@ -68,8 +75,13 @@ class GitHubStatusUpdateTest extends \TestCase
      *
      * @dataProvider statusProvider
      */
-    public function testStatusUpdateToGithub($status, $processing_status, $run_status, $state, $description)
-    {
+    public function testStatusUpdateToGithub(
+        string $status,
+        string $processing_status,
+        string $run_status,
+        string $state,
+        string $description
+    ): void {
         Log::shouldReceive('info')
             ->once();
 
@@ -91,8 +103,8 @@ class GitHubStatusUpdateTest extends \TestCase
                     'state' => $state,
                     'description' => $description,
                     'target_url' => 'https://appocular.io/' . $this->snapshot->id,
-                ]
-            ]
+                ],
+            ],
         )
             ->willReturn($response)
             ->shouldBeCalled();
@@ -101,7 +113,10 @@ class GitHubStatusUpdateTest extends \TestCase
         $job->handle($client->reveal());
     }
 
-    public function statusProvider()
+    /**
+     * @return array<array<string>>
+     */
+    public function statusProvider(): array
     {
         return [
             // Undetermined checkpoints (either with differences not
@@ -113,7 +128,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_PENDING,
                 Snapshot::RUN_STATUS_PENDING,
                 'pending',
-                'In progress. Please wait.'
+                'In progress. Please wait.',
             ],
             // All checkpoints passed, approved or ignored, but batch still
             // running. Still pending.
@@ -122,7 +137,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_PENDING,
                 Snapshot::RUN_STATUS_PENDING,
                 'pending',
-                'In progress. Please wait.'
+                'In progress. Please wait.',
             ],
             // Failed checkpoint exists, this is overall failure, even if
             // we're still running.
@@ -131,7 +146,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_PENDING,
                 Snapshot::RUN_STATUS_PENDING,
                 'failure',
-                'Failed!'
+                'Failed!',
             ],
             // Shouldn't happen. Unknown checkpoints causes processing status
             // to be pending.
@@ -140,7 +155,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_DONE,
                 Snapshot::RUN_STATUS_PENDING,
                 'error',
-                'Snapshot in unknown/impossible state? Please seek help.'
+                'Snapshot in unknown/impossible state? Please seek help.',
             ],
             // This shouldn't happen either, but we'll be open to the
             // possibility that status only considers processed checkpoints.
@@ -149,7 +164,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_DONE,
                 Snapshot::RUN_STATUS_PENDING,
                 'pending',
-                'In progress. Please wait.'
+                'In progress. Please wait.',
             ],
             // Failed checkpoint exists, this is overall failure, even if
             // we're still running.
@@ -158,7 +173,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_DONE,
                 Snapshot::RUN_STATUS_PENDING,
                 'failure',
-                'Failed!'
+                'Failed!',
             ],
             // Run done, but unprocessed checkpoints, signal human processing
             // is needed.
@@ -167,7 +182,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_PENDING,
                 Snapshot::RUN_STATUS_DONE,
                 'failure',
-                'Differences detected, please review.'
+                'Differences detected, please review.',
             ],
             // Shouldn't happen, unknown checkpoints cause status to be
             // unknown, but we'll allow it..
@@ -176,7 +191,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_PENDING,
                 Snapshot::RUN_STATUS_DONE,
                 'pending',
-                'In progress. Please wait.'
+                'In progress. Please wait.',
             ],
             // Rejected checkpoint, but more differences exists.
             [
@@ -184,7 +199,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_PENDING,
                 Snapshot::RUN_STATUS_DONE,
                 'failure',
-                'Failed! More differences detected, please review.'
+                'Failed! More differences detected, please review.',
             ],
             // Shouldn't happen.
             [
@@ -192,7 +207,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_DONE,
                 Snapshot::RUN_STATUS_DONE,
                 'error',
-                'Snapshot in unknown/impossible state? Please seek help.'
+                'Snapshot in unknown/impossible state? Please seek help.',
             ],
             // All checkpoints passed/approved/ignored and no more batches/pending.
             [
@@ -200,7 +215,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_DONE,
                 Snapshot::RUN_STATUS_DONE,
                 'success',
-                'Passed!'
+                'Passed!',
             ],
             // Rejected checkpoint and no running batches/pending.
             [
@@ -208,7 +223,7 @@ class GitHubStatusUpdateTest extends \TestCase
                 Snapshot::PROCESSING_STATUS_DONE,
                 Snapshot::RUN_STATUS_DONE,
                 'failure',
-                'Failed!'
+                'Failed!',
             ],
         ];
     }
@@ -216,7 +231,7 @@ class GitHubStatusUpdateTest extends \TestCase
     /**
      * Test that exceptions during request is properly logged.
      */
-    public function testCatchingExceptions()
+    public function testCatchingExceptions(): void
     {
         Log::shouldReceive('info')
             ->once();
@@ -234,7 +249,7 @@ class GitHubStatusUpdateTest extends \TestCase
             ->willReturn(201);
         $client = $this->prophesize(HttpClientInterface::class);
         $client->request(Argument::any(), Argument::any(), Argument::any())
-            ->willThrow(new \Exception('random error'))
+            ->willThrow(new Exception('random error'))
             ->shouldBeCalled();
 
         $job = new GitHubStatusUpdate($this->snapshot);
@@ -244,7 +259,7 @@ class GitHubStatusUpdateTest extends \TestCase
     /**
      * Test that bad response code from GitHub is logged.
      */
-    public function testLoggingBadResponses()
+    public function testLoggingBadResponses(): void
     {
         $url = 'https://api.github.com/repos/appocular/assessor/statuses/' . $this->snapshot->id;
         Log::shouldReceive('info')
@@ -252,11 +267,11 @@ class GitHubStatusUpdateTest extends \TestCase
 
         Log::shouldReceive('error')
             ->once()
-            ->with(sprintf(
+            ->with(\sprintf(
                 'Unexpected 202 response code from GitHub on "%s", user "%s", pass "%s"',
                 $url,
                 'guser',
-                '*********'
+                '*********',
             ))
             ->andReturn();
 

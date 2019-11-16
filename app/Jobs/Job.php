@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 abstract class Job implements ShouldQueue
 {
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
+
     /*
     |--------------------------------------------------------------------------
     | Queueable Jobs
@@ -19,6 +25,4 @@ abstract class Job implements ShouldQueue
     | provides access to the "queueOn" and "delay" queue helper methods.
     |
     */
-
-    use InteractsWithQueue, Queueable, SerializesModels;
 }

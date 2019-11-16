@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Appocular\Assessor\Jobs;
 
 use Appocular\Assessor\Checkpoint;
@@ -8,7 +10,9 @@ use Illuminate\Support\Facades\Log;
 class FindCheckpointBaseline extends Job
 {
     /**
-     * @var Checkpoint
+     * Checkpoint to baseline.
+     *
+     * @var \Appocular\Assessor\Checkpoint
      */
     public $checkpoint;
 
@@ -19,10 +23,8 @@ class FindCheckpointBaseline extends Job
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $checkpoint = $this->checkpoint;
         // Ensure that checkpoint is up to date.
@@ -33,24 +35,26 @@ class FindCheckpointBaseline extends Job
             return;
         }
 
-        Log::info(sprintf(
+        Log::info(\sprintf(
             'Finding Checkpoint baselines for %s (snapshot %s)',
             $checkpoint->id,
-            $checkpoint->snapshot->id
+            $checkpoint->snapshot->id,
         ));
         $baseline_url = '';
         $baseline = $checkpoint->snapshot->getBaseline();
 
         // Bail out if baseline has disappeared in the meantime.
         while ($baseline) {
-            $baseCheckpoint = $baseline->checkpoints()->where(function ($query) use ($checkpoint) {
+            $baseCheckpoint = $baseline->checkpoints()->where(static function ($query) use ($checkpoint): void {
                 $query->where('name', $checkpoint->name);
-                if (is_null($checkpoint->meta)) {
+
+                if (\is_null($checkpoint->meta)) {
                     $query->whereNull('meta');
                 } else {
-                    $query->where('meta', json_encode($checkpoint->meta));
+                    $query->where('meta', \json_encode($checkpoint->meta));
                 }
             })->first();
+
             // No parent baseline, break out.
             if (!$baseCheckpoint) {
                 break;
@@ -60,10 +64,12 @@ class FindCheckpointBaseline extends Job
             // image. This even works for deleted images, as they have an
             // empty string for URL, and new images gets an empty baseline
             // URL.
-            if ($baseCheckpoint->approval_status == Checkpoint::APPROVAL_STATUS_APPROVED) {
+            if ($baseCheckpoint->approval_status === Checkpoint::APPROVAL_STATUS_APPROVED) {
                 $baseline_url = $baseCheckpoint->image_url;
+
                 break;
             }
+
             $baseline = $baseline->getBaseline();
         }
 
