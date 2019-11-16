@@ -20,8 +20,7 @@
         "ddelnano/dredd-hooks-php": "^1.1",
         "phpunit/phpcov": "^6.0",
         "sempro/phpunit-pretty-print": "^1.0",
-        "squizlabs/php_codesniffer": "^3.5",
-        "slevomat/coding-standard": "^5.0"
+        "appocular/coding-standard": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -48,6 +47,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/appocular/clients-laravel.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/appocular/coding-standard"
         }
     ]
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a898059524f55f00cf584aecaafa72a2",
+    "content-hash": "9ccd9132ccfd84cd5fc1d31a4ba1b403",
     "packages": [
         {
             "name": "appocular/clients-laravel",
@@ -3885,6 +3885,51 @@
     ],
     "packages-dev": [
         {
+            "name": "appocular/coding-standard",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/appocular/coding-standard.git",
+                "reference": "b5d8118f2eaad585466b51cec9cff32fac340471"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/appocular/coding-standard/zipball/b5d8118f2eaad585466b51cec9cff32fac340471",
+                "reference": "b5d8118f2eaad585466b51cec9cff32fac340471",
+                "shasum": ""
+            },
+            "require": {
+                "slevomat/coding-standard": "^5.0",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "Appocular\\CodingStandard\\": "AppocularCodingStandard"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Appocular PHP coding standard, PHP Code Sniffer rules.",
+            "keywords": [
+                "CodeSniffer",
+                "PHPCodeSniffer",
+                "coding",
+                "coding standard",
+                "cs",
+                "phpcs",
+                "ruleset",
+                "sniffer",
+                "standard"
+            ],
+            "support": {
+                "source": "https://github.com/appocular/coding-standard/tree/master",
+                "issues": "https://github.com/appocular/coding-standard/issues"
+            },
+            "time": "2019-11-16T17:18:32+00:00"
+        },
+        {
             "name": "ddelnano/dredd-hooks-php",
             "version": "1.1.6",
             "source": {
@@ -5861,7 +5906,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "appocular/clients-laravel": 20
+        "appocular/clients-laravel": 20,
+        "appocular/coding-standard": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
