@@ -9,7 +9,7 @@ use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class SnapshotModelTest extends TestCase
+class SnapshotTest extends TestCase
 {
     use DatabaseMigrations;
 

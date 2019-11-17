@@ -7,7 +7,7 @@ namespace Appocular\Assessor\Models;
 use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class CheckpointModelTest extends TestCase
+class CheckpointTest extends TestCase
 {
     use DatabaseMigrations;
 

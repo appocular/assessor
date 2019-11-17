@@ -8,7 +8,7 @@ use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use RuntimeException;
 
-class RepoModelTest extends TestCase
+class RepoTest extends TestCase
 {
     use DatabaseMigrations;
 
