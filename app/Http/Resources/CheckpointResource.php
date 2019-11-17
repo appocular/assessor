@@ -13,6 +13,7 @@ class CheckpointResource extends Resource
      * Transform the resource into an array.
      *
      * @return array<string|array, string>
+     *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */

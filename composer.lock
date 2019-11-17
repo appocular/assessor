@@ -3890,12 +3890,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/appocular/coding-standard.git",
-                "reference": "b5d8118f2eaad585466b51cec9cff32fac340471"
+                "reference": "84cc48dc7552b8452e44189860e9db7ea5c4fd85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/appocular/coding-standard/zipball/b5d8118f2eaad585466b51cec9cff32fac340471",
-                "reference": "b5d8118f2eaad585466b51cec9cff32fac340471",
+                "url": "https://api.github.com/repos/appocular/coding-standard/zipball/84cc48dc7552b8452e44189860e9db7ea5c4fd85",
+                "reference": "84cc48dc7552b8452e44189860e9db7ea5c4fd85",
                 "shasum": ""
             },
             "require": {
@@ -3924,10 +3924,10 @@
                 "standard"
             ],
             "support": {
-                "source": "https://github.com/appocular/coding-standard/tree/master",
+                "source": "https://github.com/appocular/coding-standard/tree/1.0.3",
                 "issues": "https://github.com/appocular/coding-standard/issues"
             },
-            "time": "2019-11-16T17:18:32+00:00"
+            "time": "2019-11-17T18:59:56+00:00"
         },
         {
             "name": "ddelnano/dredd-hooks-php",

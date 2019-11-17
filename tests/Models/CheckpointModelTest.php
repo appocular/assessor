@@ -13,6 +13,7 @@ class CheckpointModelTest extends TestCase
 
     /**
      * @dataProvider statusProvider
+     *
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.UselessDocComment
      */
     public function testBulkDiffUpdatesSetsStatusesCorrectly(

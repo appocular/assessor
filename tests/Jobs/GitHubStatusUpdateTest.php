@@ -48,6 +48,7 @@ class GitHubStatusUpdateTest extends TestCase
 
     /**
      * @param array<array<string|array>> $expected
+     *
      * @dataProvider uriProvider
      */
     public function testUriParsing(string $uri, array $expected): void
