@@ -164,6 +164,14 @@ class Snapshot extends Model
         Log::info(\sprintf('Collectiong checkpoints for baselines finding for snapshot %s', $this->id));
         $baselineCheckpoints = [];
 
+        foreach ($baseline->checkpoints()->get() as $checkpoint) {
+            if (!$checkpoint->shouldPropagate()) {
+                continue;
+            }
+
+            $baselineCheckpoints[$checkpoint->identifier()] = $checkpoint;
+        }
+
         foreach ($this->checkpoints()->get() as $checkpoint) {
             unset($baselineCheckpoints[$checkpoint->identifier()]);
         }
@@ -182,7 +190,6 @@ class Snapshot extends Model
         // Now that both existing and expected checkpoints exists in the
         // database, queue baseline finding.
         foreach ($this->checkpoints()->get() as $checkpoint) {
-            unset($baselineCheckpoints[$checkpoint->identifier()]);
             \dispatch(new FindCheckpointBaseline($checkpoint));
         }
     }
