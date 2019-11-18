@@ -1,0 +1,75 @@
+on: push
+name: Run checks and tests
+jobs:
+  check_codestyle:
+    name: Codestyle
+    if: '!github.event.deleted'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: 7.3
+        coverage: none
+    - name: Install Dependencies
+      run: |
+        composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+    - name: Check codestyle
+      run: |
+        vendor/bin/phpcs
+
+  unit_tests:
+    name: Unit tests
+    if: '!github.event.deleted'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: 7.3
+        coverage: none
+    - name: Install Dependencies
+      run: |
+        composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+    - name: Unit tests
+      run: |
+        phpdbg -qrr ./vendor/bin/phpunit --coverage-clover=clover.xml
+    - name: Upload coverage report to Codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        bash <(curl -s https://codecov.io/bash) -c -F unit -n Unit
+
+  api_tests:
+    name: API tests
+    if: '!github.event.deleted'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: 7.3
+        # Using xdebug for this one as dredd spawns the PHP process needing coverage.
+        coverage: xdebug
+    - name: Install Dredd
+      run: |
+        npm install dredd@11.2.11 --no-optional
+    - name: Install Keeper
+      run: |
+        git clone https://github.com/appocular/keeper.git keeper
+        cd keeper && composer install
+    - name: Install Dependencies
+      run: |
+        composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+    - name: API tests
+      run: |
+        env SHARED_TOKEN=MySharedToken REPORT_COVERAGE=true node_modules/.bin/dredd
+    - name: Upload coverage report to Codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        phpdbg -qrr ./vendor/bin/phpcov merge --clover=clover.xml coverage/
+        bash <(curl -s https://codecov.io/bash) -c -F api -n API

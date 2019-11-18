@@ -3,7 +3,7 @@
 Assessor is the brains of Appocular. It keeps track of snapshots,
 checkpoints, batches and images.
 
-[Documentation](docs/Assessor API.apib)
+[Documentation](docs/Assessor%20API.apib)
 
-[![](https://img.shields.io/travis/com/appocular/assessor.svg?style=for-the-badge)](https://travis-ci.com/appocular/assessor)
+[![](https://github.com/appocular/assessor/workflows/Run%20checks%20and%20tests/badge.svg)](https://github.com/appocular/assessor/actions)
 [![](https://img.shields.io/codecov/c/github/appocular/assessor.svg)](https://codecov.io/gh/appocular/assessor)
