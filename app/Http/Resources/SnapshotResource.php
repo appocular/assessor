@@ -11,7 +11,7 @@ class SnapshotResource extends Resource
     /**
      * Transform the resource into an array.
      *
-     * @return array<string|array, string>
+     * @return array<string, string|array|null>
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
