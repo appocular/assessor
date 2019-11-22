@@ -5648,16 +5648,16 @@
         },
         {
             "name": "sempro/phpunit-pretty-print",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sempro/phpunit-pretty-print.git",
-                "reference": "9b889cf6c24565aa6706f4429e6355ce7167aa70"
+                "reference": "9a9e14c95a5a6527c25c71aa55c8295882c6fcb1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sempro/phpunit-pretty-print/zipball/9b889cf6c24565aa6706f4429e6355ce7167aa70",
-                "reference": "9b889cf6c24565aa6706f4429e6355ce7167aa70",
+                "url": "https://api.github.com/repos/sempro/phpunit-pretty-print/zipball/9a9e14c95a5a6527c25c71aa55c8295882c6fcb1",
+                "reference": "9a9e14c95a5a6527c25c71aa55c8295882c6fcb1",
                 "shasum": ""
             },
             "require": {
@@ -5678,7 +5678,7 @@
                 "MIT"
             ],
             "description": "Prettify PHPUnit output",
-            "time": "2019-11-13T08:02:35+00:00"
+            "time": "2019-11-21T19:36:58+00:00"
         },
         {
             "name": "slevomat/coding-standard",
