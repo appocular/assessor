@@ -66,7 +66,8 @@ jobs:
         composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
     - name: API tests
       run: |
-        env SHARED_TOKEN=MySharedToken REPORT_COVERAGE=true node_modules/.bin/dredd
+        # Wait a bit longer for the server to start up than locally, seems it's slower out there.
+        env SHARED_TOKEN=MySharedToken REPORT_COVERAGE=true node_modules/.bin/dredd --server-wait 3
     - name: Upload coverage report to Codecov
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
