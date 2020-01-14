@@ -11,7 +11,9 @@
         "appocular/clients-laravel": "^1",
         "fideloper/proxy": "^4.2",
         "symfony/http-client": "^4.3",
-        "doctrine/dbal": "^2.9"
+        "doctrine/dbal": "^2.9",
+        "symfony/process": "^4.4",
+        "symfony/yaml": "^4"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.4",
