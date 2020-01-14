@@ -5,36 +5,12 @@ declare(strict_types=1);
 namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Jobs\UpdateDiff;
-use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class DiffControllerTest extends TestCase
+class DiffControllerTest extends ControllerTestBase
 {
     use DatabaseMigrations;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        // Set up shared token.
-        \putenv('SHARED_TOKEN=SharedToken');
-    }
-
-    /**
-     * Return authorization headers for request.
-     *
-     * Note that the Illuminate\Auth\TokenGuard is only constructed on the
-     * first request in a test, and the Authorization headert thus "sticks
-     * around" for the subsequent requests, rendering passing the header to
-     * them pointless.
-     *
-     * @return array<string, string>
-     */
-    public function headers(): array
-    {
-        return ["Authorization" => 'Bearer SharedToken'];
-    }
-
 
     /**
      * Test that access control works.
@@ -70,7 +46,7 @@ class DiffControllerTest extends TestCase
             'different' => true,
         ];
 
-        $this->json('POST', '/diff', $data, $this->headers());
+        $this->json('POST', '/diff', $data, $this->sharedAuthHeaders());
         $this->assertResponseStatus(200);
 
         Queue::assertPushed(UpdateDiff::class);

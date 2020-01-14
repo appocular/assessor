@@ -7,34 +7,11 @@ namespace Appocular\Assessor\Http\Controllers;
 use Appocular\Assessor\Models\Checkpoint;
 use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\SlugGenerator;
-use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class CheckpointControllerTest extends TestCase
+class CheckpointControllerTest extends ControllerTestBase
 {
     use DatabaseMigrations;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        // Set up a frontend token.
-        \putenv('FRONTEND_TOKEN=FrontendToken');
-    }
-
-    /**
-     * Return authorization headers for request.
-     *
-     * Note that the Illuminate\Auth\TokenGuard is only constructed on the
-     * first request in a test, and the Authorization headert thus "sticks
-     * around" for the subsequent requests, rendering passing the header to
-     * them pointless.
-     *
-     * @return array<string, string>
-     */
-    public function headers(): array
-    {
-        return ["Authorization" => 'Bearer FrontendToken'];
-    }
 
     /**
      * Test that access control works.
@@ -59,7 +36,7 @@ class CheckpointControllerTest extends TestCase
             $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->frontendAuthHeaders());
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
             'self' => \route('checkpoint.show', ['id' => $checkpoints[0]->id]),
@@ -111,7 +88,7 @@ class CheckpointControllerTest extends TestCase
             ])),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->frontendAuthHeaders());
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
             'self' => \route('checkpoint.show', ['id' => $checkpoints[0]->id]),
@@ -140,7 +117,7 @@ class CheckpointControllerTest extends TestCase
             $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->frontendAuthHeaders());
         // Verify that it's not approved.
         $this->seeJson(['approval_status' => 'unknown']);
 
@@ -158,7 +135,7 @@ class CheckpointControllerTest extends TestCase
             $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->frontendAuthHeaders());
         // Verify that it's not rejected.
         $this->seeJson(['approval_status' => 'unknown']);
 
@@ -176,7 +153,7 @@ class CheckpointControllerTest extends TestCase
             $snapshot->checkpoints()->save(\factory(Checkpoint::class)->make()),
         ];
 
-        $this->get('checkpoint/' . $checkpoints[0]->id, $this->headers());
+        $this->get('checkpoint/' . $checkpoints[0]->id, $this->frontendAuthHeaders());
         // Verify that it's not ignored.
         $this->seeJson(['approval_status' => 'unknown']);
 

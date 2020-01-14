@@ -7,34 +7,11 @@ namespace Appocular\Assessor\Http\Controllers;
 use Appocular\Assessor\Models\Checkpoint;
 use Appocular\Assessor\Models\Snapshot;
 use Appocular\Assessor\SlugGenerator;
-use Appocular\Assessor\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class SnapshotControllerTest extends TestCase
+class SnapshotControllerTest extends ControllerTestBase
 {
     use DatabaseMigrations;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        // Set up a frontend token.
-        \putenv('FRONTEND_TOKEN=FrontendToken');
-    }
-
-    /**
-     * Return authorization headers for request.
-     *
-     * Note that the Illuminate\Auth\TokenGuard is only constructed on the
-     * first request in a test, and the Authorization headert thus "sticks
-     * around" for the subsequent requests, rendering passing the header to
-     * them pointless.
-     *
-     * @return array<string, string>
-     */
-    public function headers(): array
-    {
-        return ["Authorization" => 'Bearer FrontendToken'];
-    }
 
     /**
      * Test that access control works.
@@ -54,7 +31,7 @@ class SnapshotControllerTest extends TestCase
             'baseline' => $baseline->id,
         ]);
 
-        $this->get('snapshot/' . $snapshot->id, $this->headers());
+        $this->get('snapshot/' . $snapshot->id, $this->frontendAuthHeaders());
         $this->assertResponseStatus(200);
         $this->seeJsonEquals([
             'self' => \route('snapshot.show', ['id' => $snapshot->id]),

@@ -6,11 +6,10 @@ namespace Appocular\Assessor\Http\Controllers;
 
 use Appocular\Assessor\Jobs\SubmitImage;
 use Appocular\Assessor\Models\Repo;
-use Appocular\Assessor\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class BatchControllerTest extends TestCase
+class BatchControllerTest extends ControllerTestBase
 {
     use DatabaseMigrations;
 
@@ -22,21 +21,6 @@ class BatchControllerTest extends TestCase
         $repo->api_token = 'RepoToken';
         $repo->save();
         $this->repoId = $repo->uri;
-    }
-
-    /**
-     * Return authorization headers for request.
-     *
-     * Note that the Illuminate\Auth\TokenGuard is only constructed on the
-     * first request in a test, and the Authorization headert thus "sticks
-     * around" for the subsequent requests, rendering passing the header to
-     * them pointless.
-     *
-     * @return array<string, string>
-     */
-    public function headers(): array
-    {
-        return ["Authorization" => 'Bearer RepoToken'];
     }
 
     /**
@@ -73,13 +57,13 @@ class BatchControllerTest extends TestCase
 
     public function testUnknownBatch(): void
     {
-        $this->delete('/batch/random', [], $this->headers());
+        $this->delete('/batch/random', [], $this->authHeader('RepoToken'));
         $this->assertResponseStatus(404);
     }
 
     public function testBatchValidation(): void
     {
-        $this->json('POST', '/batch', [], $this->headers());
+        $this->json('POST', '/batch', [], $this->authHeader('RepoToken'));
         $this->assertResponseStatus(422);
         $this->seeJsonEquals([
             'id' => [0 => 'The id field is required.'],
@@ -318,7 +302,7 @@ class BatchControllerTest extends TestCase
             $data['history'] = $history;
         }
 
-        $this->json('POST', '/batch', $data, $this->headers());
+        $this->json('POST', '/batch', $data, $this->authHeader('RepoToken'));
 
         $this->assertResponseStatus(201);
         $this->assertTrue($this->response->headers->has('Location'));
