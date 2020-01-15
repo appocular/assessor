@@ -37,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
         SnapshotResource::withoutWrapping();
         CheckpointResource::withoutWrapping();
 
+        $this->app->configure('assessor');
+
         $this->app->singleton(HttpClientInterface::class, static function (): HttpClientInterface {
             return HttpClient::create();
         });

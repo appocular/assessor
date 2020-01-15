@@ -15,18 +15,17 @@ class BugSnapshotTest extends TestCase
 
     public function testCreatesBugSnapshot(): void
     {
+        // Use echo as mysqldump stand-in.
+        $this->app['config']->set('assessor.mysqldump', 'echo -- ');
         $rc = $this->artisan('assessor:bug-snapshot', [
             'email' => 'test@example.com',
             'url' => 'http://example.com/test',
             'description' => "looks wrong\n\nplease fix.",
-            // Use echo as mysqldump stand-in.
-            '--mysqldump' => 'echo -- ',
         ]);
 
         $this->assertEquals(0, $rc);
 
         $output = \trim($this->app[Kernel::class]->output());
-        print  $output;
 
         $sqlFile = \storage_path('bugreports/' . $output . '.sql');
         $this->assertTrue(\file_exists($sqlFile));

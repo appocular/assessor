@@ -19,8 +19,7 @@ class BugSnapshot extends Command
     protected $signature = 'assessor:bug-snapshot
                             {email : Reporter email}
                             {url : Frontend URL where the bug was seen}
-                            {description : Description of the problem}
-                            {--mysqldump= : The mysqldump binary to run}';
+                            {description : Description of the problem}';
 
     /**
      * The console command description.
@@ -49,7 +48,6 @@ class BugSnapshot extends Command
         }
 
         $this->id = (string) Uuid::generate(4);
-
     }
 
     /**
@@ -59,7 +57,7 @@ class BugSnapshot extends Command
     {
         // Copying mysqldump option in verbatim, to allow for tricks like
         // --mysqldump="mysqldump --some-arg".
-        $commandLine = ($this->option('mysqldump') ?? 'mysqldump') .
+        $commandLine = $this->laravel['config']->get('assessor.mysqldump', 'mysqldump') .
             ' --compact --skip-comments -h"${:HOSTNAME}" -u"${:USERNAME}" -p"${:PASSWORD}" "${:DATABASE}" > "${:FILENAME}"';
         $process = Process::fromShellCommandline(
             $commandLine,
