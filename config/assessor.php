@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'mysqldump' => 'mysqldump',
+    'mysqldump' => env('ASSESSOR_MYSQLDUMP', 'mysqldump'),
 ];

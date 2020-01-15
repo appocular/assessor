@@ -32,6 +32,8 @@ $router->group(['middleware' => 'auth:user'], function () use ($router): void {
     $router->put('checkpoint/{id}/approve', ['as' => 'checkpoint.approve', 'uses' => 'CheckpointController@approve']);
     $router->put('checkpoint/{id}/reject', ['as' => 'checkpoint.reject', 'uses' => 'CheckpointController@reject']);
     $router->put('checkpoint/{id}/ignore', ['as' => 'checkpoint.ignore', 'uses' => 'CheckpointController@ignore']);
+
+    $router->post('bugreport', 'BugReportController@create');
 });
 
 $router->group(['middleware' => 'auth:shared_token'], function () use ($router): void {

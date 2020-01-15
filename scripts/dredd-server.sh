@@ -7,6 +7,7 @@ export CACHE_DRIVER=file
 export KEEPER_BASE_URI=http://localhost:8081/
 export FRONTEND_TOKEN=MyFrontendToken
 export SHARED_TOKEN=MySharedToken
+export ASSESSOR_MYSQLDUMP="echo --"
 
 if [[ ! -d keeper ]]; then
     echo "Please clone https://github.com/appocular/keeper.git and run composer install in it."

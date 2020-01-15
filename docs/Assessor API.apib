@@ -37,6 +37,47 @@ The resources that are meant for calling directly is marked with
 The different groups of resources uses different tokens for
 authorization.
 
+# Bug reporting
+
+To ease bugreporting and debugging, Assessor allows for submitting
+bugreports directly using the API. Using the API for bugreport
+submission will save a snapshot of some internal state for debugging
+purposes.
+
+## Bug report resource [/bugreport]
+
+### Create bug report [POST]
+
+Report a problem.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer MyFrontendToken
+
+    + Attributes (Bugreport)
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "id": "<bug report id>"
+            }
+
++ Response 422 (application/json)
+
+        {
+            "email": ["The email field is required."]
+        }
+
++ Response 500  (text/plain; charset=UTF-8)
+
+    + Body
+
+        Internal error
+
 # Group Snapshot submission
 
 These resources allow for submitting a batch of images to a snapshot.
@@ -161,7 +202,7 @@ with the metadata "Browser size: 1024×768" and another named
 "Frontpage" can be submitted with the metadata "Browser size:
 360×640", in order to check the same page at different browser sizes.
 
-Assesor doesn't apply any logic to metadata other than storing it as
+Assessor doesn't apply any logic to metadata other than storing it as
 key-values, but client (both submitting and frontend) might attach
 specific significance to certain keys/values.
 
@@ -379,6 +420,11 @@ Endpoint for reporting differences.
 + Response 200
 
 # Data Structures
+
+## Bugreport
+- `url`: *http://some.frontend/path* (string) - The frontend url where the problem was noticed.
+- `email`: *someone@example.com* (string) - Email of the bug reporter.
+- `description`: *These images doesn't seem to have any difference?* (string) - Description of the problem.
 
 ## Checkpoint submission (object, fixed-type)
 - `name`: *Frontpage* (string, required) - Name of checkpoint.
