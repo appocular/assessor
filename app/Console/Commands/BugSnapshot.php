@@ -58,7 +58,8 @@ class BugSnapshot extends Command
         // Copying mysqldump option in verbatim, to allow for tricks like
         // --mysqldump="mysqldump --some-arg".
         $commandLine = $this->laravel['config']->get('assessor.mysqldump', 'mysqldump') .
-            ' --compact --skip-comments -h"${:HOSTNAME}" -u"${:USERNAME}" -p"${:PASSWORD}" "${:DATABASE}" > "${:FILENAME}"';
+            ' --compact --skip-comments -h"${:HOSTNAME}" -u"${:USERNAME}" -p"${:PASSWORD}" ' .
+            '"${:DATABASE}" > "${:FILENAME}"';
         $process = Process::fromShellCommandline(
             $commandLine,
             null,
@@ -73,7 +74,7 @@ class BugSnapshot extends Command
 
         $process->mustRun();
 
-        $yaml = YAML::dump([
+        $yaml = Yaml::dump([
             'email' => $this->argument('email'),
             'url' => $this->argument('url'),
             'description' => $this->argument('description'),
