@@ -53,9 +53,9 @@ class CheckpointObserver
             \dispatch(new SubmitDiff($checkpoint->image_url, $checkpoint->baseline_url));
         }
 
-        // Update snapshot status when checkpoint approval status changes.
+        // Update snapshot status when checkpoint approval status or image status changes.
         // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
-        if ($checkpoint->isDirty('approval_status')) {
+        if ($checkpoint->isDirty('approval_status') || $checkpoint->isDirty('image_status')) {
             $checkpoint->snapshot->updateStatus();
         }
     }
