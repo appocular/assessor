@@ -104,7 +104,7 @@ class BatchController extends BaseController
 
         if (!$imageData || \substr($imageData, 0, 8) !== $pngHeader) {
             Log::error(\sprintf(
-                'Error saving image for checkpoint "%s" in batch %s',
+                'Invalid PNG data for checkpoint "%s" in batch %s',
                 $request->input('name'),
                 $batch->id,
             ));
