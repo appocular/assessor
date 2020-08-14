@@ -202,24 +202,29 @@ class Snapshot extends Model
     public function updateStatus(): void
     {
         $this->refresh();
-        $pendingCount = $this->checkpoints->where('image_status', Checkpoint::IMAGE_STATUS_PENDING)->count();
-        $unknownCount = $this->checkpoints->where('approval_status', Checkpoint::APPROVAL_STATUS_UNKNOWN)->count();
-        $batchCount = $this->batches()->count();
+        $hasRejected = $this->checkpoints->where('approval_status', Checkpoint::APPROVAL_STATUS_REJECTED)->count() > 0;
+        $hasPending = $this->checkpoints->where('image_status', Checkpoint::IMAGE_STATUS_PENDING)->count() > 0;
+        $hasUnknown = $this->checkpoints->where('approval_status', Checkpoint::APPROVAL_STATUS_UNKNOWN)->count() > 0;
+        $hasUnknownDiffs = $this->checkpoints->where('diff_status', Checkpoint::DIFF_STATUS_UNKNOWN)
+            ->where('image_url')->where('baseline_url')->count() > 0;
+        $hasRunningBatches = $this->batches()->count() > 0;
 
-        if ($this->checkpoints->where('approval_status', Checkpoint::APPROVAL_STATUS_REJECTED)->count() > 0) {
+        if ($hasRejected) {
             $this->status = self::STATUS_FAILED;
-        } elseif ($unknownCount > 0 || $pendingCount > 0 || $batchCount > 0) {
+        } elseif ($hasUnknown || $hasUnknownDiffs || $hasPending || $hasRunningBatches) {
             $this->status = self::STATUS_UNKNOWN;
         } else {
             $this->status = self::STATUS_PASSED;
         }
 
-        $this->processing_status = $unknownCount > 0 ?
+        // Should be pending if there's missing diffs, expected images, etc.
+        // but we're assuming those will have an unknown processing state too.
+        $this->processing_status = $hasUnknown ?
             self::PROCESSING_STATUS_PENDING :
             self::PROCESSING_STATUS_DONE;
 
 
-        $this->run_status = $pendingCount > 0 || $batchCount > 0 ?
+        $this->run_status = $hasPending || $hasUnknownDiffs || $hasRunningBatches ?
             self::RUN_STATUS_PENDING :
             self::RUN_STATUS_DONE;
 

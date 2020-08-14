@@ -317,12 +317,14 @@ class SnapshotTest extends TestCase
             'name' => 'one',
             'image_status' => Checkpoint::IMAGE_STATUS_AVAILABLE,
             'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
+            'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
         $checkpoints[] = \factory(Checkpoint::class)->create([
             'snapshot_id' => $snapshot->id,
             'name' => 'one',
             'image_status' => Checkpoint::IMAGE_STATUS_AVAILABLE,
             'approval_status' => Checkpoint::APPROVAL_STATUS_UNKNOWN,
+            'diff_status' => Checkpoint::DIFF_STATUS_DIFFERENT,
         ]);
 
         // Processing status is waiting if there's unknown checkpoints.
@@ -360,15 +362,40 @@ class SnapshotTest extends TestCase
         $batch->delete();
 
         // Or pending Checkpoints.
+        $checkpoints[1]->approval_status = Checkpoint::APPROVAL_STATUS_UNKNOWN;
         $checkpoints[1]->image_status = Checkpoint::IMAGE_STATUS_PENDING;
         $checkpoints[1]->save();
 
+        $snapshot->updateStatus();
         $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
-        $this->assertEquals(Snapshot::PROCESSING_STATUS_DONE, $snapshot->processing_status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_PENDING, $snapshot->processing_status);
         $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
+
+        // Or Checkpoints needing diff, but only if it has both image and baseline.
+        $checkpoints[1]->image_status = Checkpoint::IMAGE_STATUS_AVAILABLE;
+        $checkpoints[1]->diff_status = Checkpoint::DIFF_STATUS_UNKNOWN;
+        $checkpoints[1]->image_url = 'url';
+        $checkpoints[1]->baseline_url = 'url';
+        $checkpoints[1]->save();
+
+        $snapshot->updateStatus();
+        $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_PENDING, $snapshot->processing_status);
+        $this->assertEquals(Snapshot::RUN_STATUS_PENDING, $snapshot->run_status);
+
+        // Else run status should be done.
+        $checkpoints[1]->image_url = null;
+        $checkpoints[1]->baseline_url = null;
+        $checkpoints[1]->save();
+
+        $snapshot->updateStatus();
+        $this->assertEquals(Snapshot::STATUS_UNKNOWN, $snapshot->status);
+        $this->assertEquals(Snapshot::PROCESSING_STATUS_PENDING, $snapshot->processing_status);
+        $this->assertEquals(Snapshot::RUN_STATUS_DONE, $snapshot->run_status);
 
         // Should fail if there's rejected checkpoints.
         $checkpoints[1]->image_status = Checkpoint::IMAGE_STATUS_AVAILABLE;
+        $checkpoints[1]->diff_status = Checkpoint::DIFF_STATUS_DIFFERENT;
         $checkpoints[1]->approval_status = Checkpoint::APPROVAL_STATUS_REJECTED;
         $checkpoints[1]->save();
 
