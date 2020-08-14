@@ -153,7 +153,7 @@ class Checkpoint extends Model
     {
         $this->diff_url = null;
         $this->diff_status = self::DIFF_STATUS_UNKNOWN;
-            $this->approval_status = self::APPROVAL_STATUS_UNKNOWN;
+        $this->approval_status = self::APPROVAL_STATUS_UNKNOWN;
     }
 
     /**
@@ -189,7 +189,7 @@ class Checkpoint extends Model
         // (doesn't make sense to update those).
         $checkpoints = self::where(['image_url' => $image_url, 'baseline_url' => $baseline_url])
             ->whereNested(static function ($query) use ($diff_url): void {
-                    $query->where('diff_url')->where('diff_url', '<>', $diff_url, 'or');
+                $query->where('diff_url')->where('diff_url', '<>', $diff_url, 'or');
             })
             ->where('approval_status', self::APPROVAL_STATUS_UNKNOWN)
             ->get();
