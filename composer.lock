@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "appocular/clients-laravel",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/appocular/clients-laravel.git",
-                "reference": "a34c714b3cff5a26d57f66eb674a3f7ab602772c"
+                "reference": "b67dba45b67abfc1ae5e881cf94e4ee128b4666c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/appocular/clients-laravel/zipball/a34c714b3cff5a26d57f66eb674a3f7ab602772c",
-                "reference": "a34c714b3cff5a26d57f66eb674a3f7ab602772c",
+                "url": "https://api.github.com/repos/appocular/clients-laravel/zipball/b67dba45b67abfc1ae5e881cf94e4ee128b4666c",
+                "reference": "b67dba45b67abfc1ae5e881cf94e4ee128b4666c",
                 "shasum": ""
             },
             "require": {
@@ -28,7 +28,9 @@
                 "appocular/coding-standard": "^1",
                 "friends-of-phpspec/phpspec-code-coverage": "^4.3",
                 "phpspec/phpspec": "^6.0",
-                "phpunit/phpcov": "^6.0"
+                "phpunit/phpcov": "^6.0",
+                "symfony/console": "^4",
+                "symfony/event-dispatcher": "^4"
             },
             "type": "library",
             "autoload": {
@@ -47,10 +49,10 @@
             ],
             "description": "Laravel service providers for Assessor, Keeper and differ.",
             "support": {
-                "source": "https://github.com/appocular/clients-laravel/tree/1.0.0",
+                "source": "https://github.com/appocular/clients-laravel/tree/1.0.1",
                 "issues": "https://github.com/appocular/clients-laravel/issues"
             },
-            "time": "2019-11-17T21:29:39+00:00"
+            "time": "2020-08-04T19:22:07+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -639,27 +641,29 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.3.3",
+            "version": "6.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "407b0cb880ace85c9b63c5f9551db498cb2d50ba"
+                "reference": "aab4ebd862aa7d04f01a4b51849d657db56d882e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/407b0cb880ace85c9b63c5f9551db498cb2d50ba",
-                "reference": "407b0cb880ace85c9b63c5f9551db498cb2d50ba",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/aab4ebd862aa7d04f01a4b51849d657db56d882e",
+                "reference": "aab4ebd862aa7d04f01a4b51849d657db56d882e",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "guzzlehttp/promises": "^1.0",
-                "guzzlehttp/psr7": "^1.4",
-                "php": ">=5.5"
+                "guzzlehttp/psr7": "^1.6.1",
+                "php": ">=5.5",
+                "symfony/polyfill-intl-idn": "^1.11"
             },
             "require-dev": {
                 "ext-curl": "*",
                 "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.4 || ^7.0",
-                "psr/log": "^1.0"
+                "psr/log": "^1.1"
             },
             "suggest": {
                 "psr/log": "Required for using the Log middleware"
@@ -667,16 +671,16 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.3-dev"
+                    "dev-master": "6.5-dev"
                 }
             },
             "autoload": {
-                "files": [
-                    "src/functions_include.php"
-                ],
                 "psr-4": {
                     "GuzzleHttp\\": "src/"
-                }
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -700,7 +704,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2018-04-22T15:46:56+00:00"
+            "time": "2020-04-18T10:38:46+00:00"
         },
         {
             "name": "guzzlehttp/promises",
