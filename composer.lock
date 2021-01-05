@@ -6654,24 +6654,24 @@
         },
         {
             "name": "sempro/phpunit-pretty-print",
-            "version": "1.2.2",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sempro/phpunit-pretty-print.git",
-                "reference": "6f0e99d06677dc3e518198e44263f4ddeed84a28"
+                "reference": "fa623aa8a17aece4a2b69e54b07a5e37572d1f1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sempro/phpunit-pretty-print/zipball/6f0e99d06677dc3e518198e44263f4ddeed84a28",
-                "reference": "6f0e99d06677dc3e518198e44263f4ddeed84a28",
+                "url": "https://api.github.com/repos/sempro/phpunit-pretty-print/zipball/fa623aa8a17aece4a2b69e54b07a5e37572d1f1d",
+                "reference": "fa623aa8a17aece4a2b69e54b07a5e37572d1f1d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.0",
-                "phpunit/phpunit": ">=7.0.0 <9.0.0"
+                "phpunit/phpunit": "^7 || ^8 || ^9"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.15"
+                "friendsofphp/php-cs-fixer": "^2.16"
             },
             "type": "library",
             "autoload": {
@@ -6684,7 +6684,7 @@
                 "MIT"
             ],
             "description": "Prettify PHPUnit output",
-            "time": "2020-04-08T06:32:58+00:00"
+            "time": "2021-01-04T13:25:10+00:00"
         },
         {
             "name": "slevomat/coding-standard",
