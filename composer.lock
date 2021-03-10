@@ -4659,24 +4659,24 @@
         },
         {
             "name": "webpatser/laravel-uuid",
-            "version": "4.0",
+            "version": "4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webpatser/laravel-uuid.git",
-                "reference": "ac2d27479fc362cb24132b6b597039ff60ae93cc"
+                "reference": "df92ebbc5ea71ee9e0d6e2861178be42ef7eb330"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webpatser/laravel-uuid/zipball/ac2d27479fc362cb24132b6b597039ff60ae93cc",
-                "reference": "ac2d27479fc362cb24132b6b597039ff60ae93cc",
+                "url": "https://api.github.com/repos/webpatser/laravel-uuid/zipball/df92ebbc5ea71ee9e0d6e2861178be42ef7eb330",
+                "reference": "df92ebbc5ea71ee9e0d6e2861178be42ef7eb330",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.0|^8.0"
             },
             "require-dev": {
-                "fakerphp/faker": "~1.12",
-                "phpunit/phpunit": "~9.3.8"
+                "fakerphp/faker": "^1.9.1",
+                "phpunit/phpunit": "^9.3.3"
             },
             "type": "library",
             "extra": {
@@ -4709,7 +4709,7 @@
             "keywords": [
                 "UUID RFC4122"
             ],
-            "time": "2020-12-14T12:45:59+00:00"
+            "time": "2021-03-09T07:19:24+00:00"
         }
     ],
     "packages-dev": [
